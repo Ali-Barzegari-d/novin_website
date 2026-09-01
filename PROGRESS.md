@@ -96,6 +96,18 @@ Add dated entries with commands, results, decisions, defects, and the next actio
 - Production gates are unchanged: this refresh does not make placeholders, mocks, draft legal copy, or unlicensed brand assets production-ready.
 - UI commit: `8c752d2` (`feat(ui): refresh public experience`).
 
+### 2026-09-01 — Typography, expressive color, and motion pass
+
+- Applied Ponytail in `full` mode together with UI UX Pro Max, Impeccable `4.0.4`, and Framer Motion Animator guidance. The refinement keeps `DESIGN.md`'s calm, professional product constraints while making the visual language substantially more distinct.
+- Added self-hosted, redistributable `Vazirmatn` 5.3.0 (body/UI) and `Estedad` 5.3.0 (display) through Fontsource. Both are SIL OFL 1.1 and are documented in `docs/ASSET_SOURCES.md`. IranYekan was deliberately not bundled because a licensed distribution was not supplied.
+- Rebuilt the token system around measured LinkedIn blue, teal, green, and burgundy accents; added distinct audience paths, varied problem surfaces, a stronger final CTA, and original updated process artwork. The palette intentionally avoids random rainbow or neon treatment.
+- Audited interaction sizing: public text has a 16px base; normal primary controls are 16px/48px minimum; compact navigation controls retain a 44px minimum target; fields are 48px minimum; keyboard focus is high-contrast and visible. Forms, disabled, focus, hover, and active states retain explicit feedback.
+- Added a client-only Framer Motion home experience: staged hero arrival, section entrances, restrained card hover depth, and an accessible reduced-motion path with no looping, parallax, or scroll hijacking. Section-level clipping prevents offscreen entrance transforms from creating horizontal mobile overflow.
+- Improved screenshot evidence to scroll each once-only entrance into view before full-page capture, so the evidence records the finished interface rather than temporarily hidden pre-entrance content.
+- QA passed: `pnpm typecheck`; `pnpm --filter web build` (25 routes); `pnpm lint`; `pnpm test` (11 passed); `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/google-chrome pnpm exec playwright test tests/e2e/public.spec.ts --project=chromium` (2 passed, 2 synthetic-token skips); `git diff --check`; Impeccable detector (`[]`). Manually inspected `artifacts/screenshots/home-{320,768,1440}.png`.
+- Production gates are unchanged. This work does not approve real company data, legal copy, providers, customer proof, or IranYekan licensing.
+- UI commit: pending.
+
 ## Production gates
 
 Copy unresolved gates from `DECISIONS.md` and close them only with evidence.

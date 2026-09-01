@@ -1,7 +1,25 @@
 import { expect, test } from '@playwright/test';
+import type { Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 const sizes = [{ name: '320', width: 320, height: 960 }, { name: '768', width: 768, height: 1100 }, { name: '1440', width: 1440, height: 1000 }];
+
+async function activateHomeSections(page: Page) {
+  const sections = page.locator('main > section');
+  for (let index = 0; index < await sections.count(); index += 1) {
+    await sections.nth(index).scrollIntoViewIfNeeded();
+    await page.waitForTimeout(360);
+  }
+  await page.evaluate(() => {
+    const root = document.documentElement;
+    const previousBehavior = root.style.scrollBehavior;
+    root.style.scrollBehavior = 'auto';
+    window.scrollTo(0, 0);
+    root.style.scrollBehavior = previousBehavior;
+  });
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+}
+
 test('public home is Persian RTL, accessible, and has no public price', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
@@ -9,7 +27,7 @@ test('public home is Persian RTL, accessible, and has no public price', async ({
   await expect(page.getByText(/ریال|تومان|[۰-۹]+٬[۰-۹]+/)).not.toBeVisible();
   const axe = await new AxeBuilder({ page }).analyze();
   expect(axe.violations.filter((item) => ['critical', 'serious'].includes(item.impact ?? '')).map((item) => item.id)).toEqual([]);
-  for (const size of sizes) { await page.setViewportSize({ width: size.width, height: size.height }); expect(await page.locator('body').evaluate((element) => element.scrollWidth <= window.innerWidth)).toBe(true); await page.screenshot({ path: `artifacts/screenshots/home-${size.name}.png`, fullPage: true }); }
+  for (const size of sizes) { await page.setViewportSize({ width: size.width, height: size.height }); await activateHomeSections(page); expect(await page.locator('body').evaluate((element) => element.scrollWidth <= window.innerWidth)).toBe(true); await page.screenshot({ path: `artifacts/screenshots/home-${size.name}.png`, fullPage: true }); }
 });
 
 test('primary public routes render a single request CTA without horizontal overflow', async ({ page }) => {
