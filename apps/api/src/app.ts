@@ -1,4 +1,5 @@
 import { randomInt, randomUUID } from 'node:crypto';
+import { createReadStream } from 'node:fs';
 import { mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import Fastify, { type FastifyInstance, type FastifyReply, type FastifyRequest } from 'fastify';
@@ -9,15 +10,16 @@ import rateLimit from '@fastify/rate-limit';
 import { and, desc, eq, gt, ilike, isNull, or, sql } from 'drizzle-orm';
 import { createClient } from 'redis';
 import { z } from 'zod';
+import { Secret, TOTP } from 'otpauth';
 import { loadConfig, type AppConfig } from '@novin/config';
-import { acceptOfferSchema, bankTransferSchema, complaintSchema, offerSchema, onboardingSchema, requestSchema, screeningSchema, sendOtpSchema, verifyOtpSchema } from '@novin/contracts';
-import { attachments, auditLogs, bankTransfers, caseStudies, clients, complaints, consentLogs, contentEntries, contentRevisions, createDatabase, errorEvents, legalDocuments, memberships, notifications, offerVersions, offers, orders, organizations, otpChallenges, payments, requests, screenings, sessions, teamMembers, users } from '@novin/db';
+import { acceptOfferSchema, bankTransferSchema, complaintSchema, offerSchema, onboardingSchema, requestSchema, sendOtpSchema, verifyOtpSchema } from '@novin/contracts';
+import { attachments, auditLogs, bankTransfers, caseStudies, clients, complaints, consentLogs, contentEntries, contentRevisions, createDatabase, errorEvents, legalDocuments, memberships, mfaFactors, notifications, offerVersions, offers, orders, organizations, otpChallenges, payments, requestAssignments, requests, screenings, sessions, teamMembers, users } from '@novin/db';
 import { audit } from './lib/audit.js';
 import { savePrivateUpload } from './lib/files.js';
 import { calculateTotals } from './lib/money.js';
 import { can, type Permission } from './lib/rbac.js';
 import { deliverEmail, deliverSms } from './lib/providers.js';
-import { hashIp, offerTokenHash, opaqueToken, publicReference, safeEqual, secretHash } from './lib/security.js';
+import { decryptAtRest, encryptAtRest, hashIp, offerTokenHash, opaqueToken, publicReference, safeEqual, secretHash } from './lib/security.js';
 import { assertTransition } from './lib/transitions.js';
 
 declare module 'fastify' {
@@ -37,7 +39,7 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
   await mkdir(join(process.cwd(), 'var/logs'), { recursive: true, mode: 0o700 });
   await app.register(cookie);
   await app.register(helmet, { contentSecurityPolicy: { directives: { defaultSrc: ["'self'"], imgSrc: ["'self'", 'data:'], styleSrc: ["'self'", "'unsafe-inline'"], scriptSrc: ["'self'"], frameAncestors: ["'none'"] } } });
-  await app.register(rateLimit, { global: false, redis, keyGenerator: (request) => request.ip });
+  await app.register(rateLimit, { global: false, keyGenerator: (request) => request.ip });
   await app.register(multipart, { limits: { fileSize: config.UPLOAD_MAX_BYTES, files: 1 }, throwFileSizeLimit: true });
 
   app.addHook('onRequest', async (request, reply) => {
@@ -74,6 +76,11 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
     if (!can(auth.role, permission)) throw Object.assign(new Error('دسترسی کافی نیست.'), { statusCode: 403 });
     return auth;
   }
+  function requireRecentMfa(request: FastifyRequest) {
+    const auth = requireAuth(request);
+    if (auth.role === 'SUPERADMIN' && auth.authLevel < 2) throw Object.assign(new Error('برای این عملیات تأیید دومرحله‌ای لازم است.'), { statusCode: 401 });
+    return auth;
+  }
   async function notify(channel: 'SMS' | 'EMAIL', event: string, destination: string, body: string, relatedId?: string) {
     const [row] = await db.insert(notifications).values({ event, channel, destination, body, relatedEntity: relatedId ? 'domain' : undefined, relatedId }).returning();
     try {
@@ -99,6 +106,9 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
 
   app.post('/api/v1/auth/otp', { config: { rateLimit: { max: 5, timeWindow: '10 minutes' } } }, async (request) => {
     const input = sendOtpSchema.parse(request.body);
+    for (const key of [`otp:ip:${hashIp(request.ip, config.SESSION_SECRET)}`, `otp:mobile:${secretHash(input.mobile, config.SESSION_SECRET)}`]) {
+      const count = await redis.incr(key); if (count === 1) await redis.expire(key, 600); if (count > 5) throw Object.assign(new Error('تعداد درخواست بیش از حد مجاز است. کمی بعد دوباره تلاش کنید.'), { statusCode: 429 });
+    }
     const resendKey = `otp:resend:${input.mobile}`;
     if (await redis.get(resendKey)) return { accepted: true, retryAfterSeconds: config.OTP_RESEND_SECONDS };
     const code = String(randomInt(0, 1_000_000)).padStart(6, '0');
@@ -133,6 +143,30 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
     return { ok: true };
   });
 
+  app.post('/api/v1/admin/mfa/enroll', async (request) => {
+    const auth = requireAuth(request);
+    if (auth.role !== 'SUPERADMIN') throw Object.assign(new Error('فقط سوپرادمین می‌تواند MFA را راه‌اندازی کند.'), { statusCode: 403 });
+    const secret = new Secret({ size: 20 }).base32;
+    const totp = new TOTP({ issuer: 'نوین ایرانیان', label: auth.mobile, algorithm: 'SHA1', digits: 6, period: 30, secret });
+    const recoveryCodes = Array.from({ length: 8 }, () => opaqueToken(6));
+    await db.insert(mfaFactors).values({ userId: auth.id, secretEncrypted: encryptAtRest(secret, config.SESSION_SECRET), recoveryCodeHashes: recoveryCodes.map((code) => secretHash(code, config.SESSION_SECRET)) });
+    return { otpauthUri: totp.toString(), recoveryCodes };
+  });
+
+  app.post('/api/v1/admin/mfa/verify', async (request, reply) => {
+    const auth = requireAuth(request); const input = z.object({ code: z.string().regex(/^\d{6}$/) }).parse(request.body);
+    const factor = await db.query.mfaFactors.findFirst({ where: and(eq(mfaFactors.userId, auth.id), isNull(mfaFactors.revokedAt)), orderBy: [desc(mfaFactors.createdAt)] });
+    if (!factor) throw Object.assign(new Error('MFA راه‌اندازی نشده است.'), { statusCode: 422 });
+    const totp = new TOTP({ issuer: 'نوین ایرانیان', label: auth.mobile, algorithm: 'SHA1', digits: 6, period: 30, secret: decryptAtRest(factor.secretEncrypted, config.SESSION_SECRET) });
+    if (totp.validate({ token: input.code, window: 1 }) === null) throw Object.assign(new Error('کد MFA نامعتبر است.'), { statusCode: 401 });
+    await db.update(users).set({ mfaEnrolledAt: new Date() }).where(eq(users.id, auth.id));
+    const token = await sessionFor(auth.id, 2); setSession(reply, token);
+    const previous = request.cookies.novin_session;
+    if (previous) await db.update(sessions).set({ revokedAt: new Date() }).where(eq(sessions.tokenHash, secretHash(previous, config.SESSION_SECRET)));
+    await audit(db, { actorId: auth.id, actorRole: auth.role, action: 'MFA_VERIFIED', entity: 'user', entityId: auth.id, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) });
+    return { ok: true };
+  });
+
   app.post('/api/v1/account/onboarding', async (request) => {
     const auth = requireAuth(request);
     const input = onboardingSchema.parse(request.body);
@@ -158,6 +192,32 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
     const input = onboardingSchema.partial().omit({ organizationName: true, organizationType: true, representationConfirmed: true, privacyVersion: true }).parse(request.body);
     await db.update(users).set({ ...input, updatedAt: new Date() }).where(eq(users.id, auth.id));
     return { ok: true };
+  });
+
+  app.post('/api/v1/account/mobile-change/request', async (request) => {
+    const auth = requireAuth(request); const input = z.object({ mobile: sendOtpSchema.shape.mobile }).parse(request.body);
+    if (input.mobile === auth.mobile) return { accepted: true };
+    const code = String(randomInt(0, 1_000_000)).padStart(6, '0');
+    await redis.set(`mobile-change:${auth.id}`, secretHash(`${input.mobile}:${code}`, config.SESSION_SECRET), { EX: config.OTP_TTL_SECONDS });
+    if (config.APP_ENV !== 'production') await notify('SMS', 'MOBILE_CHANGE', input.mobile, `محیط آزمایشی نوین: رمز تأیید تغییر همراه ${code}`);
+    return { accepted: true };
+  });
+  app.post('/api/v1/account/mobile-change/verify', async (request, reply) => {
+    const auth = requireAuth(request); const input = z.object({ mobile: sendOtpSchema.shape.mobile, code: z.string().regex(/^\d{6}$/) }).parse(request.body);
+    const key = `mobile-change:${auth.id}`; const saved = await redis.get(key);
+    if (!saved || !safeEqual(saved, secretHash(`${input.mobile}:${input.code}`, config.SESSION_SECRET))) throw Object.assign(new Error('رمز تأیید نامعتبر است.'), { statusCode: 401 });
+    await db.transaction(async (tx) => { await tx.update(users).set({ mobile: input.mobile, updatedAt: new Date() }).where(eq(users.id, auth.id)); await tx.update(sessions).set({ revokedAt: new Date() }).where(eq(sessions.userId, auth.id)); });
+    await redis.del(key); const token = await sessionFor(auth.id); setSession(reply, token);
+    await audit(db, { actorId: auth.id, actorRole: auth.role, action: 'MOBILE_CHANGED', entity: 'user', entityId: auth.id, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) }); return { ok: true };
+  });
+  app.post('/api/v1/account/email-verification/request', async (request) => {
+    const auth = requireAuth(request); const person = await db.query.users.findFirst({ where: eq(users.id, auth.id) }); if (!person?.email) throw Object.assign(new Error('ابتدا ایمیل را در پروفایل ثبت کنید.'), { statusCode: 422 });
+    const token = opaqueToken(); await redis.set(`email-verify:${auth.id}`, secretHash(token, config.SESSION_SECRET), { EX: 3600 }); await notify('EMAIL', 'EMAIL_VERIFICATION', person.email, `کد تأیید ایمیل شما: ${token}`, auth.id); return { accepted: true };
+  });
+  app.post('/api/v1/account/email-verification/confirm', async (request) => {
+    const auth = requireAuth(request); const input = z.object({ token: z.string().min(20).max(100) }).parse(request.body); const saved = await redis.get(`email-verify:${auth.id}`);
+    if (!saved || !safeEqual(saved, secretHash(input.token, config.SESSION_SECRET))) throw Object.assign(new Error('کد تأیید ایمیل نامعتبر است.'), { statusCode: 401 });
+    await db.update(users).set({ emailVerifiedAt: new Date(), updatedAt: new Date() }).where(eq(users.id, auth.id)); await redis.del(`email-verify:${auth.id}`); return { ok: true };
   });
 
   app.post('/api/v1/requests', async (request) => {
@@ -192,24 +252,42 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
     await db.insert(attachments).values({ requestId, ...saved, status: 'CLEAN', expiresAt: new Date(Date.now() + 180 * 24 * 3600 * 1000) });
     return { ok: true };
   });
+  app.get('/api/v1/admin/attachments/:id/download', async (request, reply) => {
+    requirePermission(request, 'requests:read'); const attachment = await db.query.attachments.findFirst({ where: eq(attachments.id, (request.params as { id: string }).id) });
+    if (!attachment || attachment.status !== 'CLEAN') throw Object.assign(new Error('فایل قابل دریافت نیست.'), { statusCode: 404 });
+    reply.header('content-type', attachment.detectedMime ?? 'application/octet-stream').header('x-content-type-options', 'nosniff').header('content-disposition', `attachment; filename="${attachment.storageName}"`).header('cache-control', 'private, no-store');
+    return reply.send(createReadStream(join(process.cwd(), 'var/uploads/clean', attachment.storageName)));
+  });
 
   app.get('/api/v1/admin/requests', async (request) => {
     requirePermission(request, 'requests:read');
     const query = (request.query as { q?: string; state?: string }).q?.trim();
     const state = (request.query as { q?: string; state?: string }).state;
-    const conditions = [state ? eq(requests.state, state as never) : undefined, query ? or(ilike(requests.reference, `%${query}%`), ilike(requests.title, `%${query}%`)) : undefined].filter(Boolean) as ReturnType<typeof eq>[];
-    return db.select({ id: requests.id, reference: requests.reference, title: requests.title, state: requests.state, submittedAt: requests.submittedAt, organization: organizations.displayName }).from(requests).innerJoin(organizations, eq(requests.organizationId, organizations.id)).where(conditions.length ? and(...conditions) : undefined).orderBy(desc(requests.submittedAt));
+    const conditions = [state ? eq(requests.state, state as never) : undefined, query ? or(ilike(requests.reference, `%${query}%`), ilike(requests.title, `%${query}%`), ilike(organizations.displayName, `%${query}%`), ilike(organizations.nationalId, `%${query}%`), ilike(users.mobile, `%${query}%`)) : undefined].filter(Boolean) as ReturnType<typeof eq>[];
+    return db.select({ id: requests.id, reference: requests.reference, title: requests.title, state: requests.state, version: requests.version, submittedAt: requests.submittedAt, organization: organizations.displayName, mobile: users.mobile }).from(requests).innerJoin(organizations, eq(requests.organizationId, organizations.id)).innerJoin(users, eq(requests.createdByUserId, users.id)).where(conditions.length ? and(...conditions) : undefined).orderBy(desc(requests.submittedAt));
+  });
+  app.post('/api/v1/admin/requests/:id/assign', async (request) => {
+    const auth = requirePermission(request, 'requests:assign'); const input = z.object({ assigneeId: z.string().uuid() }).parse(request.body); const requestId = (request.params as { id: string }).id;
+    const assignee = await db.query.users.findFirst({ where: and(eq(users.id, input.assigneeId), eq(users.active, true)) });
+    if (!assignee || !['EXPERT', 'OPERATIONS'].includes(assignee.role)) throw Object.assign(new Error('کارشناس فعال معتبر نیست.'), { statusCode: 422 });
+    await db.transaction(async (tx) => { await tx.update(requestAssignments).set({ revokedAt: new Date() }).where(and(eq(requestAssignments.requestId, requestId), isNull(requestAssignments.revokedAt))); await tx.insert(requestAssignments).values({ requestId, assigneeId: assignee.id, assignedById: auth.id }); });
+    await audit(db, { actorId: auth.id, actorRole: auth.role, action: 'REQUEST_ASSIGNED', entity: 'request', entityId: requestId, after: { assigneeId: assignee.id }, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) }); return { ok: true };
+  });
+  app.get('/api/v1/admin/requests.csv', async (request, reply) => {
+    requirePermission(request, 'requests:export'); const data = await db.select({ reference: requests.reference, title: requests.title, organization: organizations.displayName, state: requests.state, submittedAt: requests.submittedAt }).from(requests).innerJoin(organizations, eq(requests.organizationId, organizations.id)).orderBy(desc(requests.submittedAt));
+    const quote = (value: unknown) => `"${String(value ?? '').replaceAll('"', '""')}"`; const output = ['reference,title,organization,state,submitted_at', ...data.map((row) => [row.reference, row.title, row.organization, row.state, row.submittedAt.toISOString()].map(quote).join(','))].join('\n');
+    reply.header('content-type', 'text/csv; charset=utf-8').header('content-disposition', 'attachment; filename="requests.csv"'); return `\uFEFF${output}`;
   });
 
   app.post('/api/v1/admin/requests/:id/transition', async (request) => {
     const auth = requirePermission(request, 'requests:screen');
-    const input = screeningSchema.extend({ state: z.enum(['SUBMITTED', 'UNDER_REVIEW', 'CONTACT_PENDING', 'NEED_MORE_INFO', 'QUALIFIED', 'REJECTED', 'OFFER_SENT', 'PAID', 'SESSION_SCHEDULED', 'SESSION_COMPLETED', 'PROJECT_PROPOSED', 'ARCHIVED']) }).parse(request.body);
+    const input = z.object({ state: z.enum(['SUBMITTED', 'UNDER_REVIEW', 'CONTACT_PENDING', 'NEED_MORE_INFO', 'QUALIFIED', 'REJECTED', 'OFFER_SENT', 'PAID', 'SESSION_SCHEDULED', 'SESSION_COMPLETED', 'PROJECT_PROPOSED', 'ARCHIVED']), expectedVersion: z.number().int().nonnegative(), outcome: z.string().trim().min(3).max(32).optional(), note: z.string().trim().min(3).max(4_000), contactedAt: z.string().datetime().optional() }).parse(request.body);
     const requestId = (request.params as { id: string }).id;
     const current = await db.query.requests.findFirst({ where: eq(requests.id, requestId) });
     if (!current || current.version !== input.expectedVersion) throw Object.assign(new Error('درخواست تغییر کرده یا یافت نشد.'), { statusCode: 409 });
     assertTransition(current.state, input.state);
     await db.transaction(async (tx) => {
-      await tx.insert(screenings).values({ requestId, actorId: auth.id, outcome: input.outcome, note: input.note, contactedAt: input.contactedAt ? new Date(input.contactedAt) : undefined });
+      await tx.insert(screenings).values({ requestId, actorId: auth.id, outcome: input.outcome ?? input.state, note: input.note, contactedAt: input.contactedAt ? new Date(input.contactedAt) : undefined });
       await tx.update(requests).set({ state: input.state, version: sql`${requests.version} + 1`, updatedAt: new Date() }).where(and(eq(requests.id, requestId), eq(requests.version, input.expectedVersion)));
     });
     await audit(db, { actorId: auth.id, actorRole: auth.role, action: 'REQUEST_TRANSITION', entity: 'request', entityId: requestId, before: { state: current.state }, after: { state: input.state }, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) });
@@ -335,5 +413,12 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
 
   app.get('/api/v1/admin/audit', async (request) => { requirePermission(request, 'audit:read'); return db.select().from(auditLogs).orderBy(desc(auditLogs.createdAt)).limit(200); });
   app.get('/api/v1/admin/errors', async (request) => { requirePermission(request, 'errors:read'); return db.select().from(errorEvents).orderBy(desc(errorEvents.createdAt)).limit(200); });
+  app.get('/api/v1/admin/staff', async (request) => { requireRecentMfa(request); requirePermission(request, 'staff:manage'); return db.select({ id: users.id, mobile: users.mobile, firstName: users.firstName, lastName: users.lastName, role: users.role, active: users.active, mfaEnrolledAt: users.mfaEnrolledAt }).from(users).where(sql`${users.role} <> 'CUSTOMER'`).orderBy(users.role); });
+  app.patch('/api/v1/admin/staff/:id', async (request) => {
+    const auth = requireRecentMfa(request); requirePermission(request, 'staff:manage'); const input = z.object({ role: z.enum(['EXPERT', 'OPERATIONS', 'FINANCE', 'CONTENT', 'SUPERADMIN']).optional(), active: z.boolean().optional() }).refine((value) => value.role !== undefined || value.active !== undefined).parse(request.body); const userId = (request.params as { id: string }).id;
+    const before = await db.query.users.findFirst({ where: eq(users.id, userId) }); if (!before) throw Object.assign(new Error('کاربر داخلی یافت نشد.'), { statusCode: 404 });
+    await db.transaction(async (tx) => { await tx.update(users).set({ ...input, updatedAt: new Date() }).where(eq(users.id, userId)); if (input.active === false || input.role) await tx.update(sessions).set({ revokedAt: new Date() }).where(and(eq(sessions.userId, userId), isNull(sessions.revokedAt))); });
+    await audit(db, { actorId: auth.id, actorRole: auth.role, action: 'STAFF_ACCESS_CHANGED', entity: 'user', entityId: userId, before: { role: before.role, active: before.active }, after: input, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) }); return { ok: true };
+  });
   return app;
 }

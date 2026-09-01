@@ -1,4 +1,4 @@
-import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
+import { createCipheriv, createDecipheriv, createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 
 export function opaqueToken(bytes = 32) {
   return randomBytes(bytes).toString('base64url');
@@ -28,4 +28,13 @@ export function offerTokenHash(token: string) {
 
 export function asPersianDigits(value: string | number) {
   return String(value).replace(/\d/g, (digit) => '۰۱۲۳۴۵۶۷۸۹'[Number(digit)] ?? digit);
+}
+
+function encryptionKey(secret: string) { return createHash('sha256').update(secret).digest(); }
+export function encryptAtRest(value: string, secret: string) {
+  const iv = randomBytes(12); const cipher = createCipheriv('aes-256-gcm', encryptionKey(secret), iv); const ciphertext = Buffer.concat([cipher.update(value, 'utf8'), cipher.final()]);
+  return `${iv.toString('base64url')}.${cipher.getAuthTag().toString('base64url')}.${ciphertext.toString('base64url')}`;
+}
+export function decryptAtRest(value: string, secret: string) {
+  const [iv, tag, ciphertext] = value.split('.'); if (!iv || !tag || !ciphertext) throw new Error('داده رمزگذاری‌شده نامعتبر است.'); const decipher = createDecipheriv('aes-256-gcm', encryptionKey(secret), Buffer.from(iv, 'base64url')); decipher.setAuthTag(Buffer.from(tag, 'base64url')); return Buffer.concat([decipher.update(Buffer.from(ciphertext, 'base64url')), decipher.final()]).toString('utf8');
 }

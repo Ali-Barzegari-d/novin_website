@@ -14,6 +14,7 @@ artifacts/
 # Persistent/runtime data is bind-mounted and never committed.
 var/*
 !var/.gitkeep
+apps/api/var/
 
 # Local skill fallbacks and temporary downloads.
 .agent/vendor/

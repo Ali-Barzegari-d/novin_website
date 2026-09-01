@@ -10,7 +10,7 @@
   },
   "scripts": {
     "dev": "pnpm --filter contracts build && pnpm --filter config build && pnpm --filter db build && concurrently -n api,web -c cyan,magenta \"pnpm --filter api dev\" \"pnpm --filter web dev\"",
-    "build": "pnpm --filter contracts build && pnpm --filter db build && pnpm --filter api build && pnpm --filter web build",
+    "build": "pnpm --filter contracts build && pnpm --filter config build && pnpm --filter db build && pnpm --filter api build && pnpm --filter web build",
     "lint": "eslint . --max-warnings=0 && pnpm traceability:check",
     "typecheck": "pnpm --filter contracts typecheck && pnpm --filter db typecheck && pnpm --filter config typecheck && pnpm --filter api typecheck && pnpm --filter web typecheck",
     "test": "vitest run --project unit --project integration",

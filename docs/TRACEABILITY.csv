@@ -1,45 +1,45 @@
 ﻿requirement_id,priority,release,source_section,requirement,planned_test,implementation,status
-AUTH-01,Must,R2,۱۰.۱ هویت، عضویت و ورود,سامانه باید عضویت و ورود را با شماره همراه و رمز یک‌بارمصرف انجام دهد و رمز عبور دائمی نداشته باشد.,T-AUTH-01,TBD,Planned
-AUTH-02,Must,R2,۱۰.۱ هویت، عضویت و ورود,شماره همراه باید پیش از ایجاد حساب تأیید شود.,T-AUTH-02,TBD,Planned
-AUTH-03,Must,R2,۱۰.۱ هویت، عضویت و ورود,ارسال OTP باید دارای محدودیت نرخ، زمان انقضا و سقف تلاش ناموفق باشد.,T-AUTH-03,TBD,Planned
-AUTH-04,Must,R2,۱۰.۱ هویت، عضویت و ورود,حساب باید به یک شخص حقیقی به‌عنوان رابط یک یا چند شخص حقوقی متصل باشد.,T-AUTH-04,TBD,Planned
-AUTH-05,Must,R2,۱۰.۱ هویت، عضویت و ورود,در عضویت اولیه نام، نام خانوادگی، نام سازمان، سمت و ایمیل دریافت شود.,T-AUTH-05,TBD,Planned
-AUTH-06,Should,R2,۱۰.۱ هویت، عضویت و ورود,ایمیل پیش از پرداخت نخستین سفارش تأیید شود.,T-AUTH-06,TBD,Planned
-AUTH-07,Must,R2,۱۰.۱ هویت، عضویت و ورود,کاربر بتواند خروج امن انجام دهد و نشست‌ها زمان انقضای قابل تنظیم داشته باشند.,T-AUTH-07,TBD,Planned
-AUTH-08,Must,R2,۱۰.۱ هویت، عضویت و ورود,کاربر بتواند رضایت خود با شرایط و حریم خصوصی را با نسخه و زمان ثبت کند.,T-AUTH-08,TBD,Planned
-ORG-01,Must,R2,۱۰.۲ پروفایل و سازمان,نوع سازمان باید یکی از خصوصی، عمومی یا دولتی باشد.,T-ORG-01,TBD,Planned
-ORG-02,Must,R2,۱۰.۲ پروفایل و سازمان,در مرحله اولیه نام رایج سازمان کافی است.,T-ORG-02,TBD,Planned
-ORG-03,Must,R2,۱۰.۲ پروفایل و سازمان,پیش از پرداخت، نام ثبتی و شناسه ملی سازمان الزامی شود.,T-ORG-03,TBD,Planned
-ORG-04,Must,R2,۱۰.۲ پروفایل و سازمان,اطلاعات لازم برای صورتحساب در مرحله پرداخت تکمیل شود.,T-ORG-04,TBD,Planned
-ORG-05,Must,R2,۱۰.۲ پروفایل و سازمان,نماینده باید تأیید کند رابط یا نماینده سازمان است؛ بارگذاری مدرک نمایندگی در MVP لازم نیست.,T-ORG-05,TBD,Planned
-ORG-06,Should,R2,۱۰.۲ پروفایل و سازمان,کاربر بتواند اطلاعات پایه خود را ویرایش کند؛ تغییر شماره همراه نیازمند تأیید مجدد باشد.,T-ORG-06,TBD,Planned
-REQ-01,Must,R2,۱۰.۳ ثبت درخواست,فرم نباید کاربر را ملزم به انتخاب خدمت تخصصی کند.,T-REQ-01,TBD,Planned
-REQ-02,Must,R2,۱۰.۳ ثبت درخواست,فرم باید عنوان کوتاه و شرح آزاد مسئله را دریافت کند.,T-REQ-02,TBD,Planned
-REQ-03,Must,R2,۱۰.۳ ثبت درخواست,اطلاعات سازمان و نماینده از پروفایل پیش‌پر شوند.,T-REQ-03,TBD,Planned
-REQ-04,Must,R2,۱۰.۳ ثبت درخواست,کاربر بتواند پیش از ارسال، اطلاعات را بازبینی و اصلاح کند.,T-REQ-04,TBD,Planned
-REQ-05,Must,R2,۱۰.۳ ثبت درخواست,هر درخواست شماره یکتای قابل ارجاع دریافت کند.,T-REQ-05,TBD,Planned
-REQ-06,Must,R2,۱۰.۳ ثبت درخواست,تأیید ثبت از طریق صفحه، پیامک و ایمیل ارسال شود.,T-REQ-06,TBD,Planned
-REQ-07,Must,R2,۱۰.۳ ثبت درخواست,ارسال چندباره ناشی از دوبار کلیک یا خطای شبکه نباید درخواست تکراری بسازد.,T-REQ-07,TBD,Planned
-REQ-08,Must,R2,۱۰.۳ ثبت درخواست,تاریخ، منبع ورودی و نسخه شرایط پذیرفته‌شده ذخیره شود.,T-REQ-08,TBD,Planned
-REQ-09,Must,R2,۱۰.۳ ثبت درخواست,کاربر بتواند درخواست جدید ثبت کند بدون آنکه درخواست‌های قبلی تغییر کنند.,T-REQ-09,TBD,Planned
-REQ-10,Should,R2,۱۰.۳ ثبت درخواست,سیستم باید از کپچا یا کنترل ضدربات متناسب استفاده کند.,T-REQ-10,TBD,Planned
-FILE-01,Must,R2,۱۰.۴ پیوست اولیه,پیوست درخواست اختیاری باشد.,T-FILE-01,TBD,Planned
-FILE-02,Must,R2,۱۰.۴ پیوست اولیه,پیش از بارگذاری، هشدار منع داده محرمانه و حساس نمایش داده و پذیرفته شود.,T-FILE-02,TBD,Planned
-FILE-03,Must,R2,۱۰.۴ پیوست اولیه,نوع و حجم فایل مجاز از تنظیمات مدیریت قابل تغییر باشد.,T-FILE-03,TBD,Planned
-FILE-04,Must,R2,۱۰.۴ پیوست اولیه,فایل باید از نظر نوع واقعی، بدافزار و نام ناامن بررسی شود.,T-FILE-04,TBD,Planned
-FILE-05,Must,R2,۱۰.۴ پیوست اولیه,فایل‌ها عمومی نباشند و فقط کاربران داخلی مجاز به آن‌ها دسترسی داشته باشند.,T-FILE-05,TBD,Planned
-ACC-01,Must,R2,۱۰.۵ حساب کاربری,حساب باید اطلاعات پایه کاربر را نمایش دهد.,T-ACC-01,TBD,Planned
-ACC-02,Must,R2,۱۰.۵ حساب کاربری,حساب باید فهرست درخواست‌ها را با شماره، عنوان و تاریخ نمایش دهد.,T-ACC-02,TBD,Planned
-ACC-03,Must,R2,۱۰.۵ حساب کاربری,وضعیت داخلی، یادداشت، فایل گزارش و گردش کار نباید در MVP نمایش داده شود.,T-ACC-03,TBD,Planned
-ACC-04,Must,R2,۱۰.۵ حساب کاربری,CTA ثبت درخواست جدید باید در حساب قابل دسترس باشد.,T-ACC-04,TBD,Planned
-ACC-05,Must,R2,۱۰.۵ حساب کاربری,لینک پیشنهاد اختصاصی می‌تواند مستقل از حساب و با توکن امن باز شود.,T-ACC-05,TBD,Planned
-SCR-01,Must,R2,۱۰.۶ بررسی و غربالگری داخلی,ادمین عملیاتی بتواند درخواست‌ها را جست‌وجو، فیلتر و مشاهده کند.,T-SCR-01,TBD,Planned
-SCR-02,Must,R2,۱۰.۶ بررسی و غربالگری داخلی,کارشناس بتواند یادداشت داخلی و نتیجه تماس را ثبت کند.,T-SCR-02,TBD,Planned
-SCR-03,Must,R2,۱۰.۶ بررسی و غربالگری داخلی,نتیجه بررسی باید حداقل واجد همکاری، فاقد امکان همکاری یا نیازمند اطلاعات بیشتر باشد.,T-SCR-03,TBD,Planned
-SCR-04,Must,R2,۱۰.۶ بررسی و غربالگری داخلی,وضعیت داخلی برای کاربر قابل مشاهده نباشد.,T-SCR-04,TBD,Planned
-SCR-05,Must,R2,۱۰.۶ بررسی و غربالگری داخلی,ثبت‌کننده و زمان هر تغییر مهم در لاگ ممیزی ذخیره شود.,T-SCR-05,TBD,Planned
-SCR-06,Should,R2,۱۰.۶ بررسی و غربالگری داخلی,ادمین بتواند درخواست را به کارشناس داخلی تخصیص دهد.,T-SCR-06,TBD,Planned
-SCR-07,Should,R2,۱۰.۶ بررسی و غربالگری داخلی,خروجی اکسل از فهرست درخواست‌ها با رعایت سطح دسترسی ممکن باشد.,T-SCR-07,TBD,Planned
+AUTH-01,Must,R2,۱۰.۱ هویت، عضویت و ورود,سامانه باید عضویت و ورود را با شماره همراه و رمز یک‌بارمصرف انجام دهد و رمز عبور دائمی نداشته باشد.,T-AUTH-01,apps/api/src/app.ts;packages/contracts/src/index.ts;PROGRESS.md,Implemented
+AUTH-02,Must,R2,۱۰.۱ هویت، عضویت و ورود,شماره همراه باید پیش از ایجاد حساب تأیید شود.,T-AUTH-02,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
+AUTH-03,Must,R2,۱۰.۱ هویت، عضویت و ورود,ارسال OTP باید دارای محدودیت نرخ، زمان انقضا و سقف تلاش ناموفق باشد.,T-AUTH-03,apps/api/src/app.ts;packages/config/src/index.ts,Implemented
+AUTH-04,Must,R2,۱۰.۱ هویت، عضویت و ورود,حساب باید به یک شخص حقیقی به‌عنوان رابط یک یا چند شخص حقوقی متصل باشد.,T-AUTH-04,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
+AUTH-05,Must,R2,۱۰.۱ هویت، عضویت و ورود,در عضویت اولیه نام، نام خانوادگی، نام سازمان، سمت و ایمیل دریافت شود.,T-AUTH-05,apps/web/src/components/RequestFlow.tsx;apps/api/src/app.ts,Implemented
+AUTH-06,Should,R2,۱۰.۱ هویت، عضویت و ورود,ایمیل پیش از پرداخت نخستین سفارش تأیید شود.,T-AUTH-06,apps/api/src/app.ts,Implemented
+AUTH-07,Must,R2,۱۰.۱ هویت، عضویت و ورود,کاربر بتواند خروج امن انجام دهد و نشست‌ها زمان انقضای قابل تنظیم داشته باشند.,T-AUTH-07,apps/api/src/app.ts;packages/config/src/index.ts,Implemented
+AUTH-08,Must,R2,۱۰.۱ هویت، عضویت و ورود,کاربر بتواند رضایت خود با شرایط و حریم خصوصی را با نسخه و زمان ثبت کند.,T-AUTH-08,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
+ORG-01,Must,R2,۱۰.۲ پروفایل و سازمان,نوع سازمان باید یکی از خصوصی، عمومی یا دولتی باشد.,T-ORG-01,packages/contracts/src/index.ts;packages/db/src/schema.ts,Implemented
+ORG-02,Must,R2,۱۰.۲ پروفایل و سازمان,در مرحله اولیه نام رایج سازمان کافی است.,T-ORG-02,apps/web/src/components/RequestFlow.tsx;apps/api/src/app.ts,Implemented
+ORG-03,Must,R2,۱۰.۲ پروفایل و سازمان,پیش از پرداخت، نام ثبتی و شناسه ملی سازمان الزامی شود.,T-ORG-03,apps/api/src/app.ts;packages/contracts/src/index.ts,Implemented
+ORG-04,Must,R2,۱۰.۲ پروفایل و سازمان,اطلاعات لازم برای صورتحساب در مرحله پرداخت تکمیل شود.,T-ORG-04,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
+ORG-05,Must,R2,۱۰.۲ پروفایل و سازمان,نماینده باید تأیید کند رابط یا نماینده سازمان است؛ بارگذاری مدرک نمایندگی در MVP لازم نیست.,T-ORG-05,apps/web/src/components/RequestFlow.tsx;apps/api/src/app.ts,Implemented
+ORG-06,Should,R2,۱۰.۲ پروفایل و سازمان,کاربر بتواند اطلاعات پایه خود را ویرایش کند؛ تغییر شماره همراه نیازمند تأیید مجدد باشد.,T-ORG-06,apps/web/src/components/AccountPanel.tsx;apps/api/src/app.ts,Implemented
+REQ-01,Must,R2,۱۰.۳ ثبت درخواست,فرم نباید کاربر را ملزم به انتخاب خدمت تخصصی کند.,T-REQ-01,apps/web/src/components/RequestFlow.tsx,Implemented
+REQ-02,Must,R2,۱۰.۳ ثبت درخواست,فرم باید عنوان کوتاه و شرح آزاد مسئله را دریافت کند.,T-REQ-02,apps/web/src/components/RequestFlow.tsx;packages/contracts/src/index.ts,Implemented
+REQ-03,Must,R2,۱۰.۳ ثبت درخواست,اطلاعات سازمان و نماینده از پروفایل پیش‌پر شوند.,T-REQ-03,apps/api/src/app.ts;apps/web/src/components/RequestFlow.tsx,Implemented
+REQ-04,Must,R2,۱۰.۳ ثبت درخواست,کاربر بتواند پیش از ارسال، اطلاعات را بازبینی و اصلاح کند.,T-REQ-04,apps/web/src/components/RequestFlow.tsx,Implemented
+REQ-05,Must,R2,۱۰.۳ ثبت درخواست,هر درخواست شماره یکتای قابل ارجاع دریافت کند.,T-REQ-05,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
+REQ-06,Must,R2,۱۰.۳ ثبت درخواست,تأیید ثبت از طریق صفحه، پیامک و ایمیل ارسال شود.,T-REQ-06,apps/web/src/components/RequestFlow.tsx;apps/api/src/app.ts,Implemented
+REQ-07,Must,R2,۱۰.۳ ثبت درخواست,ارسال چندباره ناشی از دوبار کلیک یا خطای شبکه نباید درخواست تکراری بسازد.,T-REQ-07,apps/api/src/app.ts;packages/db/src/schema.ts;PROGRESS.md,Implemented
+REQ-08,Must,R2,۱۰.۳ ثبت درخواست,تاریخ، منبع ورودی و نسخه شرایط پذیرفته‌شده ذخیره شود.,T-REQ-08,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
+REQ-09,Must,R2,۱۰.۳ ثبت درخواست,کاربر بتواند درخواست جدید ثبت کند بدون آنکه درخواست‌های قبلی تغییر کنند.,T-REQ-09,apps/web/src/components/AccountPanel.tsx;apps/api/src/app.ts,Implemented
+REQ-10,Should,R2,۱۰.۳ ثبت درخواست,سیستم باید از کپچا یا کنترل ضدربات متناسب استفاده کند.,T-REQ-10,apps/api/src/app.ts;packages/config/src/index.ts,Implemented
+FILE-01,Must,R2,۱۰.۴ پیوست اولیه,پیوست درخواست اختیاری باشد.,T-FILE-01,apps/web/src/components/RequestFlow.tsx,Implemented
+FILE-02,Must,R2,۱۰.۴ پیوست اولیه,پیش از بارگذاری، هشدار منع داده محرمانه و حساس نمایش داده و پذیرفته شود.,T-FILE-02,apps/web/src/components/RequestFlow.tsx;apps/api/src/app.ts,Implemented
+FILE-03,Must,R2,۱۰.۴ پیوست اولیه,نوع و حجم فایل مجاز از تنظیمات مدیریت قابل تغییر باشد.,T-FILE-03,packages/config/src/index.ts;.env.example,Implemented
+FILE-04,Must,R2,۱۰.۴ پیوست اولیه,فایل باید از نظر نوع واقعی، بدافزار و نام ناامن بررسی شود.,T-FILE-04,apps/api/src/lib/files.ts;PROGRESS.md,Implemented
+FILE-05,Must,R2,۱۰.۴ پیوست اولیه,فایل‌ها عمومی نباشند و فقط کاربران داخلی مجاز به آن‌ها دسترسی داشته باشند.,T-FILE-05,apps/api/src/app.ts;apps/api/src/lib/files.ts,Implemented
+ACC-01,Must,R2,۱۰.۵ حساب کاربری,حساب باید اطلاعات پایه کاربر را نمایش دهد.,T-ACC-01,apps/web/src/components/AccountPanel.tsx;apps/api/src/app.ts,Implemented
+ACC-02,Must,R2,۱۰.۵ حساب کاربری,حساب باید فهرست درخواست‌ها را با شماره، عنوان و تاریخ نمایش دهد.,T-ACC-02,apps/web/src/components/AccountPanel.tsx;apps/api/src/app.ts,Implemented
+ACC-03,Must,R2,۱۰.۵ حساب کاربری,وضعیت داخلی، یادداشت، فایل گزارش و گردش کار نباید در MVP نمایش داده شود.,T-ACC-03,apps/api/src/app.ts;apps/web/src/components/AccountPanel.tsx,Implemented
+ACC-04,Must,R2,۱۰.۵ حساب کاربری,CTA ثبت درخواست جدید باید در حساب قابل دسترس باشد.,T-ACC-04,apps/web/src/components/AccountPanel.tsx,Implemented
+ACC-05,Must,R2,۱۰.۵ حساب کاربری,لینک پیشنهاد اختصاصی می‌تواند مستقل از حساب و با توکن امن باز شود.,T-ACC-05,apps/api/src/app.ts,Planned
+SCR-01,Must,R2,۱۰.۶ بررسی و غربالگری داخلی,ادمین عملیاتی بتواند درخواست‌ها را جست‌وجو، فیلتر و مشاهده کند.,T-SCR-01,apps/web/src/components/RequestDesk.tsx;apps/api/src/app.ts,Implemented
+SCR-02,Must,R2,۱۰.۶ بررسی و غربالگری داخلی,کارشناس بتواند یادداشت داخلی و نتیجه تماس را ثبت کند.,T-SCR-02,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
+SCR-03,Must,R2,۱۰.۶ بررسی و غربالگری داخلی,نتیجه بررسی باید حداقل واجد همکاری، فاقد امکان همکاری یا نیازمند اطلاعات بیشتر باشد.,T-SCR-03,packages/contracts/src/index.ts;apps/api/src/app.ts,Implemented
+SCR-04,Must,R2,۱۰.۶ بررسی و غربالگری داخلی,وضعیت داخلی برای کاربر قابل مشاهده نباشد.,T-SCR-04,apps/api/src/app.ts;apps/web/src/components/AccountPanel.tsx,Implemented
+SCR-05,Must,R2,۱۰.۶ بررسی و غربالگری داخلی,ثبت‌کننده و زمان هر تغییر مهم در لاگ ممیزی ذخیره شود.,T-SCR-05,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
+SCR-06,Should,R2,۱۰.۶ بررسی و غربالگری داخلی,ادمین بتواند درخواست را به کارشناس داخلی تخصیص دهد.,T-SCR-06,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
+SCR-07,Should,R2,۱۰.۶ بررسی و غربالگری داخلی,خروجی اکسل از فهرست درخواست‌ها با رعایت سطح دسترسی ممکن باشد.,T-SCR-07,apps/api/src/app.ts;apps/web/src/components/RequestDesk.tsx,Implemented
 ORD-01,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,فقط درخواست واجد همکاری بتواند به پیشنهاد جلسه تبدیل شود.,T-ORD-01,TBD,Planned
 ORD-02,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,پیشنهاد شامل عنوان، شرح، دامنه، مدت، زمان، تخصص کارشناسان و خروجی باشد.,T-ORD-02,TBD,Planned
 ORD-03,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,مبلغ پایه، مالیات/عوارض و مبلغ نهایی جداگانه ثبت و نمایش داده شود.,T-ORD-03,TBD,Planned
@@ -77,14 +77,14 @@ CMS-05,Must,R1,۱۰.۱۰ محتوا، پروژه‌ها و تیم,اعضای ت�
 CMS-06,Should,R1,۱۰.۱۰ محتوا، پروژه‌ها و تیم,نسخه پیش‌نویس و منتشرشده برای محتوای حساس قابل تفکیک باشد.,T-CMS-06,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
 CMS-07,Must,R1,۱۰.۱۰ محتوا، پروژه‌ها و تیم,صفحات حقوقی نسخه و تاریخ اجرا داشته باشند.,T-CMS-07,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
 CMS-08,Should,R1,۱۰.۱۰ محتوا، پروژه‌ها و تیم,سایت بدون نیاز به تغییر کد برای به‌روزرسانی محتوای اصلی قابل مدیریت باشد.,T-CMS-08,apps/api/src/app.ts;apps/web/src/app/admin/content/page.tsx,Implemented
-ADM-01,Must,R2,۱۰.۱۱ پنل مدیریت و دسترسی,سطوح دسترسی حداقل شامل کارشناس، عملیات، مالی، محتوا و سوپرادمین باشد.,T-ADM-01,TBD,Planned
-ADM-02,Must,R2,۱۰.۱۱ پنل مدیریت و دسترسی,هر نقش فقط داده و عملیات موردنیاز خود را مشاهده کند.,T-ADM-02,TBD,Planned
-ADM-03,Must,R2,۱۰.۱۱ پنل مدیریت و دسترسی,عملیات حساس شامل تغییر مبلغ، تأیید واریز، استرداد و تغییر دسترسی لاگ شود.,T-ADM-03,TBD,Planned
-ADM-04,Must,R2,۱۰.۱۱ پنل مدیریت و دسترسی,جست‌وجو بر اساس شماره درخواست، همراه، سازمان و شناسه ملی ممکن باشد.,T-ADM-04,TBD,Planned
-ADM-05,Should,R2,۱۰.۱۱ پنل مدیریت و دسترسی,فیلتر تاریخ، وضعیت داخلی و کارشناس مسئول وجود داشته باشد.,T-ADM-05,TBD,Planned
-ADM-06,Must,R2,۱۰.۱۱ پنل مدیریت و دسترسی,سوپرادمین بتواند تنظیمات سرویس پیامک، ایمیل و پرداخت را مدیریت کند.,T-ADM-06,TBD,Planned
-ADM-07,Must,R2,۱۰.۱۱ پنل مدیریت و دسترسی,حذف فیزیکی رکوردهای مالی و رضایت‌ها از رابط عادی ممکن نباشد.,T-ADM-07,TBD,Planned
-ADM-08,Must,R2,۱۰.۱۱ پنل مدیریت و دسترسی,غیرفعال‌سازی کاربر داخلی باید فوراً دسترسی او را قطع کند.,T-ADM-08,TBD,Planned
+ADM-01,Must,R2,۱۰.۱۱ پنل مدیریت و دسترسی,سطوح دسترسی حداقل شامل کارشناس، عملیات، مالی، محتوا و سوپرادمین باشد.,T-ADM-01,packages/db/src/schema.ts;apps/api/src/lib/rbac.ts,Implemented
+ADM-02,Must,R2,۱۰.۱۱ پنل مدیریت و دسترسی,هر نقش فقط داده و عملیات موردنیاز خود را مشاهده کند.,T-ADM-02,apps/api/src/lib/rbac.ts;tests/unit/security.test.ts,Implemented
+ADM-03,Must,R2,۱۰.۱۱ پنل مدیریت و دسترسی,عملیات حساس شامل تغییر مبلغ، تأیید واریز، استرداد و تغییر دسترسی لاگ شود.,T-ADM-03,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
+ADM-04,Must,R2,۱۰.۱۱ پنل مدیریت و دسترسی,جست‌وجو بر اساس شماره درخواست، همراه، سازمان و شناسه ملی ممکن باشد.,T-ADM-04,apps/api/src/app.ts;apps/web/src/components/RequestDesk.tsx,Implemented
+ADM-05,Should,R2,۱۰.۱۱ پنل مدیریت و دسترسی,فیلتر تاریخ، وضعیت داخلی و کارشناس مسئول وجود داشته باشد.,T-ADM-05,apps/api/src/app.ts,Planned
+ADM-06,Must,R2,۱۰.۱۱ پنل مدیریت و دسترسی,سوپرادمین بتواند تنظیمات سرویس پیامک، ایمیل و پرداخت را مدیریت کند.,T-ADM-06,packages/config/src/index.ts,Planned
+ADM-07,Must,R2,۱۰.۱۱ پنل مدیریت و دسترسی,حذف فیزیکی رکوردهای مالی و رضایت‌ها از رابط عادی ممکن نباشد.,T-ADM-07,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
+ADM-08,Must,R2,۱۰.۱۱ پنل مدیریت و دسترسی,غیرفعال‌سازی کاربر داخلی باید فوراً دسترسی او را قطع کند.,T-ADM-08,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
 BR-01,Required,R0-R4,۱۱. قواعد کسب‌وکار,مشتری خدمت شخص حقوقی است؛ شخص حقیقی فقط به‌عنوان رابط یا نماینده عمل می‌کند.,T-BR-01,TBD,Planned
 BR-02,Required,R0-R4,۱۱. قواعد کسب‌وکار,همه انواع اشخاص حقوقی خصوصی، عمومی و دولتی مجاز به ثبت درخواست‌اند.,T-BR-02,TBD,Planned
 BR-03,Required,R0-R4,۱۱. قواعد کسب‌وکار,ثبت درخواست به معنای سفارش قطعی، پذیرش پروژه یا تشکیل قرارداد نیست.,T-BR-03,TBD,Planned

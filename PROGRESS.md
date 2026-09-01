@@ -1,6 +1,6 @@
 # Implementation progress
 
-Status: R0 in progress
+Status: R2 passed; R3 in progress
 
 ## Environment
 
@@ -14,9 +14,9 @@ Status: R0 in progress
 
 | Release | Status | Commit | QA evidence | Open gates |
 |---|---|---|---|---|
-| R0 | Passed | Pending commit | `pnpm install`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`, `make bootstrap`, `docker compose --env-file .env config --quiet` | Production gates intentionally open; see below |
-| R1 | Passed (dev/demo) | Pending commit | Chromium Playwright: 2 public/a11y/RTL tests passed; screenshots in ignored `artifacts/screenshots/` | Final company data, legal approval, and publication permissions remain open |
-| R2 | Pending | — | — | — |
+| R0 | Passed | `13e2d50` | `pnpm install`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`, `make bootstrap`, `docker compose --env-file .env config --quiet` | Production gates intentionally open; see below |
+| R1 | Passed (dev/demo) | `c43affa` | Chromium Playwright: 2 public/a11y/RTL tests passed; screenshots in ignored `artifacts/screenshots/` | Final company data, legal approval, and publication permissions remain open |
+| R2 | Passed (dev/demo) | `fbde9df` | `pnpm typecheck`, `pnpm lint`, `pnpm test` (9), production build; local Postgres/Redis request + idempotency + private DOCX upload smoke | ClamAV production socket and external provider credentials remain production-gated |
 | R3 | Pending | — | — | — |
 | R4 | Pending | — | — | — |
 | R5 | Pending | — | — | — |
@@ -50,6 +50,14 @@ Add dated entries with commands, results, decisions, defects, and the next actio
 - Added CMS data models/APIs for pages, revisions, clients, case studies, team and legal versions; content-admin interface is permissioned for the content role.
 - QA passed: `pnpm typecheck`; `pnpm lint`; `pnpm build`; `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/google-chrome pnpm exec playwright test --project=chromium` (2 passed). Home screenshots: `artifacts/screenshots/home-{320,768,1440}.png`; manually inspected 320/1440 render.
 - Next action: R2 identity, intake, upload, internal screening and RBAC acceptance tests.
+
+### 2026-09-01 — R2 evidence
+
+- Implemented passwordless Iranian-mobile OTP with hashed challenges, expiry/attempt/rate limits, opaque hashed sessions, logout, account/profile/mobile-change/email-verification endpoints, least-privilege RBAC, encrypted TOTP enrolment and immutable audit events.
+- Implemented onboarding as a representative of an organization, idempotent request intake, an editable final-review step, private attachment quarantine/type scan/production ClamAV gate, internal-only download, request search/assignment/screening/state transitions/CSV export, and a Persian internal request desk.
+- Local integration evidence: the Compose PostgreSQL and Redis services were healthy; the forward-only SQL migration applied; synthetic seed completed; OTP authentication, onboarding, request creation, duplicate idempotency response, and a DOCX private upload were exercised. The stored attachment was `CLEAN`, server-detected as DOCX, and remained in the private clean location.
+- QA passed: `pnpm typecheck`; `pnpm lint`; `pnpm test` (9); `pnpm build` (Webpack). The sandboxed Next build could not parse TypeScript `--showConfig`; the identical production build passed outside that sandbox. `UPLOAD_ALLOWED_TYPES` was corrected to match the documented PDF/DOCX/XLSX/image allowlist and the root build now rebuilds the config package before API/Web.
+- Next action: update R2 traceability and commit the passing vertical slice, then implement R3 versioned offers and payment lifecycle.
 
 ## Production gates
 

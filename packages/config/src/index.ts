@@ -32,7 +32,7 @@ const schema = z.object({
   CLAMAV_HOST: z.string().default('clamav'),
   CLAMAV_PORT: z.coerce.number().int().min(1).max(65535).default(3310),
   UPLOAD_MAX_BYTES: z.coerce.number().int().min(1_024).max(50 * 1024 * 1024).default(10 * 1024 * 1024),
-  UPLOAD_ALLOWED_TYPES: z.string().default('application/pdf,image/png,image/jpeg'),
+  UPLOAD_ALLOWED_TYPES: z.string().default('application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,image/png,image/jpeg'),
   DEV_SMS_INBOX_ENABLED: boolean.default(true),
   DEV_EMAIL_INBOX_ENABLED: boolean.default(true),
   SEED_SYNTHETIC_DATA: boolean.default(true),

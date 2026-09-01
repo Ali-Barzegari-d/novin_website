@@ -1,5 +1,5 @@
-import { createWriteStream } from 'node:fs';
-import { mkdir, rename, rm } from 'node:fs/promises';
+import { createReadStream, createWriteStream } from 'node:fs';
+import { mkdir, readFile, rename, rm } from 'node:fs/promises';
 import { basename, extname, join } from 'node:path';
 import { pipeline } from 'node:stream/promises';
 import { randomUUID } from 'node:crypto';
@@ -24,19 +24,22 @@ export async function savePrivateUpload(file: MultipartFile, config: AppConfig, 
     await rm(quarantinePath, { force: true });
     throw new Error('حجم فایل از حد مجاز بیشتر است.');
   }
+  const bytes = await readFile(quarantinePath);
   const detected = await fileTypeFromFile(quarantinePath);
-  if (!detected || !config.allowedUploadTypes.includes(detected.mime) || detected.ext !== extension.slice(1).replace('jpg', 'jpeg')) {
+  const office = extension === '.docx' && bytes.includes(Buffer.from('word/')) ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' : extension === '.xlsx' && bytes.includes(Buffer.from('xl/')) ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' : undefined;
+  const actualMime = office ?? detected?.mime;
+  const expectedExtension = extension === '.jpg' ? 'jpeg' : extension.slice(1);
+  if (!actualMime || !config.allowedUploadTypes.includes(actualMime) || (!office && detected?.ext !== expectedExtension) || bytes.includes(Buffer.from('vbaProject.bin'))) {
     await rm(quarantinePath, { force: true });
     throw new Error('نوع واقعی فایل با فرمت مجاز هم‌خوانی ندارد.');
   }
-  const bytes = await (await import('node:fs/promises')).readFile(quarantinePath);
   if (bytes.includes(Buffer.from('X5O!P%@AP'))) {
     await rm(quarantinePath, { force: true });
     throw new Error('فایل توسط اسکن امنیتی رد شد.');
   }
   if (config.APP_ENV === 'production') await clamavScan(quarantinePath, config);
   await rename(quarantinePath, join(roots.clean, storageName));
-  return { originalName, storageName, detectedMime: detected.mime, sizeBytes: size };
+  return { originalName, storageName, detectedMime: actualMime, sizeBytes: size };
 }
 
 async function clamavScan(path: string, config: AppConfig) {
@@ -45,7 +48,13 @@ async function clamavScan(path: string, config: AppConfig) {
   const result = await new Promise<string>((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error('اسکن امنیتی در دسترس نیست.')), 15_000);
     let output = '';
-    socket.on('connect', () => socket.write(`zSCAN ${path}\0`));
+    socket.on('connect', () => {
+      socket.write('zINSTREAM\0');
+      const stream = createReadStream(path, { highWaterMark: 64 * 1024 });
+      stream.on('data', (chunk: string | Buffer) => { const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk); const size = Buffer.alloc(4); size.writeUInt32BE(buffer.length); socket.write(Buffer.concat([size, buffer])); });
+      stream.on('error', reject);
+      stream.on('end', () => socket.write(Buffer.alloc(4)));
+    });
     socket.on('data', (chunk) => { output += chunk.toString(); });
     socket.on('end', () => { clearTimeout(timer); resolve(output); });
     socket.on('error', (error) => { clearTimeout(timer); reject(error); });
