@@ -25,6 +25,7 @@ const schema = z.object({
   SMTP_FROM: z.string().email().optional(),
   PAYMENT_PROVIDER: z.enum(['mock', 'gateway']).default('mock'),
   PAYMENT_MERCHANT_ID: z.string().optional(),
+  PAYMENT_GATEWAY_BASE_URL: z.url().optional(),
   PAYMENT_CALLBACK_SECRET: z.string().min(32).optional(),
   CAPTCHA_PROVIDER: z.enum(['bypass', 'turnstile']).default('bypass'),
   TURNSTILE_SITE_KEY: z.string().optional(),
@@ -58,7 +59,7 @@ export function loadConfig(input: NodeJS.ProcessEnv = process.env): AppConfig {
     if (!config.PUBLIC_BASE_URL.startsWith('https://')) issues.push('PUBLIC_BASE_URL باید HTTPS باشد.');
     if (config.SMS_PROVIDER === 'mock' || !config.KAVENEGAR_API_KEY) issues.push('Kavenegar تولیدی پیکربندی نشده است.');
     if (config.EMAIL_PROVIDER === 'mock' || !config.SMTP_HOST || !config.SMTP_USERNAME || !config.SMTP_PASSWORD || !config.SMTP_FROM) issues.push('SMTP تولیدی پیکربندی نشده است.');
-    if (config.PAYMENT_PROVIDER === 'mock' || !config.PAYMENT_MERCHANT_ID || !config.PAYMENT_CALLBACK_SECRET) issues.push('درگاه پرداخت تولیدی پیکربندی نشده است.');
+    if (config.PAYMENT_PROVIDER === 'mock' || !config.PAYMENT_MERCHANT_ID || !config.PAYMENT_GATEWAY_BASE_URL || !config.PAYMENT_CALLBACK_SECRET) issues.push('درگاه پرداخت تولیدی پیکربندی نشده است.');
     if (config.CAPTCHA_PROVIDER !== 'turnstile' || !config.TURNSTILE_SITE_KEY || !config.TURNSTILE_SECRET_KEY) issues.push('Turnstile تولیدی پیکربندی نشده است.');
     if (config.DEV_SMS_INBOX_ENABLED || config.DEV_EMAIL_INBOX_ENABLED || config.SEED_SYNTHETIC_DATA) issues.push('امکانات نمایشی در production مجاز نیستند.');
     if (config.SESSION_SECRET.includes('change-me')) issues.push('SESSION_SECRET پیش‌فرض است.');

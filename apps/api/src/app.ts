@@ -12,11 +12,12 @@ import { createClient } from 'redis';
 import { z } from 'zod';
 import { Secret, TOTP } from 'otpauth';
 import { loadConfig, type AppConfig } from '@novin/config';
-import { acceptOfferSchema, bankTransferSchema, complaintSchema, offerSchema, onboardingSchema, requestSchema, sendOtpSchema, verifyOtpSchema } from '@novin/contracts';
-import { attachments, auditLogs, bankTransfers, caseStudies, clients, complaints, consentLogs, contentEntries, contentRevisions, createDatabase, errorEvents, legalDocuments, memberships, mfaFactors, notifications, offerVersions, offers, orders, organizations, otpChallenges, payments, requestAssignments, requests, screenings, sessions, teamMembers, users } from '@novin/db';
+import { acceptOfferSchema, bankTransferSchema, billingSchema, complaintSchema, offerSchema, onboardingSchema, refundSchema, requestSchema, sendOtpSchema, verifyOtpSchema } from '@novin/contracts';
+import { attachments, auditLogs, bankTransfers, caseStudies, clients, complaints, consentLogs, contentEntries, contentRevisions, createDatabase, errorEvents, legalDocuments, memberships, mfaFactors, notifications, notificationTemplates, offerVersions, offers, orders, organizations, otpChallenges, payments, refundRecords, requestAssignments, requests, screenings, sessions, teamMembers, users } from '@novin/db';
 import { audit } from './lib/audit.js';
 import { savePrivateUpload } from './lib/files.js';
 import { calculateTotals } from './lib/money.js';
+import { paymentAdapter } from './lib/payment.js';
 import { can, type Permission } from './lib/rbac.js';
 import { deliverEmail, deliverSms } from './lib/providers.js';
 import { decryptAtRest, encryptAtRest, hashIp, offerTokenHash, opaqueToken, publicReference, safeEqual, secretHash } from './lib/security.js';
@@ -28,12 +29,13 @@ declare module 'fastify' {
 
 type Options = { config?: AppConfig };
 
-const customerFields = { id: users.id, firstName: users.firstName, lastName: users.lastName, email: users.email, jobTitle: users.jobTitle, mobile: users.mobile };
+const customerFields = { id: users.id, firstName: users.firstName, lastName: users.lastName, email: users.email, emailVerifiedAt: users.emailVerifiedAt, jobTitle: users.jobTitle, mobile: users.mobile };
 
 export async function createApp(options: Options = {}): Promise<FastifyInstance> {
   const config = options.config ?? loadConfig();
   const { db, pool } = createDatabase(config.DATABASE_URL);
   const redis = createClient({ url: config.REDIS_URL });
+  const paymentsAdapter = paymentAdapter(config);
   const app = Fastify({ logger: { level: config.APP_ENV === 'production' ? 'info' : 'debug', redact: ['req.headers.cookie', 'req.headers.authorization', 'req.body.code', 'req.body.description'] }, trustProxy: config.TRUSTED_PROXY_COUNT > 0 });
   await redis.connect();
   await mkdir(join(process.cwd(), 'var/logs'), { recursive: true, mode: 0o700 });
@@ -82,9 +84,11 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
     return auth;
   }
   async function notify(channel: 'SMS' | 'EMAIL', event: string, destination: string, body: string, relatedId?: string) {
-    const [row] = await db.insert(notifications).values({ event, channel, destination, body, relatedEntity: relatedId ? 'domain' : undefined, relatedId }).returning();
+    const template = await db.query.notificationTemplates.findFirst({ where: and(eq(notificationTemplates.event, event), eq(notificationTemplates.channel, channel), eq(notificationTemplates.active, true)), orderBy: [desc(notificationTemplates.version)] });
+    const renderedBody = template ? template.body.replaceAll('{{message}}', body) : body;
+    const [row] = await db.insert(notifications).values({ event, channel, destination, body: renderedBody, relatedEntity: relatedId ? 'domain' : undefined, relatedId }).returning();
     try {
-      const delivery = channel === 'SMS' ? await deliverSms(config, destination, body) : await deliverEmail(config, destination, 'نوین ایرانیان', body);
+      const delivery = channel === 'SMS' ? await deliverSms(config, destination, renderedBody) : await deliverEmail(config, destination, 'نوین ایرانیان', renderedBody);
       await db.update(notifications).set({ status: delivery.status, providerReference: delivery.providerReference, attempts: 1, sentAt: new Date() }).where(eq(notifications.id, row!.id));
     } catch (error) {
       await db.update(notifications).set({ status: 'FAILED', attempts: 1, lastError: error instanceof Error ? error.message.slice(0, 500) : 'delivery failure' }).where(eq(notifications.id, row!.id));
@@ -319,10 +323,22 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
   app.get('/api/v1/offers/:token', async (request) => {
     const token = (request.params as { token: string }).token;
     const offer = await db.query.offers.findFirst({ where: eq(offers.tokenHash, offerTokenHash(token)) });
-    if (!offer || offer.state === 'REVOKED' || offer.validUntil <= new Date()) return { status: 'EXPIRED' as const };
+    if (!offer || offer.state === 'REVOKED') return { status: 'EXPIRED' as const };
+    if (offer.validUntil <= new Date()) { await db.update(offers).set({ state: 'EXPIRED', updatedAt: new Date() }).where(eq(offers.id, offer.id)); return { status: 'EXPIRED' as const }; }
     const version = await db.query.offerVersions.findFirst({ where: and(eq(offerVersions.offerId, offer.id), eq(offerVersions.version, offer.currentVersion)) });
     if (offer.state === 'SENT') await db.update(offers).set({ state: 'VIEWED', viewedAt: new Date() }).where(eq(offers.id, offer.id));
-    return { status: offer.state, validUntil: offer.validUntil, offer: version };
+    const order = await db.query.orders.findFirst({ where: eq(orders.offerId, offer.id) });
+    return { status: offer.state, validUntil: offer.validUntil, paymentProvider: config.PAYMENT_PROVIDER, offer: version, order: order ? { reference: order.reference, state: order.state, totalAmountIrr: order.totalAmountIrr } : undefined };
+  });
+
+  app.post('/api/v1/offers/:token/billing', async (request) => {
+    const input = billingSchema.parse(request.body);
+    const offer = await db.query.offers.findFirst({ where: eq(offers.tokenHash, offerTokenHash((request.params as { token: string }).token)) });
+    if (!offer || offer.state === 'REVOKED' || offer.validUntil <= new Date()) throw Object.assign(new Error('پیشنهاد منقضی یا باطل شده است.'), { statusCode: 410 });
+    const linked = await db.query.requests.findFirst({ where: eq(requests.id, offer.requestId) });
+    if (!linked) throw Object.assign(new Error('درخواست مرتبط یافت نشد.'), { statusCode: 404 });
+    await db.update(organizations).set({ legalName: input.legalName, nationalId: input.nationalId, billingAddress: input.billingAddress, postalCode: input.postalCode, updatedAt: new Date() }).where(eq(organizations.id, linked.organizationId));
+    return { ok: true };
   });
 
   app.post('/api/v1/offers/:token/accept', async (request) => {
@@ -332,6 +348,11 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
     if (!offer || offer.state === 'REVOKED' || offer.validUntil <= new Date()) throw Object.assign(new Error('پیشنهاد منقضی یا باطل شده است.'), { statusCode: 410 });
     const version = await db.query.offerVersions.findFirst({ where: and(eq(offerVersions.offerId, offer.id), eq(offerVersions.version, offer.currentVersion)) });
     const requestRow = await db.query.requests.findFirst({ where: eq(requests.id, offer.requestId) });
+    const representative = requestRow ? await db.query.users.findFirst({ where: eq(users.id, requestRow.createdByUserId) }) : undefined;
+    const organization = requestRow ? await db.query.organizations.findFirst({ where: eq(organizations.id, requestRow.organizationId) }) : undefined;
+    if (!representative?.emailVerifiedAt) throw Object.assign(new Error('پیش از پرداخت، ایمیل نماینده باید تأیید شود.'), { statusCode: 422 });
+    if (!organization?.legalName || !organization.nationalId || !organization.billingAddress) throw Object.assign(new Error('اطلاعات حقوقی و صورتحساب سازمان را تکمیل کنید.'), { statusCode: 422 });
+    if (input.termsVersion !== version?.termsVersion) throw Object.assign(new Error('نسخه شرایط با پیشنهاد هم‌خوانی ندارد.'), { statusCode: 422 });
     const [order] = await db.transaction(async (tx) => {
       const existing = await tx.select().from(orders).where(eq(orders.offerId, offer.id)).limit(1);
       if (existing[0]) return existing;
@@ -343,12 +364,123 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
     return { orderReference: order!.reference };
   });
 
-  app.post('/api/v1/orders/:reference/bank-transfer', async (request) => {
+  app.post('/api/v1/admin/offers/:id/version', async (request) => {
+    const auth = requirePermission(request, 'offers:manage');
+    const input = offerSchema.parse(request.body);
+    const offer = await db.query.offers.findFirst({ where: eq(offers.id, (request.params as { id: string }).id) });
+    if (!offer || ['ACCEPTED', 'REVOKED', 'EXPIRED'].includes(offer.state)) throw Object.assign(new Error('این پیشنهاد قابل اصلاح نیست؛ برای سفارش پرداخت‌شده سند جدید صادر کنید.'), { statusCode: 409 });
+    const totals = calculateTotals(input.baseAmountIrr, input.taxRateBps);
+    const nextVersion = offer.currentVersion + 1;
+    await db.transaction(async (tx) => {
+      await tx.insert(offerVersions).values({ offerId: offer.id, version: nextVersion, title: input.title, description: input.description, scope: input.scope, deliverable: input.deliverable, durationMinutes: input.durationMinutes, timing: input.timing, expertMix: input.expertMix, termsVersion: input.termsVersion, cancellationVersion: input.cancellationVersion, feeDeductionTerms: input.feeDeductionTerms, ...totals, createdById: auth.id });
+      await tx.update(offers).set({ currentVersion: nextVersion, validUntil: new Date(input.validUntil), state: 'SENT', updatedAt: new Date() }).where(eq(offers.id, offer.id));
+    });
+    await audit(db, { actorId: auth.id, actorRole: auth.role, action: 'OFFER_VERSIONED', entity: 'offer', entityId: offer.id, before: { version: offer.currentVersion }, after: { version: nextVersion, totals }, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) });
+    return { ok: true, version: nextVersion };
+  });
+
+  app.post('/api/v1/admin/offers/:id/revoke', async (request) => {
+    const auth = requirePermission(request, 'offers:manage');
+    const offer = await db.query.offers.findFirst({ where: eq(offers.id, (request.params as { id: string }).id) });
+    if (!offer || offer.state === 'ACCEPTED') throw Object.assign(new Error('پیشنهاد قابل ابطال نیست.'), { statusCode: 409 });
+    await db.update(offers).set({ state: 'REVOKED', revokedAt: new Date(), updatedAt: new Date() }).where(eq(offers.id, offer.id));
+    await audit(db, { actorId: auth.id, actorRole: auth.role, action: 'OFFER_REVOKED', entity: 'offer', entityId: offer.id, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) });
+    return { ok: true };
+  });
+
+  app.post('/api/v1/offers/:token/payments/mock', async (request) => {
+    if (config.PAYMENT_PROVIDER !== 'mock' || config.APP_ENV === 'production') throw Object.assign(new Error('پرداخت آزمایشی در این محیط فعال نیست.'), { statusCode: 404 });
+    const input = z.object({ idempotencyKey: z.string().uuid() }).parse(request.body);
+    const offer = await db.query.offers.findFirst({ where: eq(offers.tokenHash, offerTokenHash((request.params as { token: string }).token)) });
+    if (!offer || offer.validUntil <= new Date()) throw Object.assign(new Error('پیشنهاد منقضی یا باطل شده است.'), { statusCode: 410 });
+    const order = await db.query.orders.findFirst({ where: eq(orders.offerId, offer.id) });
+    if (!order || order.state !== 'PAYMENT_PENDING') throw Object.assign(new Error('سفارش در انتظار پرداخت نیست.'), { statusCode: 409 });
+    const existing = await db.query.payments.findFirst({ where: and(eq(payments.orderId, order.id), eq(payments.idempotencyKey, input.idempotencyKey)) });
+    const payment = existing ?? (await db.insert(payments).values({ orderId: order.id, provider: 'mock', amountIrr: order.totalAmountIrr, idempotencyKey: input.idempotencyKey, state: 'REDIRECTED' }).returning())[0]!;
+    if (!payment.providerReference) { const intent = await paymentsAdapter.create({ orderReference: order.reference, amountIrr: order.totalAmountIrr, callbackUrl: `${config.PUBLIC_BASE_URL}/api/v1/payments/mock/${payment.id}/callback` }); await db.update(payments).set({ providerReference: intent.providerReference, updatedAt: new Date() }).where(eq(payments.id, payment.id)); }
+    return { paymentId: payment.id, redirectUrl: `${config.PUBLIC_BASE_URL}/pay/${(request.params as { token: string }).token}?payment=${payment.id}` };
+  });
+
+  app.post('/api/v1/payments/mock/:id/callback', async (request) => {
+    if (config.PAYMENT_PROVIDER !== 'mock' || config.APP_ENV === 'production') throw Object.assign(new Error('درگاه آزمایشی فعال نیست.'), { statusCode: 404 });
+    const input = z.object({ outcome: z.enum(['SUCCESS', 'FAILED']) }).parse(request.body);
+    const payment = await db.query.payments.findFirst({ where: eq(payments.id, (request.params as { id: string }).id) });
+    if (!payment) throw Object.assign(new Error('تراکنش یافت نشد.'), { statusCode: 404 });
+    const order = await db.query.orders.findFirst({ where: eq(orders.id, payment.orderId) });
+    if (!order || payment.amountIrr !== order.totalAmountIrr || !(await paymentsAdapter.verify({ providerReference: payment.providerReference ?? '', amountIrr: order.totalAmountIrr })).verified) throw Object.assign(new Error('استعلام سمت سرور ناموفق بود.'), { statusCode: 422 });
+    if (payment.state === 'VERIFIED') return { status: 'VERIFIED', orderReference: order.reference, duplicate: true };
+    if (input.outcome === 'FAILED') { await db.update(payments).set({ state: 'FAILED', updatedAt: new Date() }).where(eq(payments.id, payment.id)); return { status: 'FAILED', orderReference: order.reference }; }
+    const updated = await db.transaction(async (tx) => {
+      const result = await tx.update(payments).set({ state: 'VERIFIED', verifiedAt: new Date(), updatedAt: new Date() }).where(and(eq(payments.id, payment.id), sql`${payments.state} <> 'VERIFIED'`)).returning();
+      if (!result[0]) return false;
+      await tx.update(orders).set({ state: 'PAID', collectedAt: new Date(), updatedAt: new Date() }).where(and(eq(orders.id, order.id), eq(orders.state, 'PAYMENT_PENDING')));
+      return true;
+    });
+    const recipient = await db.select({ mobile: users.mobile, email: users.email }).from(users).innerJoin(requests, eq(requests.createdByUserId, users.id)).innerJoin(offers, eq(offers.requestId, requests.id)).where(eq(offers.id, order.offerId)).limit(1);
+    if (updated && recipient[0]) { await notify('SMS', 'PAYMENT_SUCCESS', recipient[0].mobile, `پرداخت سفارش ${order.reference} با موفقیت تأیید شد.`, order.id); if (recipient[0].email) await notify('EMAIL', 'PAYMENT_SUCCESS', recipient[0].email, `رسید سفارش ${order.reference}: پرداخت با موفقیت تأیید شد.`, order.id); }
+    return { status: 'VERIFIED', orderReference: order.reference, duplicate: !updated };
+  });
+
+  app.post('/api/v1/offers/:token/payments/gateway', async (request) => {
+    if (config.PAYMENT_PROVIDER !== 'gateway') throw Object.assign(new Error('درگاه انتخاب‌شده فعال نیست.'), { statusCode: 404 });
+    const input = z.object({ idempotencyKey: z.string().uuid() }).parse(request.body);
+    const offer = await db.query.offers.findFirst({ where: eq(offers.tokenHash, offerTokenHash((request.params as { token: string }).token)) });
+    const order = offer ? await db.query.orders.findFirst({ where: eq(orders.offerId, offer.id) }) : undefined;
+    if (!offer || !order || order.state !== 'PAYMENT_PENDING' || offer.validUntil <= new Date()) throw Object.assign(new Error('سفارش قابل پرداخت نیست.'), { statusCode: 409 });
+    const existing = await db.query.payments.findFirst({ where: and(eq(payments.orderId, order.id), eq(payments.idempotencyKey, input.idempotencyKey)) });
+    const payment = existing ?? (await db.insert(payments).values({ orderId: order.id, provider: 'gateway', amountIrr: order.totalAmountIrr, idempotencyKey: input.idempotencyKey, state: 'REDIRECTED' }).returning())[0]!;
+    if (payment.providerReference) return { paymentId: payment.id, redirectUrl: `${config.PAYMENT_GATEWAY_BASE_URL}/pay/${encodeURIComponent(payment.providerReference)}` };
+    const intent = await paymentsAdapter.create({ orderReference: order.reference, amountIrr: order.totalAmountIrr, callbackUrl: `${config.PUBLIC_BASE_URL}/api/v1/payments/gateway/${payment.id}/callback` });
+    await db.update(payments).set({ providerReference: intent.providerReference, updatedAt: new Date() }).where(eq(payments.id, payment.id));
+    return { paymentId: payment.id, redirectUrl: intent.redirectUrl };
+  });
+
+  app.post('/api/v1/payments/gateway/:id/callback', async (request) => {
+    if (config.PAYMENT_PROVIDER !== 'gateway') throw Object.assign(new Error('درگاه انتخاب‌شده فعال نیست.'), { statusCode: 404 });
+    const input = z.object({ providerReference: z.string().trim().min(3).max(160), proof: z.string().trim().min(32).max(256) }).parse(request.body);
+    const payment = await db.query.payments.findFirst({ where: eq(payments.id, (request.params as { id: string }).id) });
+    const order = payment ? await db.query.orders.findFirst({ where: eq(orders.id, payment.orderId) }) : undefined;
+    if (!payment || !order || payment.provider !== 'gateway' || payment.providerReference !== input.providerReference) throw Object.assign(new Error('بازگشت درگاه معتبر نیست.'), { statusCode: 400 });
+    if (payment.state === 'VERIFIED') return { status: 'VERIFIED', orderReference: order.reference, duplicate: true };
+    const verified = await paymentsAdapter.verify({ providerReference: input.providerReference, amountIrr: order.totalAmountIrr, callbackProof: input.proof });
+    if (!verified.verified) { await db.update(payments).set({ state: 'FAILED', updatedAt: new Date() }).where(eq(payments.id, payment.id)); return { status: 'FAILED', orderReference: order.reference }; }
+    await db.transaction(async (tx) => { await tx.update(payments).set({ state: 'VERIFIED', verifiedAt: new Date(), updatedAt: new Date() }).where(and(eq(payments.id, payment.id), sql`${payments.state} <> 'VERIFIED'`)); await tx.update(orders).set({ state: 'PAID', collectedAt: new Date(), updatedAt: new Date() }).where(and(eq(orders.id, order.id), eq(orders.state, 'PAYMENT_PENDING'))); });
+    return { status: 'VERIFIED', orderReference: order.reference, duplicate: false };
+  });
+
+  app.get('/api/v1/offers/:token/receipt', async (request) => {
+    const offer = await db.query.offers.findFirst({ where: eq(offers.tokenHash, offerTokenHash((request.params as { token: string }).token)) });
+    if (!offer) throw Object.assign(new Error('پیشنهاد یافت نشد.'), { statusCode: 404 });
+    const order = await db.query.orders.findFirst({ where: eq(orders.offerId, offer.id) });
+    if (!order) throw Object.assign(new Error('سفارشی ثبت نشده است.'), { statusCode: 404 });
+    const payment = await db.query.payments.findFirst({ where: and(eq(payments.orderId, order.id), eq(payments.state, 'VERIFIED')) });
+    return { reference: order.reference, state: order.state, totalAmountIrr: order.totalAmountIrr, collectedAt: order.collectedAt, transactionReference: payment?.providerReference };
+  });
+
+  app.post('/api/v1/offers/:token/bank-transfer', async (request) => {
     const input = bankTransferSchema.parse(request.body);
-    const order = await db.query.orders.findFirst({ where: eq(orders.reference, (request.params as { reference: string }).reference) });
-    if (!order || order.state !== 'PAYMENT_PENDING' || input.amountIrr !== order.totalAmountIrr) throw Object.assign(new Error('اطلاعات واریز با سفارش هم‌خوانی ندارد.'), { statusCode: 422 });
-    await db.insert(bankTransfers).values({ orderId: order.id, reference: input.reference, transferredAt: new Date(input.transferredAt), amountIrr: input.amountIrr, bankName: input.bankName, depositorName: input.depositorName, idempotencyKey: input.idempotencyKey, state: 'REVIEW_PENDING' }).onConflictDoNothing();
-    return { status: 'REVIEW_PENDING' };
+    const offer = await db.query.offers.findFirst({ where: eq(offers.tokenHash, offerTokenHash((request.params as { token: string }).token)) });
+    const order = offer ? await db.query.orders.findFirst({ where: eq(orders.offerId, offer.id) }) : undefined;
+    if (!offer || !order || order.state !== 'PAYMENT_PENDING' || input.amountIrr !== order.totalAmountIrr) throw Object.assign(new Error('اطلاعات واریز با سفارش هم‌خوانی ندارد.'), { statusCode: 422 });
+    const [created] = await db.insert(bankTransfers).values({ orderId: order.id, reference: input.reference, transferredAt: new Date(input.transferredAt), amountIrr: input.amountIrr, bankName: input.bankName, depositorName: input.depositorName, idempotencyKey: input.idempotencyKey, state: 'REVIEW_PENDING' }).onConflictDoNothing().returning();
+    const transfer = created ?? await db.query.bankTransfers.findFirst({ where: and(eq(bankTransfers.orderId, order.id), eq(bankTransfers.idempotencyKey, input.idempotencyKey)) });
+    return { status: transfer?.state ?? 'REVIEW_PENDING', transferId: transfer?.id };
+  });
+
+  app.post('/api/v1/offers/:token/bank-transfers/:id/receipt', async (request) => {
+    const offer = await db.query.offers.findFirst({ where: eq(offers.tokenHash, offerTokenHash((request.params as { token: string }).token)) });
+    const transfer = await db.query.bankTransfers.findFirst({ where: eq(bankTransfers.id, (request.params as { id: string }).id) });
+    const order = transfer ? await db.query.orders.findFirst({ where: eq(orders.id, transfer.orderId) }) : undefined;
+    if (!offer || !transfer || !order || order.offerId !== offer.id || transfer.state !== 'REVIEW_PENDING') throw Object.assign(new Error('رسید واریز قابل بارگذاری نیست.'), { statusCode: 404 });
+    const file = await request.file();
+    if (!file) throw Object.assign(new Error('فایلی ارسال نشده است.'), { statusCode: 422 });
+    const saved = await savePrivateUpload(file, config);
+    await db.insert(attachments).values({ bankTransferId: transfer.id, ...saved, status: 'CLEAN', expiresAt: new Date(Date.now() + 180 * 24 * 3600 * 1000) });
+    return { ok: true };
+  });
+
+  app.post('/api/v1/orders/:reference/bank-transfer', async (request) => {
+    throw Object.assign(new Error('برای ثبت واریز از لینک اختصاصی پیشنهاد استفاده کنید.'), { statusCode: 410 });
   });
 
   app.post('/api/v1/admin/bank-transfers/:id/confirm', async (request) => {
@@ -359,14 +491,76 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
       await tx.update(bankTransfers).set({ state: 'CONFIRMED', reviewedById: auth.id, reviewedAt: new Date() }).where(eq(bankTransfers.id, transfer.id));
       await tx.update(orders).set({ state: 'PAID', collectedAt: new Date(), updatedAt: new Date() }).where(eq(orders.id, transfer.orderId));
     });
+    const recipient = await db.select({ mobile: users.mobile, email: users.email, reference: orders.reference }).from(users).innerJoin(requests, eq(requests.createdByUserId, users.id)).innerJoin(offers, eq(offers.requestId, requests.id)).innerJoin(orders, eq(orders.offerId, offers.id)).where(eq(orders.id, transfer.orderId)).limit(1);
+    if (recipient[0]) { await notify('SMS', 'BANK_TRANSFER_CONFIRMED', recipient[0].mobile, `واریز سفارش ${recipient[0].reference} تأیید شد.`, transfer.orderId); if (recipient[0].email) await notify('EMAIL', 'BANK_TRANSFER_CONFIRMED', recipient[0].email, `رسید سفارش ${recipient[0].reference}: واریز بانکی تأیید شد.`, transfer.orderId); }
     await audit(db, { actorId: auth.id, actorRole: auth.role, action: 'BANK_TRANSFER_CONFIRMED', entity: 'bank_transfer', entityId: transfer.id, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) });
     return { ok: true };
+  });
+
+  app.post('/api/v1/admin/bank-transfers/:id/reject', async (request) => {
+    const auth = requirePermission(request, 'payments:review');
+    const input = z.object({ note: z.string().trim().min(3).max(1_000) }).parse(request.body);
+    const transfer = await db.query.bankTransfers.findFirst({ where: eq(bankTransfers.id, (request.params as { id: string }).id) });
+    if (!transfer || transfer.state !== 'REVIEW_PENDING') throw Object.assign(new Error('واریز قابل رد نیست.'), { statusCode: 409 });
+    await db.update(bankTransfers).set({ state: 'REJECTED', reviewedById: auth.id, reviewedAt: new Date(), reviewNote: input.note }).where(eq(bankTransfers.id, transfer.id));
+    await audit(db, { actorId: auth.id, actorRole: auth.role, action: 'BANK_TRANSFER_REJECTED', entity: 'bank_transfer', entityId: transfer.id, after: { note: input.note }, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) });
+    return { ok: true };
+  });
+
+  app.post('/api/v1/admin/orders/:id/refunds', async (request) => {
+    const auth = requirePermission(request, 'payments:refund');
+    const input = refundSchema.parse(request.body);
+    const order = await db.query.orders.findFirst({ where: eq(orders.id, (request.params as { id: string }).id) });
+    if (!order || !['PAID', 'REFUNDED'].includes(order.state)) throw Object.assign(new Error('این سفارش قابل استرداد نیست.'), { statusCode: 409 });
+    const previous = await db.select({ amountIrr: refundRecords.amountIrr }).from(refundRecords).where(eq(refundRecords.orderId, order.id));
+    const refunded = previous.reduce((sum, record) => sum + record.amountIrr, 0);
+    if (refunded + input.amountIrr > order.totalAmountIrr) throw Object.assign(new Error('مبلغ استرداد از مبلغ وصول‌شده بیشتر است.'), { statusCode: 422 });
+    const [refund] = await db.transaction(async (tx) => {
+      const created = await tx.insert(refundRecords).values({ orderId: order.id, amountIrr: input.amountIrr, reason: input.reason, reference: input.reference, createdById: auth.id }).returning();
+      if (refunded + input.amountIrr === order.totalAmountIrr) await tx.update(orders).set({ state: 'REFUNDED', updatedAt: new Date() }).where(eq(orders.id, order.id));
+      return created;
+    });
+    await audit(db, { actorId: auth.id, actorRole: auth.role, action: 'ORDER_REFUNDED', entity: 'order', entityId: order.id, before: { refunded }, after: { amountIrr: input.amountIrr, reference: input.reference }, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) });
+    return { id: refund!.id, totalRefundedIrr: refunded + input.amountIrr };
   });
 
   app.post('/api/v1/complaints', { config: { rateLimit: { max: 5, timeWindow: '1 hour' } } }, async (request) => {
     const input = complaintSchema.parse(request.body);
     const [complaint] = await db.insert(complaints).values({ reference: publicReference('CMP'), name: input.name, mobile: input.mobile, email: input.email, subject: input.subject, description: input.description, idempotencyKey: input.idempotencyKey }).onConflictDoNothing().returning();
     return { reference: complaint?.reference ?? 'ثبت‌شده' };
+  });
+
+  app.get('/api/v1/admin/notification-templates', async (request) => { requirePermission(request, 'settings:manage'); return db.select().from(notificationTemplates).orderBy(notificationTemplates.event, notificationTemplates.channel, desc(notificationTemplates.version)); });
+  app.post('/api/v1/admin/notification-templates', async (request) => {
+    const auth = requirePermission(request, 'settings:manage');
+    const input = z.object({ event: z.string().trim().min(3).max(80), channel: z.enum(['SMS', 'EMAIL']), body: z.string().trim().min(3).max(4_000), active: z.boolean().default(true) }).parse(request.body);
+    const latest = await db.query.notificationTemplates.findFirst({ where: and(eq(notificationTemplates.event, input.event), eq(notificationTemplates.channel, input.channel)), orderBy: [desc(notificationTemplates.version)] });
+    const [template] = await db.transaction(async (tx) => {
+      if (input.active) await tx.update(notificationTemplates).set({ active: false }).where(and(eq(notificationTemplates.event, input.event), eq(notificationTemplates.channel, input.channel), eq(notificationTemplates.active, true)));
+      return tx.insert(notificationTemplates).values({ ...input, version: (latest?.version ?? 0) + 1, createdById: auth.id }).returning();
+    });
+    await audit(db, { actorId: auth.id, actorRole: auth.role, action: 'NOTIFICATION_TEMPLATE_VERSIONED', entity: 'notification_template', entityId: template!.id, after: { event: input.event, channel: input.channel, version: template!.version }, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) });
+    return template;
+  });
+  app.post('/api/v1/admin/offers/:id/resend', async (request) => {
+    const auth = requirePermission(request, 'offers:manage');
+    const offer = await db.query.offers.findFirst({ where: eq(offers.id, (request.params as { id: string }).id) });
+    if (!offer || ['REVOKED', 'EXPIRED'].includes(offer.state) || offer.validUntil <= new Date()) throw Object.assign(new Error('لینک قابل ارسال مجدد نیست.'), { statusCode: 410 });
+    const limitKey = `offer-resend:${offer.id}`; if (await redis.get(limitKey)) throw Object.assign(new Error('ارسال مجدد را کمی بعد تکرار کنید.'), { statusCode: 429 }); await redis.set(limitKey, '1', { EX: 60 });
+    const owner = await db.select({ mobile: users.mobile, email: users.email }).from(users).innerJoin(requests, eq(requests.createdByUserId, users.id)).where(eq(requests.id, offer.requestId)).limit(1);
+    // The raw link token is never stored, so resend rotates it instead of recovering a secret from storage.
+    const replacement = opaqueToken(32);
+    await db.update(offers).set({ tokenHash: offerTokenHash(replacement), updatedAt: new Date() }).where(eq(offers.id, offer.id));
+    const replacementLink = `${config.PUBLIC_BASE_URL}/offer/${replacement}`;
+    if (owner[0]) { await notify('SMS', 'OFFER_RESENT', owner[0].mobile, `لینک جدید پیشنهاد اختصاصی: ${replacementLink}`, offer.id); if (owner[0].email) await notify('EMAIL', 'OFFER_RESENT', owner[0].email, `لینک جدید پیشنهاد اختصاصی: ${replacementLink}`, offer.id); }
+    await audit(db, { actorId: auth.id, actorRole: auth.role, action: 'OFFER_LINK_ROTATED', entity: 'offer', entityId: offer.id, before: { tokenRotated: true }, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) });
+    return { ok: true };
+  });
+  app.post('/api/v1/admin/notifications/:id/retry', async (request) => {
+    requirePermission(request, 'settings:manage'); const notification = await db.query.notifications.findFirst({ where: eq(notifications.id, (request.params as { id: string }).id) });
+    if (!notification || notification.status === 'SENT') throw Object.assign(new Error('اعلان قابل ارسال مجدد نیست.'), { statusCode: 409 });
+    await notify(notification.channel, notification.event, notification.destination, notification.body, notification.relatedId ?? undefined);
+    return { accepted: true };
   });
 
   app.get('/api/v1/admin/content', async (request) => { requirePermission(request, 'content:manage'); return db.select().from(contentEntries).orderBy(desc(contentEntries.updatedAt)); });

@@ -1,6 +1,6 @@
 # Implementation progress
 
-Status: R2 passed; R3 in progress
+Status: R3 in QA
 
 ## Environment
 
@@ -17,7 +17,7 @@ Status: R2 passed; R3 in progress
 | R0 | Passed | `13e2d50` | `pnpm install`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`, `make bootstrap`, `docker compose --env-file .env config --quiet` | Production gates intentionally open; see below |
 | R1 | Passed (dev/demo) | `c43affa` | Chromium Playwright: 2 public/a11y/RTL tests passed; screenshots in ignored `artifacts/screenshots/` | Final company data, legal approval, and publication permissions remain open |
 | R2 | Passed (dev/demo) | `c06e8b4` | `pnpm typecheck`, `pnpm lint`, `pnpm test` (9), production build; local Postgres/Redis request + idempotency + private DOCX upload smoke | ClamAV production socket and external provider credentials remain production-gated |
-| R3 | Pending | — | — | — |
+| R3 | In QA | Pending commit | `pnpm typecheck`, `pnpm lint`, `pnpm test` (10), production build, Chromium 3/3 including private-offer 320/768/1440, local offer-to-receipt lifecycle with duplicate callback | Approved gateway endpoint/merchant credentials and legal approval remain production-gated |
 | R4 | Pending | — | — | — |
 | R5 | Pending | — | — | — |
 
@@ -58,6 +58,15 @@ Add dated entries with commands, results, decisions, defects, and the next actio
 - Local integration evidence: the Compose PostgreSQL and Redis services were healthy; the forward-only SQL migration applied; synthetic seed completed; OTP authentication, onboarding, request creation, duplicate idempotency response, and a DOCX private upload were exercised. The stored attachment was `CLEAN`, server-detected as DOCX, and remained in the private clean location.
 - QA passed: `pnpm typecheck`; `pnpm lint`; `pnpm test` (9); `pnpm build` (Webpack). The sandboxed Next build could not parse TypeScript `--showConfig`; the identical production build passed outside that sandbox. `UPLOAD_ALLOWED_TYPES` was corrected to match the documented PDF/DOCX/XLSX/image allowlist and the root build now rebuilds the config package before API/Web.
 - Next action: update R2 traceability and commit the passing vertical slice, then implement R3 versioned offers and payment lifecycle.
+
+### 2026-09-01 — R3 evidence
+
+- Implemented versioned, revocable, expiring opaque-token offers with an exclusive offer page that shows complete scope, timing, expert mix, fee deduction term, legal versions, and base/tax/final IRR amounts only to the secure offer link.
+- Added mandatory pre-payment email verification and organization billing completion, immutable terms consent, server-calculated money, online payment adapter boundary (deterministic mock and fail-closed REST-gateway adapter), server-side verification/idempotency, private receipt, bank-transfer review/rejection, refund records, notification templates, resend throttling, and delivery-status persistence.
+- Local lifecycle evidence: created a fully synthetic qualified-request offer, verified customer email, completed synthetic billing, accepted the terms version, started a mock transaction, verified its callback, replayed the callback (`duplicate: true`), and retrieved a PAID receipt with the independently stored transaction reference and amount.
+- QA passed: `pnpm typecheck`; `pnpm lint`; `pnpm test` (10); `pnpm build`; `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/google-chrome PLAYWRIGHT_OFFER_TOKEN=<synthetic> pnpm exec playwright test --project=chromium` (3 passed). Screenshots at `artifacts/screenshots/offer-{320,768,1440}.png` were manually inspected at 320 and 1440.
+- Fixed standalone client assets by copying `.next/static` into the Next standalone application tree during `postbuild`; this is now used by both the Playwright server and the production Docker image.
+- Next action: complete R3 traceability/commit, then implement R4 evaluator, retention/deletion, legal/operations documentation and full acceptance controls.
 
 ## Production gates
 

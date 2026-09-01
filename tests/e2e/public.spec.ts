@@ -17,3 +17,15 @@ test('primary public routes render a single request CTA without horizontal overf
     await page.setViewportSize({ width: 320, height: 900 }); await page.goto(route); expect(await page.locator('body').evaluate((element) => element.scrollWidth <= window.innerWidth)).toBe(true); await expect(page.locator('main')).toBeVisible();
   }
 });
+
+const offerToken = process.env.PLAYWRIGHT_OFFER_TOKEN;
+test('private offer and receipt are responsive without exposing payment data publicly', async ({ page }) => {
+  test.skip(!offerToken, 'requires a synthetic local offer token');
+  for (const size of sizes) {
+    await page.setViewportSize({ width: size.width, height: size.height });
+    await page.goto(`/offer/${offerToken}`);
+    await expect(page.getByRole('heading', { name: /جلسه آزمایشی چرخه پرداخت/ })).toBeVisible();
+    expect(await page.locator('body').evaluate((element) => element.scrollWidth <= window.innerWidth)).toBe(true);
+    await page.screenshot({ path: `artifacts/screenshots/offer-${size.name}.png`, fullPage: true });
+  }
+});

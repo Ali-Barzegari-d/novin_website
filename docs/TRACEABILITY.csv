@@ -32,7 +32,7 @@ ACC-01,Must,R2,۱۰.۵ حساب کاربری,حساب باید اطلاعات پ
 ACC-02,Must,R2,۱۰.۵ حساب کاربری,حساب باید فهرست درخواست‌ها را با شماره، عنوان و تاریخ نمایش دهد.,T-ACC-02,apps/web/src/components/AccountPanel.tsx;apps/api/src/app.ts,Implemented
 ACC-03,Must,R2,۱۰.۵ حساب کاربری,وضعیت داخلی، یادداشت، فایل گزارش و گردش کار نباید در MVP نمایش داده شود.,T-ACC-03,apps/api/src/app.ts;apps/web/src/components/AccountPanel.tsx,Implemented
 ACC-04,Must,R2,۱۰.۵ حساب کاربری,CTA ثبت درخواست جدید باید در حساب قابل دسترس باشد.,T-ACC-04,apps/web/src/components/AccountPanel.tsx,Implemented
-ACC-05,Must,R2,۱۰.۵ حساب کاربری,لینک پیشنهاد اختصاصی می‌تواند مستقل از حساب و با توکن امن باز شود.,T-ACC-05,apps/api/src/app.ts,Planned
+ACC-05,Must,R2,۱۰.۵ حساب کاربری,لینک پیشنهاد اختصاصی می‌تواند مستقل از حساب و با توکن امن باز شود.,T-ACC-05,apps/api/src/app.ts;apps/web/src/app/offer/[token]/page.tsx,Implemented
 SCR-01,Must,R2,۱۰.۶ بررسی و غربالگری داخلی,ادمین عملیاتی بتواند درخواست‌ها را جست‌وجو، فیلتر و مشاهده کند.,T-SCR-01,apps/web/src/components/RequestDesk.tsx;apps/api/src/app.ts,Implemented
 SCR-02,Must,R2,۱۰.۶ بررسی و غربالگری داخلی,کارشناس بتواند یادداشت داخلی و نتیجه تماس را ثبت کند.,T-SCR-02,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
 SCR-03,Must,R2,۱۰.۶ بررسی و غربالگری داخلی,نتیجه بررسی باید حداقل واجد همکاری، فاقد امکان همکاری یا نیازمند اطلاعات بیشتر باشد.,T-SCR-03,packages/contracts/src/index.ts;apps/api/src/app.ts,Implemented
@@ -40,35 +40,35 @@ SCR-04,Must,R2,۱۰.۶ بررسی و غربالگری داخلی,وضعیت دا
 SCR-05,Must,R2,۱۰.۶ بررسی و غربالگری داخلی,ثبت‌کننده و زمان هر تغییر مهم در لاگ ممیزی ذخیره شود.,T-SCR-05,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
 SCR-06,Should,R2,۱۰.۶ بررسی و غربالگری داخلی,ادمین بتواند درخواست را به کارشناس داخلی تخصیص دهد.,T-SCR-06,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
 SCR-07,Should,R2,۱۰.۶ بررسی و غربالگری داخلی,خروجی اکسل از فهرست درخواست‌ها با رعایت سطح دسترسی ممکن باشد.,T-SCR-07,apps/api/src/app.ts;apps/web/src/components/RequestDesk.tsx,Implemented
-ORD-01,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,فقط درخواست واجد همکاری بتواند به پیشنهاد جلسه تبدیل شود.,T-ORD-01,TBD,Planned
-ORD-02,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,پیشنهاد شامل عنوان، شرح، دامنه، مدت، زمان، تخصص کارشناسان و خروجی باشد.,T-ORD-02,TBD,Planned
-ORD-03,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,مبلغ پایه، مالیات/عوارض و مبلغ نهایی جداگانه ثبت و نمایش داده شود.,T-ORD-03,TBD,Planned
-ORD-04,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,پیشنهاد دارای تاریخ انقضا و وضعیت باشد.,T-ORD-04,TBD,Planned
-ORD-05,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,لینک پیشنهاد توکن غیرقابل حدس، قابل ابطال و مدت‌دار داشته باشد.,T-ORD-05,TBD,Planned
-ORD-06,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,مبلغ جلسه در صفحه عمومی نمایش داده نشود.,T-ORD-06,TBD,Planned
-ORD-07,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,مبلغ دقیق و همه هزینه‌ها پیش از پرداخت در صفحه اختصاصی نمایش داده شود.,T-ORD-07,TBD,Planned
-ORD-08,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,قاعده کسر مبلغ جلسه از قرارداد اصلی در پیشنهاد درج شود.,T-ORD-08,TBD,Planned
-ORD-09,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,شرایط لغو، جابه‌جایی و استرداد پیش از پذیرش نمایش داده شود.,T-ORD-09,TBD,Planned
-ORD-10,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,پذیرش شرایط با نسخه، زمان، IP و شناسه پیشنهاد ثبت شود.,T-ORD-10,TBD,Planned
-ORD-11,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,پس از انقضا، لینک اجازه پرداخت ندهد و پیام مناسب نمایش دهد.,T-ORD-11,TBD,Planned
-ORD-12,Should,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,ادمین بتواند پیشنهاد پرداخت‌نشده را با ثبت نسخه جدید اصلاح کند.,T-ORD-12,TBD,Planned
-ORD-13,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,پیشنهاد پرداخت‌شده قابل ویرایش مخرب نباشد و اصلاح با سند جدید انجام شود.,T-ORD-13,TBD,Planned
-PAY-01,Must,R3,۱۰.۸ پرداخت و رسید,پرداخت آنلاین از طریق درگاه مورد تأیید پشتیبانی شود.,T-PAY-01,TBD,Planned
-PAY-02,Must,R3,۱۰.۸ پرداخت و رسید,روش واریز بانکی نیز قابل انتخاب باشد.,T-PAY-02,TBD,Planned
-PAY-03,Must,R3,۱۰.۸ پرداخت و رسید,بازگشت از درگاه باید با استعلام سمت سرور و جلوگیری از ثبت تکراری تأیید شود.,T-PAY-03,TBD,Planned
-PAY-04,Must,R3,۱۰.۸ پرداخت و رسید,شماره تراکنش، مبلغ، زمان و وضعیت پرداخت ذخیره شود.,T-PAY-04,TBD,Planned
-PAY-05,Must,R3,۱۰.۸ پرداخت و رسید,پس از پرداخت موفق، رسید روی صفحه و از طریق ایمیل ارسال شود.,T-PAY-05,TBD,Planned
-PAY-06,Must,R3,۱۰.۸ پرداخت و رسید,برای واریز بانکی، ثبت مشخصات و تأیید دستی توسط مالی امکان‌پذیر باشد.,T-PAY-06,TBD,Planned
-PAY-07,Must,R3,۱۰.۸ پرداخت و رسید,تا قبل از تأیید واریز بانکی، سفارش پرداخت‌شده تلقی نشود.,T-PAY-07,TBD,Planned
-PAY-08,Should,R3,۱۰.۸ پرداخت و رسید,استرداد کامل یا جزئی با دلیل، مرجع و لاگ قابل ثبت باشد.,T-PAY-08,TBD,Planned
-PAY-09,Must,R3,۱۰.۸ پرداخت و رسید,اطلاعات کارت بانکی در سامانه ذخیره نشود.,T-PAY-09,TBD,Planned
+ORD-01,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,فقط درخواست واجد همکاری بتواند به پیشنهاد جلسه تبدیل شود.,T-ORD-01,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
+ORD-02,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,پیشنهاد شامل عنوان، شرح، دامنه، مدت، زمان، تخصص کارشناسان و خروجی باشد.,T-ORD-02,apps/api/src/app.ts;apps/web/src/components/OfferFlow.tsx,Implemented
+ORD-03,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,مبلغ پایه، مالیات/عوارض و مبلغ نهایی جداگانه ثبت و نمایش داده شود.,T-ORD-03,apps/api/src/lib/money.ts;apps/web/src/components/OfferFlow.tsx,Implemented
+ORD-04,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,پیشنهاد دارای تاریخ انقضا و وضعیت باشد.,T-ORD-04,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
+ORD-05,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,لینک پیشنهاد توکن غیرقابل حدس، قابل ابطال و مدت‌دار داشته باشد.,T-ORD-05,apps/api/src/lib/security.ts;apps/api/src/app.ts,Implemented
+ORD-06,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,مبلغ جلسه در صفحه عمومی نمایش داده نشود.,T-ORD-06,apps/web/src/app/page.tsx;tests/e2e/public.spec.ts,Implemented
+ORD-07,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,مبلغ دقیق و همه هزینه‌ها پیش از پرداخت در صفحه اختصاصی نمایش داده شود.,T-ORD-07,apps/web/src/components/OfferFlow.tsx,Implemented
+ORD-08,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,قاعده کسر مبلغ جلسه از قرارداد اصلی در پیشنهاد درج شود.,T-ORD-08,apps/web/src/components/OfferFlow.tsx;apps/api/src/app.ts,Implemented
+ORD-09,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,شرایط لغو، جابه‌جایی و استرداد پیش از پذیرش نمایش داده شود.,T-ORD-09,apps/web/src/components/OfferFlow.tsx,Implemented
+ORD-10,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,پذیرش شرایط با نسخه، زمان، IP و شناسه پیشنهاد ثبت شود.,T-ORD-10,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
+ORD-11,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,پس از انقضا، لینک اجازه پرداخت ندهد و پیام مناسب نمایش دهد.,T-ORD-11,apps/api/src/app.ts;apps/web/src/components/OfferFlow.tsx,Implemented
+ORD-12,Should,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,ادمین بتواند پیشنهاد پرداخت‌نشده را با ثبت نسخه جدید اصلاح کند.,T-ORD-12,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
+ORD-13,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,پیشنهاد پرداخت‌شده قابل ویرایش مخرب نباشد و اصلاح با سند جدید انجام شود.,T-ORD-13,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
+PAY-01,Must,R3,۱۰.۸ پرداخت و رسید,پرداخت آنلاین از طریق درگاه مورد تأیید پشتیبانی شود.,T-PAY-01,apps/api/src/lib/payment.ts;apps/api/src/app.ts,Implemented
+PAY-02,Must,R3,۱۰.۸ پرداخت و رسید,روش واریز بانکی نیز قابل انتخاب باشد.,T-PAY-02,apps/web/src/components/OfferFlow.tsx;apps/api/src/app.ts,Implemented
+PAY-03,Must,R3,۱۰.۸ پرداخت و رسید,بازگشت از درگاه باید با استعلام سمت سرور و جلوگیری از ثبت تکراری تأیید شود.,T-PAY-03,apps/api/src/lib/payment.ts;apps/api/src/app.ts;PROGRESS.md,Implemented
+PAY-04,Must,R3,۱۰.۸ پرداخت و رسید,شماره تراکنش، مبلغ، زمان و وضعیت پرداخت ذخیره شود.,T-PAY-04,packages/db/src/schema.ts;apps/api/src/app.ts,Implemented
+PAY-05,Must,R3,۱۰.۸ پرداخت و رسید,پس از پرداخت موفق، رسید روی صفحه و از طریق ایمیل ارسال شود.,T-PAY-05,apps/api/src/app.ts;apps/web/src/components/OfferFlow.tsx,Implemented
+PAY-06,Must,R3,۱۰.۸ پرداخت و رسید,برای واریز بانکی، ثبت مشخصات و تأیید دستی توسط مالی امکان‌پذیر باشد.,T-PAY-06,apps/api/src/app.ts;apps/web/src/components/OfferFlow.tsx,Implemented
+PAY-07,Must,R3,۱۰.۸ پرداخت و رسید,تا قبل از تأیید واریز بانکی، سفارش پرداخت‌شده تلقی نشود.,T-PAY-07,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
+PAY-08,Should,R3,۱۰.۸ پرداخت و رسید,استرداد کامل یا جزئی با دلیل، مرجع و لاگ قابل ثبت باشد.,T-PAY-08,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
+PAY-09,Must,R3,۱۰.۸ پرداخت و رسید,اطلاعات کارت بانکی در سامانه ذخیره نشود.,T-PAY-09,apps/api/src/lib/payment.ts;packages/db/src/schema.ts,Implemented
 PAY-10,Should,R3,۱۰.۸ پرداخت و رسید,ادمین بتواند برای مراحل قرارداد اصلی نیز لینک صورتحساب اختصاصی صادر کند.,T-PAY-10,TBD,Planned
-NOT-01,Must,R3,۱۰.۹ اعلان‌ها,ثبت درخواست از طریق پیامک و ایمیل اعلام شود.,T-NOT-01,TBD,Planned
-NOT-02,Must,R3,۱۰.۹ اعلان‌ها,لینک پیشنهاد جلسه از طریق هر دو کانال ارسال شود.,T-NOT-02,TBD,Planned
-NOT-03,Must,R3,۱۰.۹ اعلان‌ها,پرداخت موفق، ناموفق یا در انتظار تأیید پیام متناسب داشته باشد.,T-NOT-03,TBD,Planned
-NOT-04,Should,R3,۱۰.۹ اعلان‌ها,متن اعلان‌ها از پنل مدیریت قابل تنظیم و نسخه‌گذاری باشد.,T-NOT-04,TBD,Planned
-NOT-05,Must,R3,۱۰.۹ اعلان‌ها,موفقیت یا خطای ارسال و شناسه سرویس‌دهنده ذخیره شود.,T-NOT-05,TBD,Planned
-NOT-06,Should,R3,۱۰.۹ اعلان‌ها,ارسال مجدد لینک توسط ادمین با محدودیت مناسب ممکن باشد.,T-NOT-06,TBD,Planned
+NOT-01,Must,R3,۱۰.۹ اعلان‌ها,ثبت درخواست از طریق پیامک و ایمیل اعلام شود.,T-NOT-01,apps/api/src/app.ts,Implemented
+NOT-02,Must,R3,۱۰.۹ اعلان‌ها,لینک پیشنهاد جلسه از طریق هر دو کانال ارسال شود.,T-NOT-02,apps/api/src/app.ts,Implemented
+NOT-03,Must,R3,۱۰.۹ اعلان‌ها,پرداخت موفق، ناموفق یا در انتظار تأیید پیام متناسب داشته باشد.,T-NOT-03,apps/api/src/app.ts,Implemented
+NOT-04,Should,R3,۱۰.۹ اعلان‌ها,متن اعلان‌ها از پنل مدیریت قابل تنظیم و نسخه‌گذاری باشد.,T-NOT-04,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
+NOT-05,Must,R3,۱۰.۹ اعلان‌ها,موفقیت یا خطای ارسال و شناسه سرویس‌دهنده ذخیره شود.,T-NOT-05,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
+NOT-06,Should,R3,۱۰.۹ اعلان‌ها,ارسال مجدد لینک توسط ادمین با محدودیت مناسب ممکن باشد.,T-NOT-06,apps/api/src/app.ts,Implemented
 CMS-01,Must,R1,۱۰.۱۰ محتوا، پروژه‌ها و تیم,مدیر محتوا بتواند صفحات اصلی را ویرایش و پیش‌نمایش کند.,T-CMS-01,apps/api/src/app.ts;apps/web/src/app/admin/content/page.tsx,Implemented
 CMS-02,Must,R1,۱۰.۱۰ محتوا، پروژه‌ها و تیم,امکان ثبت نشان مشتری با متن جایگزین و ترتیب نمایش وجود داشته باشد.,T-CMS-02,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
 CMS-03,Must,R1,۱۰.۱۰ محتوا، پروژه‌ها و تیم,مطالعه موردی شامل مسئله، اقدام، نتیجه، کارفرما و وضعیت انتشار باشد.,T-CMS-03,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
