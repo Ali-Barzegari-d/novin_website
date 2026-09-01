@@ -1,6 +1,6 @@
 # Implementation progress
 
-Status: R4 passed; R5 in progress
+Status: R5 passed (dev/demo); public production blocked by external gates. UI refresh QA passed; commit pending.
 
 ## Environment
 
@@ -85,6 +85,15 @@ Add dated entries with commands, results, decisions, defects, and the next actio
 - Production preflight deliberately fails inside the final API image and now names the required remediation: HTTPS public URL, real Kavenegar/SMTP/payment/Turnstile configuration, disabled demo facilities, a non-default session secret, company identity, legal approval, and age backup recipient.
 - R5 constraints observed without bypass: ClamAV is unhealthy because its upstream signature CDN returned rate-limit/cool-down responses, so Compose correctly refuses API startup and uploads remain fail-closed. `age` is not installed and no recovery identity/recipient exists, so encrypted backup and isolated restore drill cannot be evidenced. WebKit smoke requires missing system libraries; its official dependency installer requires unavailable sudo, while CI performs `playwright install --with-deps chromium firefox webkit`. No final company/legal/provider/TLS/brand approvals have been supplied.
 - R5 named release commit: `97f9253` (`feat(r5): deliver production operations`). Final Go/No-Go: development/demo is runnable; public production is No-Go until every gate below is closed with evidence.
+
+### 2026-09-01 — UI refresh evidence
+
+- Applied Ponytail in `full` mode, the retained UI UX Pro Max design-system/UI-styling guidance, and Impeccable `4.0.4` to the public web surface. `DESIGN.md` remained authoritative: the refresh uses the approved navy, teal, gold, burgundy, and accessible surface shades rather than neon or generic dashboard styling.
+- Reworked the shared semantic token layer, typography rhythm, buttons, fields, cards, notices, footer, offers, and responsive layouts. The public home now has a more expressive original process diagram, two distinct audience-path treatments, an accessible mobile navigation menu, a stronger final CTA, and a compact mobile timeline; public route templates now share the same page-intro and CTA language.
+- Fixed an independent Next 16.3.4 build-environment defect: its default TypeScript CLI subprocess returned an empty `--showConfig` stream under this environment. `experimental.useTypeScriptCli: false` preserves type checking through TypeScript's supported programmatic API; the production build now completes.
+- QA passed: `pnpm --filter web typecheck`; `pnpm --filter web build` (25 routes); `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/google-chrome pnpm exec playwright test tests/e2e/public.spec.ts --project=chromium` (2 passed, 2 synthetic-token skips); `pnpm lint`; `pnpm test` (11 passed); `node /home/ali-barzegari-d/.agents/skills/impeccable/scripts/detect.mjs --json apps/web/src apps/web/next.config.ts` (no findings).
+- Visually inspected the production-built homepage at 320, 768, and 1440 px: `artifacts/screenshots/home-{320,768,1440}.png`. The in-app browser runtime had no available browser binding, so the repository's established Playwright browser QA supplied the screenshots and route/accessibility evidence.
+- Production gates are unchanged: this refresh does not make placeholders, mocks, draft legal copy, or unlicensed brand assets production-ready.
 
 ## Production gates
 
