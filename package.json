@@ -1,0 +1,48 @@
+{
+  "name": "novin-financial-platform",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=22.0.0 <23",
+    "pnpm": ">=9.0.0 <10"
+  },
+  "scripts": {
+    "dev": "pnpm --filter contracts build && pnpm --filter config build && pnpm --filter db build && concurrently -n api,web -c cyan,magenta \"pnpm --filter api dev\" \"pnpm --filter web dev\"",
+    "build": "pnpm --filter contracts build && pnpm --filter db build && pnpm --filter api build && pnpm --filter web build",
+    "lint": "eslint . --max-warnings=0 && pnpm traceability:check",
+    "typecheck": "pnpm --filter contracts typecheck && pnpm --filter db typecheck && pnpm --filter config typecheck && pnpm --filter api typecheck && pnpm --filter web typecheck",
+    "test": "vitest run --project unit --project integration",
+    "test:watch": "vitest --project unit",
+    "test:e2e": "playwright test",
+    "security:secrets": "node infra/scripts/secret-scan.mjs",
+    "security:sast": "eslint apps packages --max-warnings=0",
+    "security:sbom": "pnpm exec cyclonedx-npm --output-file artifacts/sbom.json",
+    "traceability:check": "node infra/scripts/check-traceability.mjs",
+    "db:migrate": "tsx packages/db/src/migrate.ts",
+    "db:seed": "tsx packages/db/src/seed.ts",
+    "admin:create": "tsx packages/db/src/create-admin.ts",
+    "preflight:production": "tsx infra/scripts/preflight-production.ts"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.62.1",
+    "@types/node": "24.10.1",
+    "@types/nodemailer": "7.0.11",
+    "@types/pg": "8.15.6",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.5",
+    "@typescript-eslint/eslint-plugin": "8.48.0",
+    "@typescript-eslint/parser": "8.48.0",
+    "@tailwindcss/postcss": "4.3.3",
+    "concurrently": "9.2.1",
+    "@cyclonedx/cyclonedx-npm": "6.0.1",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.3.4",
+    "prettier": "3.8.3",
+    "tsx": "4.21.0",
+    "typescript": "5.9.3",
+    "vitest": "4.1.11"
+  }
+}
