@@ -106,7 +106,7 @@ Add dated entries with commands, results, decisions, defects, and the next actio
 - Improved screenshot evidence to scroll each once-only entrance into view before full-page capture, so the evidence records the finished interface rather than temporarily hidden pre-entrance content.
 - QA passed: `pnpm typecheck`; `pnpm --filter web build` (25 routes); `pnpm lint`; `pnpm test` (11 passed); `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/google-chrome pnpm exec playwright test tests/e2e/public.spec.ts --project=chromium` (2 passed, 2 synthetic-token skips); `git diff --check`; Impeccable detector (`[]`). Manually inspected `artifacts/screenshots/home-{320,768,1440}.png`.
 - Production gates are unchanged. This work does not approve real company data, legal copy, providers, customer proof, or IranYekan licensing.
-- UI commit: pending.
+- UI commit: `9c33cd1` (`feat(ui): elevate Persian visual system`).
 
 ## Production gates
 
