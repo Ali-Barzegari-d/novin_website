@@ -4,7 +4,15 @@ import { createDatabase } from '../../packages/db/src/index.js';
 type Gate = readonly [gate: string, owner: string, remediation: string];
 const gates: Gate[] = [];
 let config: ReturnType<typeof loadConfig> | undefined;
-try { config = loadConfig({ ...process.env, APP_ENV: 'production', NODE_ENV: 'production' }); } catch (error) { gates.push(['امنیت پیکربندی', 'Technical', error instanceof Error ? error.message : 'پیکربندی production نامعتبر است.']); }
+try {
+  config = loadConfig({ ...process.env, APP_ENV: 'production', NODE_ENV: 'production' });
+} catch (error) {
+  const paths = typeof error === 'object' && error && 'issues' in error && Array.isArray(error.issues)
+    ? error.issues.map((issue) => typeof issue === 'object' && issue && 'path' in issue && Array.isArray(issue.path) ? issue.path.join('.') : '').filter(Boolean).join('، ')
+    : '';
+  const message = error instanceof Error ? error.message : 'پیکربندی production نامعتبر است.';
+  gates.push(['امنیت پیکربندی', 'Technical', paths ? `مقادیر production زیر را مطابق .env.example تکمیل یا اصلاح کنید: ${paths}.` : message]);
+}
 
 if (config) {
   const { pool } = createDatabase(config.DATABASE_URL);

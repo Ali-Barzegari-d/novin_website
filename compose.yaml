@@ -2,12 +2,18 @@ name: novin-financial
 
 services:
   web:
+    image: "novin-financial-web:${RELEASE_SHA:-dev}"
     build:
       context: .
       dockerfile: docker/web.Dockerfile
     init: true
     restart: unless-stopped
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
     read_only: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    stop_grace_period: 30s
     tmpfs:
       - /tmp:size=64m,mode=1777
     environment:
@@ -30,13 +36,19 @@ services:
     networks: [app]
 
   api:
+    image: "novin-financial-api:${RELEASE_SHA:-dev}"
     build:
       context: .
       dockerfile: docker/api.Dockerfile
       target: runtime
     init: true
     restart: unless-stopped
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
     read_only: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    stop_grace_period: 45s
     tmpfs:
       - /tmp:size=64m,mode=1777
     env_file: .env
@@ -49,9 +61,9 @@ services:
       CLAMAV_HOST: clamav
       CLAMAV_PORT: 3310
     volumes:
-      - ./var/uploads/quarantine:/data/uploads/quarantine
-      - ./var/uploads/clean:/data/uploads/clean
-      - ./var/logs:/data/logs
+      - ./var/uploads/quarantine:/app/var/uploads/quarantine
+      - ./var/uploads/clean:/app/var/uploads/clean
+      - ./var/logs:/app/var/logs
     depends_on:
       postgres:
         condition: service_healthy
@@ -69,6 +81,7 @@ services:
     networks: [app]
 
   worker:
+    image: "novin-financial-api:${RELEASE_SHA:-dev}"
     build:
       context: .
       dockerfile: docker/api.Dockerfile
@@ -76,7 +89,12 @@ services:
     command: ["node", "apps/api/dist/worker.js"]
     init: true
     restart: unless-stopped
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
     read_only: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    stop_grace_period: 45s
     tmpfs:
       - /tmp:size=64m,mode=1777
     env_file: .env
@@ -88,9 +106,7 @@ services:
       CLAMAV_HOST: clamav
       CLAMAV_PORT: 3310
     volumes:
-      - ./var/uploads/quarantine:/data/uploads/quarantine
-      - ./var/uploads/clean:/data/uploads/clean
-      - ./var/logs:/data/logs
+      - ./var/uploads/clean:/app/var/uploads/clean
     depends_on:
       api:
         condition: service_healthy
@@ -98,7 +114,7 @@ services:
     networks: [app]
 
   postgres:
-    image: ${POSTGRES_IMAGE:-postgres:17-alpine}
+    image: ${POSTGRES_IMAGE:-postgres@sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73}
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
@@ -116,7 +132,7 @@ services:
     networks: [app]
 
   redis:
-    image: ${REDIS_IMAGE:-redis:7.4-alpine}
+    image: ${REDIS_IMAGE:-redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf}
     restart: unless-stopped
     command: ["redis-server", "--appendonly", "yes", "--maxmemory", "128mb", "--maxmemory-policy", "noeviction"]
     volumes:
@@ -130,7 +146,7 @@ services:
     networks: [app]
 
   clamav:
-    image: ${CLAMAV_IMAGE:-clamav/clamav:1.4}
+    image: ${CLAMAV_IMAGE:-clamav/clamav@sha256:b25d9199257ae7ef45e0cc4c7eaa60ce7e5447796f0090d5ff311d1a30980cc3}
     restart: unless-stopped
     volumes:
       - ./var/clamav:/var/lib/clamav

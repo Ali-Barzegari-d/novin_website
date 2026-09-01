@@ -38,6 +38,8 @@ var/
 
 Use health-gated dependencies, restart policies, graceful termination, non-root users, dropped capabilities, read-only root filesystems where practical, tmpfs for temp paths, and resource budgets from `ARCHITECTURE.md`.
 
+The Compose file tags application images with the Git SHA supplied by `deploy.sh`; external service images are pinned to reviewed content digests. The API and worker run as `APP_UID:APP_GID`, so their three writable mounts must be owned by that deployment identity. This prevents a root container workaround for host-owned private data.
+
 ## Host Nginx contract
 
 - HTTP redirects to HTTPS; canonical host is `karafintech.ir`.
@@ -108,6 +110,8 @@ GitHub Actions on pull request/push:
 7. traceability/preflight contract checks
 
 Production deployment is not automatic from an unreviewed branch. Use an approved manual environment/release workflow or `make deploy` on the server with protected credentials.
+
+`docs/OPERATIONS.md` is the executable handoff for backup pairing, restore drill, health evidence, and application-only rollback.
 
 ## Monitoring and incident response
 

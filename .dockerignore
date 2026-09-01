@@ -1,0 +1,19 @@
+# Runtime data, local credentials, and build outputs must never enter an image.
+.git/
+.env
+.env.*
+!.env.example
+node_modules/
+.pnpm-store/
+var/
+artifacts/
+coverage/
+playwright-report/
+test-results/
+.next/
+dist/
+**/.next/
+**/dist/
+**/node_modules/
+.agent/
+.tmp/

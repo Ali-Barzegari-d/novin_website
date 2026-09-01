@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 const boolean = z.enum(['true', 'false']).transform((value) => value === 'true');
 const provider = z.enum(['mock', 'kavenegar', 'smtp', 'gateway']);
+const emptyToUndefined = <T extends z.ZodType>(schema: T) => z.preprocess((value) => value === '' ? undefined : value, schema.optional());
 
 const schema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
@@ -16,20 +17,20 @@ const schema = z.object({
   OTP_RESEND_SECONDS: z.coerce.number().int().min(30).max(600).default(60),
   OTP_MAX_ATTEMPTS: z.coerce.number().int().min(1).max(10).default(5),
   SMS_PROVIDER: z.enum(['mock', 'kavenegar']).default('mock'),
-  KAVENEGAR_API_KEY: z.string().optional(),
+  KAVENEGAR_API_KEY: emptyToUndefined(z.string()),
   EMAIL_PROVIDER: z.enum(['mock', 'smtp']).default('mock'),
-  SMTP_HOST: z.string().optional(),
+  SMTP_HOST: emptyToUndefined(z.string()),
   SMTP_PORT: z.coerce.number().int().min(1).max(65535).default(587),
-  SMTP_USERNAME: z.string().optional(),
-  SMTP_PASSWORD: z.string().optional(),
-  SMTP_FROM: z.string().email().optional(),
+  SMTP_USERNAME: emptyToUndefined(z.string()),
+  SMTP_PASSWORD: emptyToUndefined(z.string()),
+  SMTP_FROM: emptyToUndefined(z.string().email()),
   PAYMENT_PROVIDER: z.enum(['mock', 'gateway']).default('mock'),
-  PAYMENT_MERCHANT_ID: z.string().optional(),
-  PAYMENT_GATEWAY_BASE_URL: z.url().optional(),
-  PAYMENT_CALLBACK_SECRET: z.string().min(32).optional(),
+  PAYMENT_MERCHANT_ID: emptyToUndefined(z.string()),
+  PAYMENT_GATEWAY_BASE_URL: emptyToUndefined(z.url()),
+  PAYMENT_CALLBACK_SECRET: emptyToUndefined(z.string().min(32)),
   CAPTCHA_PROVIDER: z.enum(['bypass', 'turnstile']).default('bypass'),
-  TURNSTILE_SITE_KEY: z.string().optional(),
-  TURNSTILE_SECRET_KEY: z.string().optional(),
+  TURNSTILE_SITE_KEY: emptyToUndefined(z.string()),
+  TURNSTILE_SECRET_KEY: emptyToUndefined(z.string()),
   CLAMAV_HOST: z.string().default('clamav'),
   CLAMAV_PORT: z.coerce.number().int().min(1).max(65535).default(3310),
   UPLOAD_MAX_BYTES: z.coerce.number().int().min(1_024).max(50 * 1024 * 1024).default(10 * 1024 * 1024),
@@ -40,13 +41,13 @@ const schema = z.object({
   TAX_RATE_BPS: z.coerce.number().int().min(0).max(100_000).default(0),
   OFFER_DEFAULT_VALIDITY_DAYS: z.coerce.number().int().min(1).max(90).default(7),
   TRUSTED_PROXY_COUNT: z.coerce.number().int().min(0).max(5).default(1),
-  COMPANY_NATIONAL_ID: z.string().optional(),
-  COMPANY_REGISTRATION_ID: z.string().optional(),
-  COMPANY_ADDRESS: z.string().optional(),
-  COMPANY_PHONE: z.string().optional(),
-  COMPANY_EMAIL: z.string().email().optional(),
+  COMPANY_NATIONAL_ID: emptyToUndefined(z.string()),
+  COMPANY_REGISTRATION_ID: emptyToUndefined(z.string()),
+  COMPANY_ADDRESS: emptyToUndefined(z.string()),
+  COMPANY_PHONE: emptyToUndefined(z.string()),
+  COMPANY_EMAIL: emptyToUndefined(z.string().email()),
   LEGAL_CONTENT_APPROVED: boolean.default(false),
-  BACKUP_AGE_RECIPIENT: z.string().optional()
+  BACKUP_AGE_RECIPIENT: emptyToUndefined(z.string())
 });
 
 export type AppConfig = z.infer<typeof schema> & { allowedUploadTypes: string[] };

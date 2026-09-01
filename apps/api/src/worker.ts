@@ -6,6 +6,7 @@ import { createDatabase } from '@novin/db';
 
 const config = loadConfig();
 const { pool } = createDatabase(config.DATABASE_URL);
+const shutdown = new AbortController();
 
 async function retentionSweep() {
   const expired = await pool.query<{ id: string; storage_name: string }>("UPDATE attachments SET status = 'EXPIRED' WHERE status = 'CLEAN' AND expires_at IS NOT NULL AND expires_at < now() RETURNING id, storage_name");
@@ -15,9 +16,24 @@ async function retentionSweep() {
   process.stdout.write(`retention sweep: ${expired.rows.length} attachments expired, ${people.rows.length} users anonymized\n`);
 }
 
-process.stdout.write('novin worker started\n');
-for (;;) {
-  await pool.query('SELECT 1');
-  await retentionSweep();
-  await wait(60 * 60_000);
+async function run() {
+  process.stdout.write('novin worker started\n');
+  try {
+    while (!shutdown.signal.aborted) {
+      await pool.query('SELECT 1');
+      await retentionSweep();
+      await wait(60 * 60_000, undefined, { signal: shutdown.signal });
+    }
+  } catch (error) {
+    if (!shutdown.signal.aborted) throw error;
+  } finally {
+    await pool.end();
+  }
 }
+
+for (const signal of ['SIGTERM', 'SIGINT'] as const) process.once(signal, () => {
+  process.stdout.write(`novin worker received ${signal}; stopping\n`);
+  shutdown.abort();
+});
+
+await run();

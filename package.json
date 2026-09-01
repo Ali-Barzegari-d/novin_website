@@ -8,6 +8,11 @@
     "node": ">=22.0.0 <23",
     "pnpm": ">=9.0.0 <10"
   },
+  "pnpm": {
+    "overrides": {
+      "shell-quote": "1.10.0"
+    }
+  },
   "scripts": {
     "dev": "pnpm --filter contracts build && pnpm --filter config build && pnpm --filter db build && concurrently -n api,web -c cyan,magenta \"pnpm --filter api dev\" \"pnpm --filter web dev\"",
     "build": "pnpm --filter contracts build && pnpm --filter config build && pnpm --filter db build && pnpm --filter api build && pnpm --filter web build",
@@ -18,7 +23,7 @@
     "test:e2e": "playwright test",
     "security:secrets": "node infra/scripts/secret-scan.mjs",
     "security:sast": "eslint apps packages --max-warnings=0",
-    "security:sbom": "pnpm exec cyclonedx-npm --output-file artifacts/sbom.json",
+    "security:sbom": "node infra/scripts/generate-sbom.mjs",
     "traceability:check": "node infra/scripts/check-traceability.mjs",
     "db:migrate": "tsx packages/db/src/migrate.ts",
     "db:seed": "tsx packages/db/src/seed.ts",
@@ -37,7 +42,6 @@
     "@typescript-eslint/parser": "8.48.0",
     "@tailwindcss/postcss": "4.3.3",
     "concurrently": "9.2.1",
-    "@cyclonedx/cyclonedx-npm": "6.0.1",
     "eslint": "9.39.5",
     "eslint-config-next": "16.3.4",
     "prettier": "3.8.3",

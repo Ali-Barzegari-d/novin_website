@@ -115,7 +115,7 @@ NFR-07,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,OTP �
 NFR-08,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,فایل — اعتبارسنجی MIME، اسکن بدافزار، تغییر نام و ذخیره خصوصی اجرا شود.,T-NFR-08,apps/api/src/lib/files.ts;PROGRESS.md,Implemented
 NFR-09,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,حریم خصوصی — حداقل‌گرایی داده، محدودیت نگهداری و منع ارسال داده حساس به ابزار تحلیلی رعایت شود.,T-NFR-09,apps/api/src/worker.ts;docs/RETENTION.md;SECURITY.md,Implemented
 NFR-10,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,لاگ — لاگ امنیتی و ممیزی دارای زمان هماهنگ، شناسه بازیگر و مقاومت در برابر تغییر باشد.,T-NFR-10,apps/api/src/lib/audit.ts;packages/db/src/schema.ts,Implemented
-NFR-11,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,پشتیبان — پشتیبان روزانه، RPO حداکثر ۲۴ ساعت و RTO پیشنهادی ۸ ساعت برقرار باشد.,T-NFR-11,infra/scripts/backup.sh;DEPLOYMENT.md,Implemented
+NFR-11,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,پشتیبان — پشتیبان روزانه، RPO حداکثر ۲۴ ساعت و RTO پیشنهادی ۸ ساعت برقرار باشد.,T-NFR-11,infra/scripts/backup.sh;infra/scripts/restore-drill.sh;docs/OPERATIONS.md;DEPLOYMENT.md,Implemented
 NFR-12,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,دسترس‌پذیری — کنتراست، ناوبری صفحه‌کلید، برچسب فرم، متن جایگزین و پیام خطای قابل فهم رعایت شود.,T-NFR-12,apps/web/src/app/globals.css;tests/e2e/public.spec.ts,Implemented
 NFR-13,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,SEO — متادیتا، sitemap، canonical، structured data سازمان و صفحات قابل ایندکس فراهم شود.,T-NFR-13,apps/web/src/app/sitemap.ts;apps/web/src/app/robots.ts,Implemented
 NFR-14,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,مرورگر — دو نسخه آخر مرورگرهای رایج موبایل و دسکتاپ پشتیبانی شوند.,T-NFR-14,README.md;tests/e2e/public.spec.ts,Implemented

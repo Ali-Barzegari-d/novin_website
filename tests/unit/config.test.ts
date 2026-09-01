@@ -5,4 +5,5 @@ const base = { PUBLIC_BASE_URL: 'http://localhost:3050', DATABASE_URL: 'postgres
 describe('production gates', () => {
   it('rejects mock providers in production', () => expect(() => loadConfig({ ...base, APP_ENV: 'production', NODE_ENV: 'production' })).toThrow(/پیکربندی ناامن/));
   it('accepts bounded dev configuration', () => expect(loadConfig({ ...base, APP_ENV: 'dev', NODE_ENV: 'development' }).OTP_TTL_SECONDS).toBe(120));
+  it('treats blank optional provider credentials as unset in development', () => expect(loadConfig({ ...base, APP_ENV: 'dev', NODE_ENV: 'development', SMTP_FROM: '', PAYMENT_CALLBACK_SECRET: '' }).SMTP_FROM).toBeUndefined());
 });

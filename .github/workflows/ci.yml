@@ -17,11 +17,11 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
         with:
           run_install: false
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22
           cache: pnpm
@@ -34,9 +34,23 @@ jobs:
   e2e:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
+    env:
+      NODE_ENV: test
+      APP_ENV: test
+      PUBLIC_BASE_URL: http://127.0.0.1:3050
+      DATABASE_URL: postgresql://novin:test-only@127.0.0.1:5432/novin_test
+      REDIS_URL: redis://127.0.0.1:6379/0
+      SESSION_SECRET: ci-only-session-secret-with-at-least-32-bytes
+      SMS_PROVIDER: mock
+      EMAIL_PROVIDER: mock
+      PAYMENT_PROVIDER: mock
+      CAPTCHA_PROVIDER: bypass
+      DEV_SMS_INBOX_ENABLED: "true"
+      DEV_EMAIL_INBOX_ENABLED: "true"
+      SEED_SYNTHETIC_DATA: "true"
     services:
       postgres:
-        image: postgres:17-alpine
+        image: postgres@sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73
         env:
           POSTGRES_DB: novin_test
           POSTGRES_USER: novin
@@ -46,25 +60,27 @@ jobs:
           --health-cmd "pg_isready -U novin -d novin_test"
           --health-interval 10s --health-timeout 5s --health-retries 10
       redis:
-        image: redis:7.4-alpine
+        image: redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf
         ports: ["6379:6379"]
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s --health-timeout 5s --health-retries 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
         with:
           run_install: false
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium firefox webkit
+      - run: pnpm db:migrate
+      - run: pnpm build
       - run: make test-e2e
       - if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: e2e-artifacts
           path: artifacts/
@@ -74,13 +90,13 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
         with:
           run_install: false
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22
           cache: pnpm
@@ -89,6 +105,3 @@ jobs:
       - run: pnpm security:secrets
       - run: pnpm security:sast
       - run: pnpm security:sbom
-
-# R0 must pin reviewed action SHAs and container versions before this workflow
-# is treated as a protected production control.

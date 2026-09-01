@@ -2,10 +2,12 @@ SHELL := /usr/bin/env bash
 .DEFAULT_GOAL := help
 
 ENV ?= dev
+BACKUP ?=
+ROLLBACK_SHA ?=
 COMPOSE_FILE ?= compose.yaml
 COMPOSE := docker compose -f $(COMPOSE_FILE) --env-file .env
 
-.PHONY: help plan-check bootstrap install dev lint typecheck test test-e2e build up down restart logs ps health migrate seed admin-create backup restore deploy rollback clean-safe preflight-production
+.PHONY: help plan-check bootstrap install dev lint typecheck test test-e2e build up down restart logs ps health migrate seed admin-create backup restore restore-drill deploy rollback clean-safe preflight-production
 
 help: ## Show available targets
 	@awk 'BEGIN {FS = ":.*## "; printf "Usage: make <target> [ENV=dev|production]\n\n"} /^[a-zA-Z0-9_-]+:.*## / {printf "  %-22s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -59,31 +61,34 @@ ps: ## Show Compose service state
 	@$(COMPOSE) ps
 
 health: ## Check app, provider, storage, disk, queue, and backup health
-	@./infra/scripts/health.sh "$(ENV)"
+	@ENV="$(ENV)" ./infra/scripts/health.sh
 
 migrate: ## Run forward migrations with a deployment lock
-	@./infra/scripts/migrate.sh "$(ENV)"
+	@ENV="$(ENV)" ./infra/scripts/migrate.sh
 
 seed: ## Load synthetic development/test data only
-	@./infra/scripts/seed.sh "$(ENV)"
+	@ENV="$(ENV)" ./infra/scripts/seed.sh
 
 admin-create: ## Create the first superadmin and start TOTP enrollment
-	@./infra/scripts/admin-create.sh "$(ENV)"
+	@ENV="$(ENV)" ./infra/scripts/admin-create.sh
 
-backup: ## Create encrypted and checksummed backup
-	@./infra/scripts/backup.sh "$(ENV)"
+backup: ## Create encrypted, checksummed database and upload backups
+	@ENV="$(ENV)" ./infra/scripts/backup.sh
 
-restore: ## Restore one explicit backup with multi-step confirmation
-	@./infra/scripts/restore.sh "$(ENV)"
+restore: ## Restore explicit dev backup: make restore ENV=dev BACKUP=var/backups/daily/...dump.age
+	@ENV="$(ENV)" BACKUP="$(BACKUP)" ./infra/scripts/restore.sh
+
+restore-drill: ## Restore a backup into isolated dev drill database (explicit confirmation required)
+	@ENV="$(ENV)" BACKUP="$(BACKUP)" ./infra/scripts/restore-drill.sh
 
 preflight-production: ## Fail closed on mocks, placeholders, missing approvals, and unsafe config
-	@./infra/scripts/preflight-production.sh
+	@ENV=production ./infra/scripts/preflight-production.sh
 
 deploy: ## Backup, build, migrate, deploy, verify, and roll back on failure
-	@./infra/scripts/deploy.sh "$(ENV)"
+	@ENV="$(ENV)" ./infra/scripts/deploy.sh
 
-rollback: ## Restore the last known-good application version safely
-	@./infra/scripts/rollback.sh "$(ENV)"
+rollback: ## Restore recorded application image: make rollback ENV=production ROLLBACK_SHA=<sha>
+	@ENV="$(ENV)" ROLLBACK_SHA="$(ROLLBACK_SHA)" ./infra/scripts/rollback.sh
 
 clean-safe: ## Remove build/test caches; never persistent var data
 	@./infra/scripts/clean-safe.sh

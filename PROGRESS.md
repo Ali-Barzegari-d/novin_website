@@ -19,7 +19,7 @@ Status: R4 passed; R5 in progress
 | R2 | Passed (dev/demo) | `c06e8b4` | `pnpm typecheck`, `pnpm lint`, `pnpm test` (9), production build; local Postgres/Redis request + idempotency + private DOCX upload smoke | ClamAV production socket and external provider credentials remain production-gated |
 | R3 | Passed (dev/demo) | `83575ff` | `pnpm typecheck`, `pnpm lint`, `pnpm test` (10), production build, Chromium 3/3 including private-offer 320/768/1440, local offer-to-receipt lifecycle with duplicate callback | Approved gateway endpoint/merchant credentials and legal approval remain production-gated |
 | R4 | Passed (dev/demo) | `7fc56c4` | migration `0001_service_settings.sql`; `pnpm typecheck`, `pnpm lint`, `pnpm test` (10), secrets scan, production build, Chromium 4/4 at 320/768/1440, synthetic contract invoice | Legal/company identity acceptance remains externally blocked; production preflight fails closed as designed |
-| R5 | Pending | — | — | — |
+| R5 | Passed (dev/demo); public production blocked | pending `feat(r5)` | final static/security gates, Docker image rehearsal, API/web health smoke, Chromium + Firefox E2E; see R5 evidence below | Legal/company/provider/TLS/backup/ClamAV gates and isolated restore drill remain open |
 
 ## Execution log
 
@@ -76,6 +76,23 @@ Add dated entries with commands, results, decisions, defects, and the next actio
 - Production preflight was corrected to resolve workspace modules, load `.env` via its wrapper, validate config/database release conditions, and fail only while gates are open. It currently fails as expected because the development configuration has invalid/missing production provider values, legal approval, and company facts.
 - Next action: commit R4, then complete R5 container/CI/operations validation and final Go/No-Go report.
 
+### 2026-09-01 — R5 evidence
+
+- Hardened Compose with loopback-only web exposure, Git-SHA application image tags, reviewed PostgreSQL/Redis/ClamAV digests, non-root `APP_UID:APP_GID`, read-only application roots, dropped Linux capabilities, no-new-privileges, graceful API/worker shutdown, resource limits, correct private upload mounts, and a `.dockerignore` that excludes credentials, runtime data, artifacts, and build outputs.
+- Corrected host-vs-Compose database/Redis resolution for development scripts; `make migrate ENV=dev` completed safely against the local Compose database. Production migration/seed/admin paths run inside the API image. The API runtime image was rehearsed with `GET /health/ready` injection under the Compose user/mount policy, returning 200; the web image was smoke-tested at `127.0.0.1:3051/health` under read-only, non-root, no-capability settings and returned `{ "status": "ok" }`.
+- Added paired encrypted database and upload backup artifacts with checksums, daily/weekly retention, explicit dev restore staging, isolated restore-drill command, application-only Git-SHA rollback guard, backup-aware health checks, an operations runbook, HTTPS/HSTS proxy guidance, production preflight in the runtime image, and pinned CI actions. CI now runs migrations/build before Playwright and uses a deterministic CycloneDX 1.6 SBOM generator for the pnpm store.
+- QA passed: `pnpm lint`; `pnpm typecheck`; `pnpm test` (11); `pnpm security:secrets`; `pnpm security:sast`; `pnpm security:sbom` (657 components); `pnpm audit --audit-level high` (no high/critical findings; one low finding remains); `pnpm build` (25 routes); `docker compose --env-file .env config --quiet`; `docker compose ... build web/api`; API image readiness injection; Chromium Playwright 2 passed/2 synthetic-token skips; Firefox Playwright 2 passed/2 synthetic-token skips.
+- Production preflight deliberately fails inside the final API image and now names the required remediation: HTTPS public URL, real Kavenegar/SMTP/payment/Turnstile configuration, disabled demo facilities, a non-default session secret, company identity, legal approval, and age backup recipient.
+- R5 constraints observed without bypass: ClamAV is unhealthy because its upstream signature CDN returned rate-limit/cool-down responses, so Compose correctly refuses API startup and uploads remain fail-closed. `age` is not installed and no recovery identity/recipient exists, so encrypted backup and isolated restore drill cannot be evidenced. WebKit smoke requires missing system libraries; its official dependency installer requires unavailable sudo, while CI performs `playwright install --with-deps chromium firefox webkit`. No final company/legal/provider/TLS/brand approvals have been supplied.
+- Next action: commit the R5 operational slice, then record its named commit SHA and final Go/No-Go status.
+
 ## Production gates
 
 Copy unresolved gates from `DECISIONS.md` and close them only with evidence.
+
+- Legal/privacy owner: approve and publish final terms, privacy, cancellation/refund, retention copy, and version identifiers; remove all drafts only after approval.
+- Company owner: supply approved registered name, national/registration IDs, address, phone, public email, and contact escalation details.
+- Finance/Technical: provide the approved payment-gateway contract, merchant identity, callback secret, and successful server-verification evidence.
+- Operations/Technical: provide Kavenegar, SMTP/DNS, Turnstile, and licensed brand-asset approvals; disable every development inbox/seed/mock setting.
+- Infrastructure: install approved TLS/Nginx configuration and certificate for `karafintech.ir`, provide the encrypted `age` recipient and separately held recovery identity, perform/record an isolated restore drill, and select/maintain an approved ClamAV signature feed or private mirror. The current upstream ClamAV CDN cool-down is a fail-closed release blocker.
+- QA infrastructure: install WebKit system libraries (or run the supplied CI job) and retain its successful smoke evidence. This does not change production application behavior.
