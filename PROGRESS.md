@@ -1,6 +1,6 @@
 # Implementation progress
 
-Status: R5 passed (dev/demo); public production blocked by external gates. UI refresh QA passed; commit pending.
+Status: R5 passed (dev/demo); public production blocked by external gates. UI refresh QA passed and committed as `8c752d2`.
 
 ## Environment
 
@@ -94,6 +94,7 @@ Add dated entries with commands, results, decisions, defects, and the next actio
 - QA passed: `pnpm --filter web typecheck`; `pnpm --filter web build` (25 routes); `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/google-chrome pnpm exec playwright test tests/e2e/public.spec.ts --project=chromium` (2 passed, 2 synthetic-token skips); `pnpm lint`; `pnpm test` (11 passed); `node /home/ali-barzegari-d/.agents/skills/impeccable/scripts/detect.mjs --json apps/web/src apps/web/next.config.ts` (no findings).
 - Visually inspected the production-built homepage at 320, 768, and 1440 px: `artifacts/screenshots/home-{320,768,1440}.png`. The in-app browser runtime had no available browser binding, so the repository's established Playwright browser QA supplied the screenshots and route/accessibility evidence.
 - Production gates are unchanged: this refresh does not make placeholders, mocks, draft legal copy, or unlicensed brand assets production-ready.
+- UI commit: `8c752d2` (`feat(ui): refresh public experience`).
 
 ## Production gates
 
