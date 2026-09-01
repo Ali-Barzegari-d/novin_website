@@ -18,7 +18,7 @@ export function safeEqual(left: string, right: string) {
   return leftBuffer.length === rightBuffer.length && timingSafeEqual(leftBuffer, rightBuffer);
 }
 
-export function publicReference(prefix: 'REQ' | 'ORD' | 'CMP') {
+export function publicReference(prefix: 'REQ' | 'ORD' | 'CMP' | 'INV') {
   return `${prefix}-${new Date().getUTCFullYear()}-${randomBytes(5).toString('hex').toUpperCase()}`;
 }
 

@@ -11,10 +11,15 @@ export function RequestDesk() {
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [query, setQuery] = useState('');
+  const [stateFilter, setStateFilter] = useState('');
+  const [from, setFrom] = useState('');
+  const [until, setUntil] = useState('');
+  const [assigneeId, setAssigneeId] = useState('');
 
   async function reload(search = query) {
     setError('');
-    const response = await fetch(`/api/v1/admin/requests?q=${encodeURIComponent(search)}`);
+    const params = new URLSearchParams(); if (search) params.set('q', search); if (stateFilter) params.set('state', stateFilter); if (from) params.set('from', `${from}T00:00:00.000Z`); if (until) params.set('until', `${until}T23:59:59.999Z`); if (assigneeId) params.set('assigneeId', assigneeId);
+    const response = await fetch(`/api/v1/admin/requests?${params.toString()}`);
     if (!response.ok) return setError((await response.json()).error ?? 'دریافت درخواست‌ها ممکن نیست.');
     setItems(await response.json());
   }
@@ -45,5 +50,5 @@ export function RequestDesk() {
     return <select aria-label={`تغییر وضعیت ${item.reference}`} defaultValue="" onChange={(event) => { if (event.target.value) transition(item.id, event.target.value, item.version); }}><option value="" disabled>انتخاب اقدام</option>{available.map((key) => <option value={key} key={key}>{states.find(([value]) => value === key)?.[1] ?? key}</option>)}</select>;
   }
 
-  return <section className="card"><form className="admin-toolbar" onSubmit={filter}><label className="field">جست‌وجوی داخلی<input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="شماره، عنوان، سازمان یا همراه" /></label><button className="button button-secondary" type="submit">جست‌وجو</button><a className="button button-secondary" href="/api/v1/admin/requests.csv">CSV</a></form>{error ? <p className="error" role="alert">{error}</p> : null}{notice ? <p className="success" role="status">{notice}</p> : null}<div className="table-wrap"><table><thead><tr><th>پیگیری</th><th>سازمان / همراه</th><th>عنوان</th><th>وضعیت داخلی</th><th>اقدام مجاز بعدی</th></tr></thead><tbody>{items.map((item) => <tr key={item.id}><td><bdi>{item.reference}</bdi></td><td>{item.organization}<br/><span className="muted"><bdi>{item.mobile}</bdi></span></td><td>{item.title}</td><td>{states.find(([key]) => key === item.state)?.[1] ?? item.state}</td><td>{actions(item)}</td></tr>)}{!items.length ? <tr><td colSpan={5} className="muted">درخواستی با این معیار یافت نشد.</td></tr> : null}</tbody></table></div></section>;
+  return <section className="card"><form className="admin-toolbar" onSubmit={filter}><label className="field">جست‌وجوی داخلی<input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="شماره، عنوان، سازمان یا همراه" /></label><label className="field">وضعیت<select value={stateFilter} onChange={(event) => setStateFilter(event.target.value)}><option value="">همه</option>{states.map(([key, label]) => <option value={key} key={key}>{label}</option>)}</select></label><label className="field">از تاریخ<input value={from} onChange={(event) => setFrom(event.target.value)} type="date" /></label><label className="field">تا تاریخ<input value={until} onChange={(event) => setUntil(event.target.value)} type="date" /></label><label className="field">شناسه کارشناس<input value={assigneeId} onChange={(event) => setAssigneeId(event.target.value)} placeholder="UUID داخلی" /></label><button className="button button-secondary" type="submit">جست‌وجو</button><a className="button button-secondary" href="/api/v1/admin/requests.csv">CSV</a></form>{error ? <p className="error" role="alert">{error}</p> : null}{notice ? <p className="success" role="status">{notice}</p> : null}<div className="table-wrap"><table><thead><tr><th>پیگیری</th><th>سازمان / همراه</th><th>عنوان</th><th>وضعیت داخلی</th><th>اقدام مجاز بعدی</th></tr></thead><tbody>{items.map((item) => <tr key={item.id}><td><bdi>{item.reference}</bdi></td><td>{item.organization}<br/><span className="muted"><bdi>{item.mobile}</bdi></span></td><td>{item.title}</td><td>{states.find(([key]) => key === item.state)?.[1] ?? item.state}</td><td>{actions(item)}</td></tr>)}{!items.length ? <tr><td colSpan={5} className="muted">درخواستی با این معیار یافت نشد.</td></tr> : null}</tbody></table></div></section>;
 }

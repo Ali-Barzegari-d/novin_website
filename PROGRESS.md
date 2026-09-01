@@ -1,6 +1,6 @@
 # Implementation progress
 
-Status: R3 passed; R4 in progress
+Status: R4 in QA
 
 ## Environment
 
@@ -18,7 +18,7 @@ Status: R3 passed; R4 in progress
 | R1 | Passed (dev/demo) | `c43affa` | Chromium Playwright: 2 public/a11y/RTL tests passed; screenshots in ignored `artifacts/screenshots/` | Final company data, legal approval, and publication permissions remain open |
 | R2 | Passed (dev/demo) | `c06e8b4` | `pnpm typecheck`, `pnpm lint`, `pnpm test` (9), production build; local Postgres/Redis request + idempotency + private DOCX upload smoke | ClamAV production socket and external provider credentials remain production-gated |
 | R3 | Passed (dev/demo) | `83575ff` | `pnpm typecheck`, `pnpm lint`, `pnpm test` (10), production build, Chromium 3/3 including private-offer 320/768/1440, local offer-to-receipt lifecycle with duplicate callback | Approved gateway endpoint/merchant credentials and legal approval remain production-gated |
-| R4 | Pending | — | — | — |
+| R4 | In QA | Pending commit | migration `0001_service_settings.sql`; `pnpm typecheck`, `pnpm lint`, `pnpm test` (10), secrets scan, production build, Chromium 4/4 at 320/768/1440, synthetic contract invoice | Legal/company identity acceptance remains externally blocked; production preflight fails closed as designed |
 | R5 | Pending | — | — | — |
 
 ## Execution log
@@ -67,6 +67,14 @@ Add dated entries with commands, results, decisions, defects, and the next actio
 - QA passed: `pnpm typecheck`; `pnpm lint`; `pnpm test` (10); `pnpm build`; `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/google-chrome PLAYWRIGHT_OFFER_TOKEN=<synthetic> pnpm exec playwright test --project=chromium` (3 passed). Screenshots at `artifacts/screenshots/offer-{320,768,1440}.png` were manually inspected at 320 and 1440.
 - Fixed standalone client assets by copying `.next/static` into the Next standalone application tree during `postbuild`; this is now used by both the Playwright server and the production Docker image.
 - Next action: complete R3 traceability/commit, then implement R4 evaluator, retention/deletion, legal/operations documentation and full acceptance controls.
+
+### 2026-09-01 — R4 evidence
+
+- Applied and tested forward-only migration `0001_service_settings.sql` against local PostgreSQL. It adds non-secret service settings and separate opaque-token contract invoice records; the finance role successfully issued and read a synthetic invoice link.
+- Added an MFA-protected Superadmin settings view for auditable upload policy (service secrets remain deployment-only), internal request filters, account anonymization request, retention worker for expired private attachments and deferred identity anonymization, machine-readable OpenAPI, evaluator walkthrough, data dictionary, authorization matrix, retention policy, and API adapter documentation.
+- QA passed: `pnpm typecheck`; `pnpm lint`; `pnpm test` (10); `pnpm security:secrets`; `pnpm build`; Chromium Playwright (4 passed) including offer/invoice screenshots at 320/768/1440. The 320px invoice screenshot was manually inspected.
+- Production preflight was corrected to resolve workspace modules, load `.env` via its wrapper, validate config/database release conditions, and fail only while gates are open. It currently fails as expected because the development configuration has invalid/missing production provider values, legal approval, and company facts.
+- Next action: commit R4, then complete R5 container/CI/operations validation and final Go/No-Go report.
 
 ## Production gates
 

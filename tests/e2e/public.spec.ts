@@ -29,3 +29,15 @@ test('private offer and receipt are responsive without exposing payment data pub
     await page.screenshot({ path: `artifacts/screenshots/offer-${size.name}.png`, fullPage: true });
   }
 });
+
+const invoiceToken = process.env.PLAYWRIGHT_INVOICE_TOKEN;
+test('private contract invoice is responsive', async ({ page }) => {
+  test.skip(!invoiceToken, 'requires a synthetic local invoice token');
+  for (const size of sizes) {
+    await page.setViewportSize({ width: size.width, height: size.height });
+    await page.goto(`/invoice/${invoiceToken}`);
+    await expect(page.getByRole('heading', { name: /مرحله ساختگی قرارداد/ })).toBeVisible();
+    expect(await page.locator('body').evaluate((element) => element.scrollWidth <= window.innerWidth)).toBe(true);
+    await page.screenshot({ path: `artifacts/screenshots/invoice-${size.name}.png`, fullPage: true });
+  }
+});

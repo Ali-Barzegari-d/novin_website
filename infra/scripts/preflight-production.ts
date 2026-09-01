@@ -1,15 +1,21 @@
-import { loadConfig } from '@novin/config';
+import { loadConfig } from '../../packages/config/src/index.js';
+import { createDatabase } from '../../packages/db/src/index.js';
 
-const gates = [
-  ['Legal identity/contact', 'Management', 'COMPANY_NATIONAL_ID, COMPANY_REGISTRATION_ID, COMPANY_ADDRESS, COMPANY_PHONE, COMPANY_EMAIL'],
-  ['Approved legal documents and retention', 'Legal/privacy', 'LEGAL_CONTENT_APPROVED=true and approved CMS records'],
-  ['Kavenegar production templates', 'Operations', 'SMS_PROVIDER=kavenegar and KAVENEGAR_API_KEY'],
-  ['SMTP plus SPF/DKIM/DMARC', 'Operations', 'EMAIL_PROVIDER=smtp and verified mail DNS'],
-  ['Approved payment gateway', 'Finance', 'PAYMENT_PROVIDER=gateway, credentials and sandbox certification'],
-  ['Tax, invoice and bank instructions', 'Finance/legal', 'approved TAX_RATE_BPS and bank instructions CMS setting'],
-  ['Publication approvals and brand assets', 'Management', 'approved clients/team/case studies and licensed font assets'],
-  ['TLS, age recipient, restore drill, contacts', 'Technical', 'HTTPS proxy, BACKUP_AGE_RECIPIENT and documented restore evidence']
-] as const;
-try { loadConfig({ ...process.env, APP_ENV: 'production', NODE_ENV: 'production' }); } catch (error) { console.error(error instanceof Error ? error.message : error); }
+type Gate = readonly [gate: string, owner: string, remediation: string];
+const gates: Gate[] = [];
+let config: ReturnType<typeof loadConfig> | undefined;
+try { config = loadConfig({ ...process.env, APP_ENV: 'production', NODE_ENV: 'production' }); } catch (error) { gates.push(['امنیت پیکربندی', 'Technical', error instanceof Error ? error.message : 'پیکربندی production نامعتبر است.']); }
+
+if (config) {
+  const { pool } = createDatabase(config.DATABASE_URL);
+  try {
+    const checks = await pool.query<{ placeholders: number; legal_drafts: number; synthetic_publications: number }>("SELECT (SELECT count(*)::int FROM content_entries WHERE is_placeholder = true AND state = 'PUBLISHED') + (SELECT count(*)::int FROM clients WHERE is_synthetic = true AND approved_for_publication = true) + (SELECT count(*)::int FROM case_studies WHERE is_synthetic = true AND approved_for_publication = true) + (SELECT count(*)::int FROM team_members WHERE is_synthetic = true AND approved_for_publication = true) AS placeholders, (SELECT count(*)::int FROM legal_documents WHERE is_draft = true) AS legal_drafts, (SELECT count(*)::int FROM clients WHERE is_synthetic = true AND approved_for_publication = true) AS synthetic_publications");
+    const row = checks.rows[0];
+    if (row && row.placeholders > 0) gates.push(['داده نمایشی منتشرشده', 'Content', 'placeholder یا داده مصنوعی منتشرشده را از انتشار خارج کنید.']);
+    if (row && row.legal_drafts > 0) gates.push(['اسناد حقوقی پیش‌نویس', 'Legal/privacy', 'نسخه‌های نهایی شرایط، حریم خصوصی و لغو/استرداد را تأیید و منتشر کنید.']);
+  } catch (error) { gates.push(['دسترسی پیش‌پرواز پایگاه‌داده', 'Technical', error instanceof Error ? error.message : 'پیش‌پرواز پایگاه‌داده ناموفق بود.']); } finally { await pool.end(); }
+}
+
 for (const [gate, owner, remediation] of gates) console.error(`OPEN GATE | ${gate} | owner: ${owner} | remediation: ${remediation}`);
-process.exitCode = 1;
+if (gates.length) process.exitCode = 1;
+else console.log('production preflight passed');

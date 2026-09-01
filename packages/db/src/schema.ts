@@ -237,6 +237,21 @@ export const refundRecords = pgTable('refund_records', {
   createdAt: createdAt()
 });
 
+export const contractInvoices = pgTable('contract_invoices', {
+  id: id(),
+  reference: varchar('reference', { length: 32 }).notNull().unique(),
+  organizationId: uuid('organization_id').notNull().references(() => organizations.id),
+  title: varchar('title', { length: 180 }).notNull(),
+  description: text('description').notNull(),
+  totalAmountIrr: bigint('total_amount_irr', { mode: 'number' }).notNull(),
+  tokenHash: varchar('token_hash', { length: 128 }).notNull().unique(),
+  validUntil: timestamp('valid_until', { withTimezone: true }).notNull(),
+  state: varchar('state', { length: 24 }).notNull().default('SENT'),
+  createdById: uuid('created_by_id').notNull().references(() => users.id),
+  createdAt: createdAt(),
+  updatedAt: updatedAt()
+});
+
 export const notificationTemplates = pgTable('notification_templates', {
   id: id(),
   event: varchar('event', { length: 80 }).notNull(),
@@ -247,6 +262,13 @@ export const notificationTemplates = pgTable('notification_templates', {
   createdById: uuid('created_by_id').references(() => users.id),
   createdAt: createdAt()
 }, (table) => [uniqueIndex('notification_template_version_unique').on(table.event, table.channel, table.version)]);
+
+export const serviceSettings = pgTable('service_settings', {
+  key: varchar('key', { length: 80 }).primaryKey(),
+  value: jsonb('value').notNull(),
+  updatedById: uuid('updated_by_id').references(() => users.id),
+  updatedAt: updatedAt()
+});
 
 export const notifications = pgTable('notifications', {
   id: id(),

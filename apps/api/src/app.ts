@@ -7,13 +7,13 @@ import cookie from '@fastify/cookie';
 import helmet from '@fastify/helmet';
 import multipart from '@fastify/multipart';
 import rateLimit from '@fastify/rate-limit';
-import { and, desc, eq, gt, ilike, isNull, or, sql } from 'drizzle-orm';
+import { and, desc, eq, gt, gte, ilike, isNotNull, isNull, lte, or, sql } from 'drizzle-orm';
 import { createClient } from 'redis';
 import { z } from 'zod';
 import { Secret, TOTP } from 'otpauth';
 import { loadConfig, type AppConfig } from '@novin/config';
 import { acceptOfferSchema, bankTransferSchema, billingSchema, complaintSchema, offerSchema, onboardingSchema, refundSchema, requestSchema, sendOtpSchema, verifyOtpSchema } from '@novin/contracts';
-import { attachments, auditLogs, bankTransfers, caseStudies, clients, complaints, consentLogs, contentEntries, contentRevisions, createDatabase, errorEvents, legalDocuments, memberships, mfaFactors, notifications, notificationTemplates, offerVersions, offers, orders, organizations, otpChallenges, payments, refundRecords, requestAssignments, requests, screenings, sessions, teamMembers, users } from '@novin/db';
+import { attachments, auditLogs, bankTransfers, caseStudies, clients, complaints, consentLogs, contentEntries, contentRevisions, contractInvoices, createDatabase, errorEvents, legalDocuments, memberships, mfaFactors, notifications, notificationTemplates, offerVersions, offers, orders, organizations, otpChallenges, payments, refundRecords, requestAssignments, requests, screenings, serviceSettings, sessions, teamMembers, users } from '@novin/db';
 import { audit } from './lib/audit.js';
 import { savePrivateUpload } from './lib/files.js';
 import { calculateTotals } from './lib/money.js';
@@ -102,11 +102,18 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
   function setSession(reply: FastifyReply, token: string) {
     reply.setCookie('novin_session', token, { httpOnly: true, secure: config.APP_ENV === 'production', sameSite: 'lax', path: '/', maxAge: config.SESSION_TTL_SECONDS });
   }
+  const uploadPolicySchema = z.object({ maxBytes: z.number().int().min(1_024).max(50 * 1024 * 1024), allowedTypes: z.array(z.string().min(3).max(160)).min(1).max(12) });
+  async function activeUploadConfig() {
+    const saved = await db.query.serviceSettings.findFirst({ where: eq(serviceSettings.key, 'upload_policy') });
+    const policy = saved ? uploadPolicySchema.safeParse(saved.value) : undefined;
+    if (!policy?.success) return config;
+    return { ...config, UPLOAD_MAX_BYTES: policy.data.maxBytes, allowedUploadTypes: policy.data.allowedTypes };
+  }
 
   app.get('/health/live', async () => ({ status: 'ok' }));
   app.get('/health/ready', async () => { await pool.query('SELECT 1'); await redis.ping(); return { status: 'ready' }; });
   app.get('/health', async () => ({ status: 'ok' }));
-  app.get('/api/v1/openapi.json', async () => ({ openapi: '3.1.0', info: { title: 'Novin API', version: '0.1.0' }, paths: { '/api/v1/auth/otp': { post: { summary: 'Issue OTP' } }, '/api/v1/requests': { post: { summary: 'Submit customer request' } } } }));
+  app.get('/api/v1/openapi.json', async () => ({ openapi: '3.1.0', info: { title: 'Novin API', version: '0.1.0', description: 'API داخلی و مشتری؛ تمام مسیرهای تغییر‌دهنده داده به نشست، RBAC و ثبت ممیزی متکی هستند.' }, servers: [{ url: config.PUBLIC_BASE_URL }], paths: { '/api/v1/auth/otp': { post: { summary: 'Issue OTP', responses: { 200: { description: 'Accepted without account enumeration' }, 429: { description: 'Rate limited' } } } }, '/api/v1/auth/verify': { post: { summary: 'Verify OTP and set an opaque session cookie', responses: { 200: { description: 'Authenticated' }, 401: { description: 'Invalid OTP' } } } }, '/api/v1/requests': { post: { summary: 'Submit an idempotent customer request', security: [{ sessionCookie: [] }], responses: { 200: { description: 'Created or idempotent duplicate' } } } }, '/api/v1/offers/{token}': { get: { summary: 'Read a private opaque-token offer', parameters: [{ name: 'token', in: 'path', required: true, schema: { type: 'string' } }] } }, '/api/v1/offers/{token}/accept': { post: { summary: 'Record versioned consent and create an order' } }, '/api/v1/offers/{token}/payments/gateway': { post: { summary: 'Create a gateway redirect transaction after production configuration' } }, '/api/v1/admin/requests': { get: { summary: 'Search/filter internal requests', security: [{ sessionCookie: [] }] } }, '/api/v1/admin/settings': { get: { summary: 'Read non-secret service settings; superadmin MFA required', security: [{ sessionCookie: [] }] } } }, components: { securitySchemes: { sessionCookie: { type: 'apiKey', in: 'cookie', name: 'novin_session' } } } }));
 
   app.post('/api/v1/auth/otp', { config: { rateLimit: { max: 5, timeWindow: '10 minutes' } } }, async (request) => {
     const input = sendOtpSchema.parse(request.body);
@@ -223,6 +230,12 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
     if (!saved || !safeEqual(saved, secretHash(input.token, config.SESSION_SECRET))) throw Object.assign(new Error('کد تأیید ایمیل نامعتبر است.'), { statusCode: 401 });
     await db.update(users).set({ emailVerifiedAt: new Date(), updatedAt: new Date() }).where(eq(users.id, auth.id)); await redis.del(`email-verify:${auth.id}`); return { ok: true };
   });
+  app.post('/api/v1/account/deletion-request', async (request) => {
+    const auth = requireAuth(request);
+    await db.update(users).set({ anonymizationRequestedAt: new Date(), updatedAt: new Date() }).where(eq(users.id, auth.id));
+    await audit(db, { actorId: auth.id, actorRole: auth.role, action: 'ANONYMIZATION_REQUESTED', entity: 'user', entityId: auth.id, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) });
+    return { ok: true, retention: 'سوابق مالی، رضایت و ممیزی طبق دوره نگهداری حقوقی حفظ و داده هویتی در زمان‌بندی مصوب ناشناس‌سازی می‌شود.' };
+  });
 
   app.post('/api/v1/requests', async (request) => {
     const auth = requireAuth(request);
@@ -252,7 +265,7 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
     if (!accepted) throw Object.assign(new Error('پذیرش هشدار محرمانگی الزامی است.'), { statusCode: 422 });
     const file = await request.file();
     if (!file) throw Object.assign(new Error('فایلی ارسال نشده است.'), { statusCode: 422 });
-    const saved = await savePrivateUpload(file, config);
+    const saved = await savePrivateUpload(file, await activeUploadConfig());
     await db.insert(attachments).values({ requestId, ...saved, status: 'CLEAN', expiresAt: new Date(Date.now() + 180 * 24 * 3600 * 1000) });
     return { ok: true };
   });
@@ -265,10 +278,11 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
 
   app.get('/api/v1/admin/requests', async (request) => {
     requirePermission(request, 'requests:read');
-    const query = (request.query as { q?: string; state?: string }).q?.trim();
-    const state = (request.query as { q?: string; state?: string }).state;
-    const conditions = [state ? eq(requests.state, state as never) : undefined, query ? or(ilike(requests.reference, `%${query}%`), ilike(requests.title, `%${query}%`), ilike(organizations.displayName, `%${query}%`), ilike(organizations.nationalId, `%${query}%`), ilike(users.mobile, `%${query}%`)) : undefined].filter(Boolean) as ReturnType<typeof eq>[];
-    return db.select({ id: requests.id, reference: requests.reference, title: requests.title, state: requests.state, version: requests.version, submittedAt: requests.submittedAt, organization: organizations.displayName, mobile: users.mobile }).from(requests).innerJoin(organizations, eq(requests.organizationId, organizations.id)).innerJoin(users, eq(requests.createdByUserId, users.id)).where(conditions.length ? and(...conditions) : undefined).orderBy(desc(requests.submittedAt));
+    const query = request.query as { q?: string; state?: string; from?: string; until?: string; assigneeId?: string };
+    const text = query.q?.trim();
+    const from = query.from ? new Date(query.from) : undefined; const until = query.until ? new Date(query.until) : undefined;
+    const conditions = [query.state ? eq(requests.state, query.state as never) : undefined, from && !Number.isNaN(from.valueOf()) ? gte(requests.submittedAt, from) : undefined, until && !Number.isNaN(until.valueOf()) ? lte(requests.submittedAt, until) : undefined, query.assigneeId ? eq(requestAssignments.assigneeId, query.assigneeId) : undefined, text ? or(ilike(requests.reference, `%${text}%`), ilike(requests.title, `%${text}%`), ilike(organizations.displayName, `%${text}%`), ilike(organizations.nationalId, `%${text}%`), ilike(users.mobile, `%${text}%`)) : undefined].filter(Boolean) as ReturnType<typeof eq>[];
+    return db.select({ id: requests.id, reference: requests.reference, title: requests.title, state: requests.state, version: requests.version, submittedAt: requests.submittedAt, organization: organizations.displayName, mobile: users.mobile, assigneeId: requestAssignments.assigneeId }).from(requests).innerJoin(organizations, eq(requests.organizationId, organizations.id)).innerJoin(users, eq(requests.createdByUserId, users.id)).leftJoin(requestAssignments, and(eq(requestAssignments.requestId, requests.id), isNull(requestAssignments.revokedAt))).where(conditions.length ? and(...conditions) : undefined).orderBy(desc(requests.submittedAt));
   });
   app.post('/api/v1/admin/requests/:id/assign', async (request) => {
     const auth = requirePermission(request, 'requests:assign'); const input = z.object({ assigneeId: z.string().uuid() }).parse(request.body); const requestId = (request.params as { id: string }).id;
@@ -474,7 +488,7 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
     if (!offer || !transfer || !order || order.offerId !== offer.id || transfer.state !== 'REVIEW_PENDING') throw Object.assign(new Error('رسید واریز قابل بارگذاری نیست.'), { statusCode: 404 });
     const file = await request.file();
     if (!file) throw Object.assign(new Error('فایلی ارسال نشده است.'), { statusCode: 422 });
-    const saved = await savePrivateUpload(file, config);
+    const saved = await savePrivateUpload(file, await activeUploadConfig());
     await db.insert(attachments).values({ bankTransferId: transfer.id, ...saved, status: 'CLEAN', expiresAt: new Date(Date.now() + 180 * 24 * 3600 * 1000) });
     return { ok: true };
   });
@@ -524,6 +538,21 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
     return { id: refund!.id, totalRefundedIrr: refunded + input.amountIrr };
   });
 
+  app.post('/api/v1/admin/contract-invoices', async (request) => {
+    const auth = requirePermission(request, 'invoices:manage');
+    const input = z.object({ organizationId: z.string().uuid(), title: z.string().trim().min(3).max(180), description: z.string().trim().min(3).max(4_000), totalAmountIrr: z.number().int().positive().max(9_000_000_000_000), validUntil: z.string().datetime() }).parse(request.body);
+    const organization = await db.query.organizations.findFirst({ where: eq(organizations.id, input.organizationId) }); if (!organization) throw Object.assign(new Error('سازمان یافت نشد.'), { statusCode: 404 });
+    const token = opaqueToken(32);
+    const [invoice] = await db.insert(contractInvoices).values({ reference: publicReference('INV'), organizationId: input.organizationId, title: input.title, description: input.description, totalAmountIrr: input.totalAmountIrr, tokenHash: offerTokenHash(token), validUntil: new Date(input.validUntil), createdById: auth.id }).returning();
+    await audit(db, { actorId: auth.id, actorRole: auth.role, action: 'CONTRACT_INVOICE_CREATED', entity: 'contract_invoice', entityId: invoice!.id, after: { amountIrr: input.totalAmountIrr }, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) });
+    return { reference: invoice!.reference, link: `${config.PUBLIC_BASE_URL}/invoice/${token}` };
+  });
+  app.get('/api/v1/invoices/:token', async (request) => {
+    const invoice = await db.query.contractInvoices.findFirst({ where: eq(contractInvoices.tokenHash, offerTokenHash((request.params as { token: string }).token)) });
+    if (!invoice || invoice.validUntil <= new Date() || invoice.state === 'REVOKED') return { status: 'EXPIRED' as const };
+    return { status: invoice.state, reference: invoice.reference, title: invoice.title, description: invoice.description, totalAmountIrr: invoice.totalAmountIrr, validUntil: invoice.validUntil };
+  });
+
   app.post('/api/v1/complaints', { config: { rateLimit: { max: 5, timeWindow: '1 hour' } } }, async (request) => {
     const input = complaintSchema.parse(request.body);
     const [complaint] = await db.insert(complaints).values({ reference: publicReference('CMP'), name: input.name, mobile: input.mobile, email: input.email, subject: input.subject, description: input.description, idempotencyKey: input.idempotencyKey }).onConflictDoNothing().returning();
@@ -561,6 +590,18 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
     if (!notification || notification.status === 'SENT') throw Object.assign(new Error('اعلان قابل ارسال مجدد نیست.'), { statusCode: 409 });
     await notify(notification.channel, notification.event, notification.destination, notification.body, notification.relatedId ?? undefined);
     return { accepted: true };
+  });
+  app.get('/api/v1/admin/settings', async (request) => {
+    requireRecentMfa(request); requirePermission(request, 'settings:manage');
+    const policy = await activeUploadConfig();
+    return { uploadPolicy: { maxBytes: policy.UPLOAD_MAX_BYTES, allowedTypes: policy.allowedUploadTypes }, providers: { sms: config.SMS_PROVIDER, email: config.EMAIL_PROVIDER, payment: config.PAYMENT_PROVIDER, captcha: config.CAPTCHA_PROVIDER }, secretManagement: 'رازهای سرویس فقط از محیط استقرار مدیریت می‌شوند و هرگز از پنل خوانده یا ذخیره نمی‌شوند.' };
+  });
+  app.get('/api/v1/admin/anonymization-requests', async (request) => { requirePermission(request, 'settings:manage'); return db.select({ id: users.id, mobile: users.mobile, requestedAt: users.anonymizationRequestedAt }).from(users).where(and(isNotNull(users.anonymizationRequestedAt), eq(users.active, true))).orderBy(users.anonymizationRequestedAt); });
+  app.put('/api/v1/admin/settings/upload-policy', async (request) => {
+    const auth = requireRecentMfa(request); requirePermission(request, 'settings:manage'); const input = uploadPolicySchema.parse(request.body);
+    await db.insert(serviceSettings).values({ key: 'upload_policy', value: input, updatedById: auth.id, updatedAt: new Date() }).onConflictDoUpdate({ target: serviceSettings.key, set: { value: input, updatedById: auth.id, updatedAt: new Date() } });
+    await audit(db, { actorId: auth.id, actorRole: auth.role, action: 'UPLOAD_POLICY_CHANGED', entity: 'service_setting', entityId: 'upload_policy', after: input, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) });
+    return { ok: true };
   });
 
   app.get('/api/v1/admin/content', async (request) => { requirePermission(request, 'content:manage'); return db.select().from(contentEntries).orderBy(desc(contentEntries.updatedAt)); });
