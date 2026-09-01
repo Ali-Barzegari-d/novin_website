@@ -19,7 +19,7 @@ Status: R4 passed; R5 in progress
 | R2 | Passed (dev/demo) | `c06e8b4` | `pnpm typecheck`, `pnpm lint`, `pnpm test` (9), production build; local Postgres/Redis request + idempotency + private DOCX upload smoke | ClamAV production socket and external provider credentials remain production-gated |
 | R3 | Passed (dev/demo) | `83575ff` | `pnpm typecheck`, `pnpm lint`, `pnpm test` (10), production build, Chromium 3/3 including private-offer 320/768/1440, local offer-to-receipt lifecycle with duplicate callback | Approved gateway endpoint/merchant credentials and legal approval remain production-gated |
 | R4 | Passed (dev/demo) | `7fc56c4` | migration `0001_service_settings.sql`; `pnpm typecheck`, `pnpm lint`, `pnpm test` (10), secrets scan, production build, Chromium 4/4 at 320/768/1440, synthetic contract invoice | Legal/company identity acceptance remains externally blocked; production preflight fails closed as designed |
-| R5 | Passed (dev/demo); public production blocked | pending `feat(r5)` | final static/security gates, Docker image rehearsal, API/web health smoke, Chromium + Firefox E2E; see R5 evidence below | Legal/company/provider/TLS/backup/ClamAV gates and isolated restore drill remain open |
+| R5 | Passed (dev/demo); public production blocked | `97f9253` | final static/security gates, Docker image rehearsal, API/web health smoke, Chromium + Firefox E2E; see R5 evidence below | Legal/company/provider/TLS/backup/ClamAV gates and isolated restore drill remain open |
 
 ## Execution log
 
@@ -84,7 +84,7 @@ Add dated entries with commands, results, decisions, defects, and the next actio
 - QA passed: `pnpm lint`; `pnpm typecheck`; `pnpm test` (11); `pnpm security:secrets`; `pnpm security:sast`; `pnpm security:sbom` (657 components); `pnpm audit --audit-level high` (no high/critical findings; one low finding remains); `pnpm build` (25 routes); `docker compose --env-file .env config --quiet`; `docker compose ... build web/api`; API image readiness injection; Chromium Playwright 2 passed/2 synthetic-token skips; Firefox Playwright 2 passed/2 synthetic-token skips.
 - Production preflight deliberately fails inside the final API image and now names the required remediation: HTTPS public URL, real Kavenegar/SMTP/payment/Turnstile configuration, disabled demo facilities, a non-default session secret, company identity, legal approval, and age backup recipient.
 - R5 constraints observed without bypass: ClamAV is unhealthy because its upstream signature CDN returned rate-limit/cool-down responses, so Compose correctly refuses API startup and uploads remain fail-closed. `age` is not installed and no recovery identity/recipient exists, so encrypted backup and isolated restore drill cannot be evidenced. WebKit smoke requires missing system libraries; its official dependency installer requires unavailable sudo, while CI performs `playwright install --with-deps chromium firefox webkit`. No final company/legal/provider/TLS/brand approvals have been supplied.
-- Next action: commit the R5 operational slice, then record its named commit SHA and final Go/No-Go status.
+- R5 named release commit: `97f9253` (`feat(r5): deliver production operations`). Final Go/No-Go: development/demo is runnable; public production is No-Go until every gate below is closed with evidence.
 
 ## Production gates
 
