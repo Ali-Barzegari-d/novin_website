@@ -15,7 +15,7 @@ Status: R0 in progress
 | Release | Status | Commit | QA evidence | Open gates |
 |---|---|---|---|---|
 | R0 | Passed | Pending commit | `pnpm install`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`, `make bootstrap`, `docker compose --env-file .env config --quiet` | Production gates intentionally open; see below |
-| R1 | Pending | — | — | — |
+| R1 | Passed (dev/demo) | Pending commit | Chromium Playwright: 2 public/a11y/RTL tests passed; screenshots in ignored `artifacts/screenshots/` | Final company data, legal approval, and publication permissions remain open |
 | R2 | Pending | — | — | — |
 | R3 | Pending | — | — | — |
 | R4 | Pending | — | — | — |
@@ -43,6 +43,13 @@ Add dated entries with commands, results, decisions, defects, and the next actio
 - Implemented strict TypeScript workspace boundaries, shared contracts/config, Drizzle schema plus forward-only SQL migration, secure configuration validation, API health/logging baseline, original design-token preview, Compose bind mounts, and Make/operations scripts.
 - QA passed: `pnpm lint`; `pnpm typecheck`; `pnpm test` (6 checks); `pnpm build` using Webpack (Turbopack is not used because its CSS worker cannot bind a local port in this environment); `make bootstrap`; `docker compose --env-file .env config --quiet`.
 - Next action: complete R1 CMS screens and public-route visual/a11y evidence. The preflight command is intentionally failing until external production gates are closed.
+
+### 2026-09-01 — R1 evidence
+
+- Added the public Persian RTL corporate experience: all planned public routes, canonical/robots/sitemap metadata, legal draft banners, original SVG process language, 404/500 states, mobile header, public complaint flow, and dev-only accessible SMS inbox.
+- Added CMS data models/APIs for pages, revisions, clients, case studies, team and legal versions; content-admin interface is permissioned for the content role.
+- QA passed: `pnpm typecheck`; `pnpm lint`; `pnpm build`; `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/google-chrome pnpm exec playwright test --project=chromium` (2 passed). Home screenshots: `artifacts/screenshots/home-{320,768,1440}.png`; manually inspected 320/1440 render.
+- Next action: R2 identity, intake, upload, internal screening and RBAC acceptance tests.
 
 ## Production gates
 

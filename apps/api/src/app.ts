@@ -11,7 +11,7 @@ import { createClient } from 'redis';
 import { z } from 'zod';
 import { loadConfig, type AppConfig } from '@novin/config';
 import { acceptOfferSchema, bankTransferSchema, complaintSchema, offerSchema, onboardingSchema, requestSchema, screeningSchema, sendOtpSchema, verifyOtpSchema } from '@novin/contracts';
-import { attachments, auditLogs, bankTransfers, complaints, consentLogs, contentEntries, createDatabase, errorEvents, memberships, notifications, offerVersions, offers, orders, organizations, otpChallenges, payments, requests, screenings, sessions, users } from '@novin/db';
+import { attachments, auditLogs, bankTransfers, caseStudies, clients, complaints, consentLogs, contentEntries, contentRevisions, createDatabase, errorEvents, legalDocuments, memberships, notifications, offerVersions, offers, orders, organizations, otpChallenges, payments, requests, screenings, sessions, teamMembers, users } from '@novin/db';
 import { audit } from './lib/audit.js';
 import { savePrivateUpload } from './lib/files.js';
 import { calculateTotals } from './lib/money.js';
@@ -296,8 +296,41 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
     const auth = requirePermission(request, 'content:manage');
     const body = request.body as { title: string; body: Record<string, unknown>; state: 'DRAFT' | 'PUBLISHED'; isPlaceholder?: boolean };
     const [row] = await db.insert(contentEntries).values({ slug: (request.params as { slug: string }).slug, title: body.title, body: body.body, state: body.state, isPlaceholder: Boolean(body.isPlaceholder), createdById: auth.id, publishedAt: body.state === 'PUBLISHED' ? new Date() : undefined }).onConflictDoUpdate({ target: contentEntries.slug, set: { title: body.title, body: body.body, state: body.state, isPlaceholder: Boolean(body.isPlaceholder), version: sql`${contentEntries.version} + 1`, updatedAt: new Date() } }).returning();
+    await db.insert(contentRevisions).values({ contentEntryId: row!.id, version: row!.version, title: row!.title, body: row!.body, state: row!.state, createdById: auth.id });
     await audit(db, { actorId: auth.id, actorRole: auth.role, action: 'CONTENT_UPSERTED', entity: 'content', entityId: row!.id, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) });
     return row;
+  });
+  app.get('/api/v1/content/:slug', async (request) => {
+    const row = await db.query.contentEntries.findFirst({ where: and(eq(contentEntries.slug, (request.params as { slug: string }).slug), eq(contentEntries.state, 'PUBLISHED'), eq(contentEntries.isPlaceholder, false)) });
+    if (!row) throw Object.assign(new Error('محتوای منتشرشده یافت نشد.'), { statusCode: 404 });
+    return row;
+  });
+  app.get('/api/v1/admin/clients', async (request) => { requirePermission(request, 'content:manage'); return db.select().from(clients).orderBy(clients.displayOrder); });
+  app.post('/api/v1/admin/clients', async (request) => {
+    const auth = requirePermission(request, 'content:manage'); const input = request.body as { name: string; logoAlt: string; logoUrl?: string; displayOrder?: number; approvedForPublication?: boolean; isSynthetic?: boolean };
+    const [row] = await db.insert(clients).values({ ...input, displayOrder: input.displayOrder ?? 0, approvedForPublication: Boolean(input.approvedForPublication), isSynthetic: Boolean(input.isSynthetic) }).returning();
+    await audit(db, { actorId: auth.id, actorRole: auth.role, action: 'CLIENT_CREATED', entity: 'client', entityId: row!.id, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) }); return row;
+  });
+  app.get('/api/v1/admin/case-studies', async (request) => { requirePermission(request, 'content:manage'); return db.select().from(caseStudies).orderBy(desc(caseStudies.updatedAt)); });
+  app.post('/api/v1/admin/case-studies', async (request) => {
+    const auth = requirePermission(request, 'content:manage'); const input = request.body as { slug: string; title: string; problem: string; action: string; result: string; clientId?: string; state?: 'DRAFT' | 'PUBLISHED'; approvedForPublication?: boolean; isSynthetic?: boolean };
+    const [row] = await db.insert(caseStudies).values({ ...input, state: input.state ?? 'DRAFT', approvedForPublication: Boolean(input.approvedForPublication), isSynthetic: Boolean(input.isSynthetic) }).returning();
+    await audit(db, { actorId: auth.id, actorRole: auth.role, action: 'CASE_STUDY_CREATED', entity: 'case_study', entityId: row!.id, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) }); return row;
+  });
+  app.get('/api/v1/admin/team', async (request) => { requirePermission(request, 'content:manage'); return db.select().from(teamMembers).orderBy(desc(teamMembers.updatedAt)); });
+  app.post('/api/v1/admin/team', async (request) => {
+    const auth = requirePermission(request, 'content:manage'); const input = request.body as { name: string; role: string; expertise: string; biography: string; imageUrl?: string; state?: 'DRAFT' | 'PUBLISHED'; approvedForPublication?: boolean; isSynthetic?: boolean };
+    const [row] = await db.insert(teamMembers).values({ ...input, state: input.state ?? 'DRAFT', approvedForPublication: Boolean(input.approvedForPublication), isSynthetic: Boolean(input.isSynthetic) }).returning();
+    await audit(db, { actorId: auth.id, actorRole: auth.role, action: 'TEAM_MEMBER_CREATED', entity: 'team_member', entityId: row!.id, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) }); return row;
+  });
+  app.get('/api/v1/legal/:kind', async (request) => {
+    const row = await db.query.legalDocuments.findFirst({ where: eq(legalDocuments.kind, (request.params as { kind: string }).kind), orderBy: [desc(legalDocuments.createdAt)] });
+    if (!row) throw Object.assign(new Error('سند حقوقی یافت نشد.'), { statusCode: 404 }); return row;
+  });
+  app.put('/api/v1/admin/legal/:kind', async (request) => {
+    const auth = requirePermission(request, 'content:manage'); const input = request.body as { version: string; body: string; effectiveAt?: string; isDraft: boolean };
+    const [row] = await db.insert(legalDocuments).values({ kind: (request.params as { kind: string }).kind, version: input.version, body: input.body, effectiveAt: input.effectiveAt ? new Date(input.effectiveAt) : undefined, isDraft: input.isDraft, approvedAt: input.isDraft ? undefined : new Date(), approvedById: input.isDraft ? undefined : auth.id }).returning();
+    await audit(db, { actorId: auth.id, actorRole: auth.role, action: 'LEGAL_DOCUMENT_VERSIONED', entity: 'legal_document', entityId: row!.id, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) }); return row;
   });
 
   app.get('/api/v1/admin/audit', async (request) => { requirePermission(request, 'audit:read'); return db.select().from(auditLogs).orderBy(desc(auditLogs.createdAt)).limit(200); });
