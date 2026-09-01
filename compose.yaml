@@ -1,0 +1,148 @@
+name: novin-financial
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: docker/web.Dockerfile
+    init: true
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      API_INTERNAL_URL: http://api:4000
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL}
+    ports:
+      - "127.0.0.1:${APP_PORT:-3050}:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    mem_limit: 512m
+    networks: [app]
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+      target: runtime
+    init: true
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      APP_ENV: ${APP_ENV}
+      PORT: 4000
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: redis://redis:6379/0
+      CLAMAV_HOST: clamav
+      CLAMAV_PORT: 3310
+    volumes:
+      - ./var/uploads/quarantine:/data/uploads/quarantine
+      - ./var/uploads/clean:/data/uploads/clean
+      - ./var/logs:/data/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      clamav:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4000/health/ready').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 45s
+    mem_limit: 512m
+    networks: [app]
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+      target: runtime
+    command: ["node", "apps/api/dist/worker.js"]
+    init: true
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      APP_ENV: ${APP_ENV}
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: redis://redis:6379/0
+      CLAMAV_HOST: clamav
+      CLAMAV_PORT: 3310
+    volumes:
+      - ./var/uploads/quarantine:/data/uploads/quarantine
+      - ./var/uploads/clean:/data/uploads/clean
+      - ./var/logs:/data/logs
+    depends_on:
+      api:
+        condition: service_healthy
+    mem_limit: 256m
+    networks: [app]
+
+  postgres:
+    image: ${POSTGRES_IMAGE:-postgres:17-alpine}
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./var/postgres:/var/lib/postgresql/data
+      - ./var/backups:/backups
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    mem_limit: 768m
+    networks: [app]
+
+  redis:
+    image: ${REDIS_IMAGE:-redis:7.4-alpine}
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "128mb", "--maxmemory-policy", "noeviction"]
+    volumes:
+      - ./var/redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    mem_limit: 192m
+    networks: [app]
+
+  clamav:
+    image: ${CLAMAV_IMAGE:-clamav/clamav:1.4}
+    restart: unless-stopped
+    volumes:
+      - ./var/clamav:/var/lib/clamav
+    healthcheck:
+      test: ["CMD-SHELL", "clamdscan --ping 1 >/dev/null 2>&1"]
+      interval: 30s
+      timeout: 10s
+      retries: 20
+      start_period: 120s
+    mem_limit: 1024m
+    networks: [app]
+
+networks:
+  app:
+    driver: bridge

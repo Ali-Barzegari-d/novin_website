@@ -1,0 +1,26 @@
+.env
+.env.*
+!.env.example
+node_modules/
+.pnpm-store/
+.next/
+dist/
+coverage/
+playwright-report/
+test-results/
+artifacts/
+*.log
+
+# Persistent/runtime data is bind-mounted and never committed.
+var/*
+!var/.gitkeep
+
+# Local skill fallbacks and temporary downloads.
+.agent/vendor/
+.tmp/
+
+# OS/editor files.
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
