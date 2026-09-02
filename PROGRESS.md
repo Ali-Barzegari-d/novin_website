@@ -1,6 +1,6 @@
 # Implementation progress
 
-Status: R6 UI/intake checkpoint validated locally; R7 Tailwind token, global-style and Button-primitive checkpoints validated locally. Public production remains blocked by external gates and unverified launch work.
+Status: R6 UI/intake checkpoint validated locally; R7 Tailwind token, global-style, Button and Input primitive checkpoints validated locally. Public production remains blocked by external gates and unverified launch work.
 
 ## Environment
 
@@ -21,7 +21,7 @@ Status: R6 UI/intake checkpoint validated locally; R7 Tailwind token, global-sty
 | R4 | Passed (dev/demo) | `7fc56c4` | migration `0001_service_settings.sql`; `pnpm typecheck`, `pnpm lint`, `pnpm test` (10), secrets scan, production build, Chromium 4/4 at 320/768/1440, synthetic contract invoice | Legal/company identity acceptance remains externally blocked; production preflight fails closed as designed |
 | R5 | Passed (dev/demo); public production blocked | `97f9253` | final static/security gates, Docker image rehearsal, API/web health smoke, Chromium + Firefox E2E; see R5 evidence below | Legal/company/provider/TLS/backup/ClamAV gates and isolated restore drill remain open |
 | R6 | Validated checkpoint; not a production release | `b45f147` | frozen install, lint, typecheck, 22 unit tests, production build, disposable PostgreSQL/Redis integration, Chromium/Firefox E2E, Docker production-like image smoke | WebKit runner failure; all existing launch gates plus security/commerce/CMS/operations backlog remain open |
-| R7 | Tailwind token/global-style/Button checkpoints validated; not a production release | `645c429`, `1ec7663`, `f8bf9cf` | frozen install, workspace typecheck, web production build, lint, 22 unit/integration tests and focused Chromium RTL/dark/focus checks | R6 and launch gates are unchanged |
+| R7 | Tailwind token/global-style/Button/Input checkpoints validated; not a production release | `645c429`, `1ec7663`, `f8bf9cf`, `4671dbd` | frozen install, workspace typecheck, web production build, lint, 22 unit/integration tests and focused Chromium RTL/dark/focus/axe checks | R6 and launch gates are unchanged |
 
 ## Execution log
 
@@ -157,6 +157,15 @@ Add dated entries with commands, results, decisions, defects, and the next actio
 - Chromium local-development smoke passed at 320px: all preview variants present exactly once, loading/disabled semantics, RTL icon order, 40×40px `icon-md`, focus-visible ring in light/dark modes, dark primary tokens and no horizontal overflow. Screenshots were manually inspected at `artifacts/screenshots/button-preview-light-320.png` and `artifacts/screenshots/button-preview-dark-320.png`.
 - Next development logs two non-production warnings: TypeScript `tailwind.config.ts` is reparsed as ESM without an app-level module type, and a direct `127.0.0.1` smoke URL is not an allowed HMR origin. Adding `type: module` was tested and reverted because it breaks the existing web TypeScript module-resolution contract. The optimized production build and workspace typecheck pass; retain the warnings as follow-up engineering work rather than weakening type safety.
 - Button implementation commit: `f8bf9cf` (`feat(r7): add reusable Button primitive`). No remote action was taken.
+
+### 2026-09-02 — R7 accessible Input primitive
+
+- Applied Ponytail `full` plus the retained UI UX Pro Max design-system/UI-styling guidance to `~/amir/prompt-04.md`. Reconciled its malformed utility snippets with the R7 token system and added a reusable native `Input`: persistent label, generated unique ID, required marker, helper/error association, default/error/success/warning/disabled states, sm/md/lg sizing, and decorative leading/trailing RTL addons.
+- Preserved native form semantics: `aria-describedby` supplied by a consumer is combined with the helper ID; error state adds `aria-invalid`, `role="alert"` and polite live notification; `state="disabled"` as well as `disabled` produces a genuinely disabled native input. The input now fills the control's internal height (`h-full`), after browser QA found that the original text-height-only element did not cover the expected field surface.
+- Expanded the development-only `/design-preview` with all Input states and addons. It continues to return no public content in `NODE_ENV=production`. Existing semantic success/warning tokens were already present, so no raw colour or new dependency was added.
+- QA passed: `pnpm typecheck`; `pnpm --filter web build` (25 routes); `pnpm lint` (137-row traceability contract); `pnpm test` (22 passed, 1 opted-out integration skipped); `git diff --check`; and a focused local Chromium + axe smoke. The browser check covers unique generated IDs, label click-to-focus, `required`, `aria-invalid`, helper alert/description, disabled behavior, 44px large-field geometry, RTL addon ordering, keyboard Tab focus, light/dark focus tokens, no 320px overflow and no serious/critical axe findings.
+- Manually inspected `artifacts/screenshots/input-preview-light-320.png` and `artifacts/screenshots/input-preview-dark-320.png`. The known non-production Tailwind config module-type warning remains unchanged and is recorded in the preceding R7 Button entry; no type-safety control was relaxed to silence it.
+- Input implementation commit: `4671dbd` (`feat(r7): add accessible Input primitive`). No remote action was taken.
 
 Copy unresolved gates from `DECISIONS.md` and close them only with evidence.
 
