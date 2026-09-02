@@ -24,6 +24,7 @@ test('public home is Persian RTL, accessible, and has no public price', async ({
   await page.goto('/');
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   await expect(page.getByRole('heading', { name: /پیچیدگی‌های مالی/ })).toBeVisible();
+  await expect(page.getByText('یک جریان منسجم، از رویداد تا پذیرش')).toBeVisible();
   await expect(page.getByText(/ریال|تومان|[۰-۹]+٬[۰-۹]+/)).not.toBeVisible();
   const axe = await new AxeBuilder({ page }).analyze();
   expect(axe.violations.filter((item) => ['critical', 'serious'].includes(item.impact ?? '')).map((item) => item.id)).toEqual([]);
