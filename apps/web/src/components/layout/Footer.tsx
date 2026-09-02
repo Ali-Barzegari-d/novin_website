@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { BrandMark } from './BrandMark';
 
 const footerColumns = [
   {
@@ -37,12 +38,7 @@ function Footer() {
         <div className="grid gap-10 lg:grid-cols-5 lg:gap-12">
           <section className="lg:col-span-2">
             <div className="flex items-center gap-2">
-              <span
-                className="grid h-9 w-9 place-items-center rounded-(--radius-sm) border border-(--color-primary) font-(family-name:--font-display) text-base font-bold leading-none text-(--color-primary)"
-                aria-hidden="true"
-              >
-                ن
-              </span>
+              <BrandMark />
               <h2 className="m-0 font-(family-name:--font-display) text-base font-bold text-(--color-text-primary)">
                 شرکت طراحی و تحلیل مالی نوین ایرانیان
               </h2>

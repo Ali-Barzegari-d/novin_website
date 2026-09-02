@@ -10,6 +10,8 @@ async function captureState(page: Page, name: string) {
   expect(await page.locator('.skip-link').evaluate((el) => el.getBoundingClientRect().bottom < 0)).toBe(true);
   for (const viewport of viewports) {
     await page.setViewportSize(viewport);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
     expect(await page.locator('body').evaluate((el) => el.scrollWidth <= innerWidth)).toBe(true);
     await page.screenshot({ path: `artifacts/screenshots/request-${name}-${viewport.name}.png`, fullPage: true });
   }

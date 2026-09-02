@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import * as Dialog from '@radix-ui/react-dialog';
 import * as NavigationMenu from '@radix-ui/react-navigation-menu';
+import { BrandMark } from './BrandMark';
 import { buttonVariants } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 
@@ -116,12 +117,7 @@ function Header() {
           className="flex shrink-0 items-center gap-2 rounded-(--radius-sm) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-accent) focus-visible:ring-offset-2 focus-visible:ring-offset-(--color-bg)"
           aria-label="نوین ایرانیان، صفحه اصلی"
         >
-          <span
-            className="grid h-9 w-9 place-items-center rounded-(--radius-sm) border border-(--color-primary) font-(family-name:--font-display) text-base font-bold leading-none text-(--color-primary)"
-            aria-hidden="true"
-          >
-            ن
-          </span>
+          <BrandMark />
           <span className="hidden leading-tight sm:block">
             <span className="block font-(family-name:--font-display) text-sm font-bold text-(--color-text-primary)">
               نوین ایرانیان

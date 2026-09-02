@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { HeroDiagram } from './sections/HeroDiagram';
 
 const problems = [
   ['اطلاعات هست؛ تصویر واحدی از مسئله نیست.', 'وقتی نیازهای ذی‌نفعان پراکنده یا متعارض‌اند، ابتدا مسئله مشترک، مرز تصمیم‌ها و معیار موفقیت را روشن می‌کنیم.', 'صورت‌بندی مسئله و نیازمندی‌ها'],
@@ -20,10 +19,25 @@ export function HomeExperience() {
     <section className="editorial-hero">
       <div className="shell">
         <div className="hero-masthead"><span>طراحی و تحلیل مالی نوین ایرانیان</span><span>از شناخت مسئله تا پذیرش نتیجه</span></div>
-        <div className="editorial-hero-grid">
-          <div className="hero-statement"><p className="eyebrow">برای مسائل واقعی سازمان‌ها</p><h1>پیچیدگی‌های مالی و کسب‌وکاری را به <em>فرایند، سامانه و محصول</em> قابل‌اجرا تبدیل می‌کنیم.</h1><p className="hero-copy">از صورت‌بندی مسئله و طراحی مدل مالی تا اتوماسیون، توسعه نرم‌افزار، راهبری اجرا و پذیرش نهایی.</p><div className="hero-actions"><Link className="button button-primary" href="/request">ثبت مسئله و درخواست بررسی <span aria-hidden="true">↙</span></Link><Link className="text-link" href="/projects">مشاهده پروژه‌ها <span aria-hidden="true">←</span></Link></div><p className="hero-footnote">ثبت مسئله و تماس اولیه رایگان است؛ بدون تعهد به خرید.</p><ul className="hero-principles" aria-label="اصول شروع همکاری"><li>شروع از مسئله</li><li>پیشنهاد متناسب</li><li>معیار پذیرش روشن</li></ul></div>
-          <div className="blueprint"><div className="blueprint-caption"><span>نگاهی به روش ما</span><span className="drawing-index" aria-hidden="true">۰۱ / ۰۳</span></div><div className="blueprint-board"><HeroDiagram/></div><div className="blueprint-summary"><strong>از پیچیدگی، به منطق قابل اجرا.</strong><span>شناخت · طراحی · راهبری</span></div></div>
+        <div className="hero-composition">
+          <div className="hero-statement">
+            <p className="eyebrow">برای مسائل واقعی سازمان‌ها</p>
+            <h1>پیچیدگی‌های مالی و کسب‌وکاری را به <em>فرایند، سامانه و محصول</em> قابل‌اجرا تبدیل می‌کنیم.</h1>
+            <p className="hero-copy">از صورت‌بندی مسئله و طراحی مدل مالی تا اتوماسیون، توسعه نرم‌افزار، راهبری اجرا و پذیرش نهایی.</p>
+            <div className="hero-actions"><Link className="button button-primary" href="/request">ثبت مسئله و درخواست بررسی <span aria-hidden="true">↙</span></Link><Link className="text-link" href="/projects">مشاهده پروژه‌ها <span aria-hidden="true">←</span></Link></div>
+            <p className="hero-footnote">ثبت مسئله و تماس اولیه رایگان است؛ بدون تعهد به خرید.</p>
+          </div>
+          <aside className="hero-brief" aria-label="روش شروع همکاری">
+            <p className="hero-brief-label">خط روشن همکاری</p>
+            <p className="hero-brief-copy">به‌جای نمایش یک نمودار تزئینی، از همان ابتدا روی سه تصمیم مهم توافق می‌کنیم.</p>
+            <ol>
+              <li><span>۰۱</span><strong>مسئله چیست؟</strong><small>مرز، ذی‌نفع و نتیجهٔ مورد انتظار</small></li>
+              <li><span>۰۲</span><strong>چه چیزی قابل اجراست؟</strong><small>مدل، فرایند و اتصال متناسب با سازمان</small></li>
+              <li><span>۰۳</span><strong>پذیرش چگونه سنجیده می‌شود؟</strong><small>معیارهای روشن برای راهبری و تحویل</small></li>
+            </ol>
+          </aside>
         </div>
+        <ul className="hero-principles" aria-label="اصول شروع همکاری"><li>شروع از مسئله</li><li>پیشنهاد متناسب</li><li>معیار پذیرش روشن</li></ul>
       </div>
     </section>
     <section className="evidence-strip"><div className="shell"><strong>اعتبار، با شواهد واقعی.</strong><p>نشان مشتریان و سوابق پروژه‌ها پس از تأیید مجوز انتشار در این بخش قرار می‌گیرند.</p><Link href="/projects" className="text-link">پروژه‌ها و شواهد ←</Link></div></section>
