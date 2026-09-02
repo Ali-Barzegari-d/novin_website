@@ -94,7 +94,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const describedBy = [ariaDescribedBy, helperId].filter(Boolean).join(' ') || undefined;
 
     return (
-      <div className="flex w-full flex-col">
+      <div className="flex min-w-0 w-full flex-col">
         {label ? (
           <label
             htmlFor={inputId}

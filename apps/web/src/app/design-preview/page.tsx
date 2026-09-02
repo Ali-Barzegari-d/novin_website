@@ -10,6 +10,9 @@ import {
 } from '@/components/ui/Card';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { Input } from '@/components/ui/Input';
+import { Select } from '@/components/ui/Select';
+import { Textarea } from '@/components/ui/Textarea';
+import { ToastPreview } from '@/components/ui/ToastPreview';
 
 export const metadata = { title: 'پیش‌نمایش طراحی', robots: { index: false, follow: false } };
 
@@ -161,6 +164,74 @@ export default function Preview() {
             </div>
           </article>
           <article className="card">
+            <h2 style={{ fontSize: '1.2rem' }}>Select</h2>
+            <div style={{ display: 'grid', gap: 16 }}>
+              <form aria-label="نمونه فرم انتخاب نوع سازمان">
+                <Select
+                  label="نوع سازمان"
+                  name="organizationType"
+                  placeholder="نوع سازمان را انتخاب کنید"
+                  options={[
+                    { value: 'PRIVATE', label: 'کسب‌وکار خصوصی' },
+                    { value: 'PUBLIC', label: 'نهاد عمومی' },
+                    { value: 'GOVERNMENT', label: 'نهاد دولتی' }
+                  ]}
+                />
+              </form>
+              <Select
+                label="حوزه همکاری"
+                placeholder="یک حوزه را انتخاب کنید"
+                groups={[
+                  {
+                    label: 'تحلیل مالی',
+                    options: [
+                      { value: 'portfolio', label: 'ارزیابی پرتفوی سرمایه‌گذاری' },
+                      { value: 'risk', label: 'مدیریت ریسک' }
+                    ]
+                  },
+                  {
+                    label: 'مشاوره و طراحی ساختار',
+                    options: [
+                      { value: 'valuation', label: 'ارزش‌گذاری شرکت' },
+                      { value: 'restructure', label: 'اصلاح ساختار سرمایه' }
+                    ]
+                  }
+                ]}
+              />
+              <Select
+                label="نمونه خطا"
+                error="برای ادامه، یک گزینه را انتخاب کنید."
+                options={[{ value: 'sample', label: 'گزینه نمونه' }]}
+              />
+            </div>
+          </article>
+          <article className="card">
+            <h2 style={{ fontSize: '1.2rem' }}>Textarea</h2>
+            <div style={{ display: 'grid', gap: 16 }}>
+              <Textarea
+                label="شرح مسئله یا نیاز تحلیلی"
+                maxLength={1000}
+                showCount
+                rows={4}
+                required
+                placeholder="وضعیت فعلی، هدف و سؤال‌های کلیدی را شرح دهید…"
+                helperText="توضیح دقیق‌تر، غربالگری اولیه را سریع‌تر می‌کند."
+              />
+              <Textarea
+                label="نمونه خطا"
+                defaultValue="داده ناقص"
+                error="لطفاً زمینه و هدف موردنظر را هم اضافه کنید."
+                rows={2}
+              />
+              <Textarea
+                label="نمونه غیرفعال"
+                disabled
+                defaultValue="این متن قابل ویرایش نیست."
+                rows={2}
+              />
+            </div>
+          </article>
+          <article className="card">
             <h2 style={{ fontSize: '1.2rem' }}>Card</h2>
             <div style={{ display: 'grid', gap: 12 }}>
               <Card variant="outlined" padding="sm">
@@ -218,6 +289,11 @@ export default function Preview() {
             <h2 style={{ fontSize: '1.2rem' }}>وضعیت</h2>
             <p className="success">تأیید موفق</p>
             <p className="error">خطای قابل اقدام</p>
+          </article>
+          <article className="card">
+            <h2 style={{ fontSize: '1.2rem' }}>Toast</h2>
+            <p>اعلان کوتاه، قابل‌بستن و دارای اعلام مناسب برای ابزارهای کمکی.</p>
+            <ToastPreview />
           </article>
         </div>
       </div>

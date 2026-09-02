@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { SiteChrome } from '@/components/SiteChrome';
+import { Toaster } from '@/components/ui/Toaster';
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3050'),
@@ -11,5 +12,12 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="fa" dir="rtl"><body><SiteChrome>{children}</SiteChrome></body></html>;
+  return (
+    <html lang="fa" dir="rtl">
+      <body>
+        <SiteChrome>{children}</SiteChrome>
+        <Toaster />
+      </body>
+    </html>
+  );
 }
