@@ -1,6 +1,6 @@
 # Implementation progress
 
-Status: R6 UI/intake checkpoint validated locally; R7 Tailwind token and global-style checkpoints validated locally. Public production remains blocked by external gates and unverified launch work.
+Status: R6 UI/intake checkpoint validated locally; R7 Tailwind token, global-style and Button-primitive checkpoints validated locally. Public production remains blocked by external gates and unverified launch work.
 
 ## Environment
 
@@ -21,7 +21,7 @@ Status: R6 UI/intake checkpoint validated locally; R7 Tailwind token and global-
 | R4 | Passed (dev/demo) | `7fc56c4` | migration `0001_service_settings.sql`; `pnpm typecheck`, `pnpm lint`, `pnpm test` (10), secrets scan, production build, Chromium 4/4 at 320/768/1440, synthetic contract invoice | Legal/company identity acceptance remains externally blocked; production preflight fails closed as designed |
 | R5 | Passed (dev/demo); public production blocked | `97f9253` | final static/security gates, Docker image rehearsal, API/web health smoke, Chromium + Firefox E2E; see R5 evidence below | Legal/company/provider/TLS/backup/ClamAV gates and isolated restore drill remain open |
 | R6 | Validated checkpoint; not a production release | `b45f147` | frozen install, lint, typecheck, 22 unit tests, production build, disposable PostgreSQL/Redis integration, Chromium/Firefox E2E, Docker production-like image smoke | WebKit runner failure; all existing launch gates plus security/commerce/CMS/operations backlog remain open |
-| R7 | Tailwind token/global-style checkpoints validated; not a production release | `645c429`, `1ec7663` | web typecheck, web production build, lint, traceability contract and focused Chromium RTL/dark-mode checks | R6 and launch gates are unchanged |
+| R7 | Tailwind token/global-style/Button checkpoints validated; not a production release | `645c429`, `1ec7663`, `f8bf9cf` | frozen install, workspace typecheck, web production build, lint, 22 unit/integration tests and focused Chromium RTL/dark/focus checks | R6 and launch gates are unchanged |
 
 ## Execution log
 
@@ -148,6 +148,15 @@ Add dated entries with commands, results, decisions, defects, and the next actio
 - QA passed: `pnpm --filter web typecheck`; `pnpm --filter web build` (25 routes); `pnpm lint` (137-row traceability contract); `git diff --check`; Chromium dark-token test at 320px; Chromium 320px public-route no-horizontal-overflow test.
 - Visually inspected dark-mode evidence at `artifacts/screenshots/home-dark-320.png`: RTL hierarchy, dark surface/text contrast, native focus treatment and the existing page composition remain intact.
 - Global-style implementation commit: `1ec7663` (`feat(r7): add semantic global styles`). No remote action was taken.
+
+### 2026-09-02 — R7 reusable Button primitive
+
+- Applied Ponytail `full` and the retained UI UX Pro Max design-system guidance to `~/amir/prompt-03.md`. Added `Button` plus the `cn` utility, using the pinned runtime dependencies `class-variance-authority` 0.7.1, `clsx` 2.1.1 and `tailwind-merge` 3.6.0. The component provides the approved primary/secondary/ghost/accent/danger/danger-ghost/link variants; xs–xl and square icon sizes; width/rounding options; native disabled behavior; loading spinner/status; RTL-leading/trailing icons; and visible semantic focus rings. `asChild` is intentionally not exposed because the prompt's final requirement removes it.
+- Updated semantic foreground tokens so primary, accent and danger Button variants retain contrast in the existing dark variable set. The development-only `/design-preview` now renders each Button state. It continues to return no public content when `NODE_ENV=production`; no internal preview is exposed through the production build.
+- QA passed: `pnpm install --frozen-lockfile`; `pnpm typecheck`; `pnpm --filter web build` (25 routes); `pnpm lint` (including 137-row traceability contract); `pnpm test` (22 passed, 1 opted-out integration skipped); and `git diff --check`.
+- Chromium local-development smoke passed at 320px: all preview variants present exactly once, loading/disabled semantics, RTL icon order, 40×40px `icon-md`, focus-visible ring in light/dark modes, dark primary tokens and no horizontal overflow. Screenshots were manually inspected at `artifacts/screenshots/button-preview-light-320.png` and `artifacts/screenshots/button-preview-dark-320.png`.
+- Next development logs two non-production warnings: TypeScript `tailwind.config.ts` is reparsed as ESM without an app-level module type, and a direct `127.0.0.1` smoke URL is not an allowed HMR origin. Adding `type: module` was tested and reverted because it breaks the existing web TypeScript module-resolution contract. The optimized production build and workspace typecheck pass; retain the warnings as follow-up engineering work rather than weakening type safety.
+- Button implementation commit: `f8bf9cf` (`feat(r7): add reusable Button primitive`). No remote action was taken.
 
 Copy unresolved gates from `DECISIONS.md` and close them only with evidence.
 
