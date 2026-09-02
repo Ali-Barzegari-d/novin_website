@@ -1,6 +1,6 @@
 # Implementation progress
 
-Status: R6 UI/intake checkpoint validated locally; R7 Tailwind token, global-style, Button, Input, Badge, Card, Checkbox, Select, Textarea, Toast, Header and Footer checkpoints validated locally. Public production remains blocked by external gates and unverified launch work.
+Status: R6 UI/intake checkpoint validated locally; R7 Tailwind token, global-style, Button, Input, Badge, Card, Checkbox, Select, Textarea, Toast, Header, Footer and HeroDiagram checkpoints validated locally. Public production remains blocked by external gates and unverified launch work.
 
 ## Environment
 
@@ -21,7 +21,7 @@ Status: R6 UI/intake checkpoint validated locally; R7 Tailwind token, global-sty
 | R4 | Passed (dev/demo) | `7fc56c4` | migration `0001_service_settings.sql`; `pnpm typecheck`, `pnpm lint`, `pnpm test` (10), secrets scan, production build, Chromium 4/4 at 320/768/1440, synthetic contract invoice | Legal/company identity acceptance remains externally blocked; production preflight fails closed as designed |
 | R5 | Passed (dev/demo); public production blocked | `97f9253` | final static/security gates, Docker image rehearsal, API/web health smoke, Chromium + Firefox E2E; see R5 evidence below | Legal/company/provider/TLS/backup/ClamAV gates and isolated restore drill remain open |
 | R6 | Validated checkpoint; not a production release | `b45f147` | frozen install, lint, typecheck, 22 unit tests, production build, disposable PostgreSQL/Redis integration, Chromium/Firefox E2E, Docker production-like image smoke | WebKit runner failure; all existing launch gates plus security/commerce/CMS/operations backlog remain open |
-| R7 | Tailwind token/global-style/Button/Input/Badge/Card/Checkbox/Select/Textarea/Toast/Header/Footer checkpoints validated; not a production release | `645c429`, `1ec7663`, `f8bf9cf`, `4671dbd`, `06e31db`, `b3ce320`, `eeda580`, `e22ef57` | frozen install, workspace typecheck, web production build, lint, 22 unit/integration tests and focused Chromium RTL/dark/focus/axe checks | R6 and launch gates are unchanged |
+| R7 | Tailwind token/global-style/Button/Input/Badge/Card/Checkbox/Select/Textarea/Toast/Header/Footer/HeroDiagram checkpoints validated; not a production release | `645c429`, `1ec7663`, `f8bf9cf`, `4671dbd`, `06e31db`, `b3ce320`, `eeda580`, `e22ef57`, `80e7bd4` | frozen install, workspace typecheck, web production build, lint, 22 unit/integration tests and focused Chromium RTL/dark/focus/axe checks | R6 and launch gates are unchanged |
 
 ## Execution log
 
@@ -194,6 +194,15 @@ Add dated entries with commands, results, decisions, defects, and the next actio
 - QA passed: `pnpm install --frozen-lockfile`; `pnpm typecheck`; `pnpm lint` (137-row traceability contract); `pnpm test` (22 passed, 1 opted-out integration skipped); `pnpm --filter web build` (25 routes); and `git diff --check`. The existing non-production Tailwind config module-type warning remains during Next commands; the build/typecheck pass without relaxing the TypeScript configuration.
 - Focused Chromium coverage at 320/768/1440 verified no horizontal overflow, RTL physical-right mobile drawer, focus return after Escape, overlay/link close, desktop Navigation Menu, active-link `aria-current`, scroll state and zero axe violations in settled light/dark themes. Manually inspected `artifacts/screenshots/layout-shell-home-{320,768,1440}.png`. A production-built, JavaScript-disabled 320px home page still exposed the heading, legal identity placeholder and footer without horizontal overflow.
 - Implementation commit: `e22ef57` (`feat(r7): add accessible layout shell`). No push, merge or deployment was performed; no traceability mapping changed because this is a shared presentation shell rather than a new PRD requirement.
+
+### 2026-09-02 — R7 responsive HeroDiagram
+
+- Applied Ponytail `full`, retained UI UX Pro Max guidance and Impeccable `4.0.4` to `~/amir/prompt-08.md`. Replaced the legacy `ProcessArt` with a token-driven, accessible `HeroDiagram` instead of copying the supplied malformed SVG draft. It uses only existing semantic CSS variables; no dependency, external asset, unapproved brand fact or raw production colour was added.
+- The diagram preserves the homepage's RTL visual logic: public/private organization inputs on the right converge on the primary analysis node and continue to a success-marked analytical/executable output on the left. At 320px it switches to an intentionally vertical composition, keeping labels readable rather than shrinking the desktop layout or permitting overflow. SVG marker IDs use `useId`, so multiple instances do not collide.
+- Motion is a single 970ms-or-shorter process reveal: inputs, core, output and dashed flow paths arrive in causal order once. There is no loop. The static SVG needs no JavaScript state, and `prefers-reduced-motion` removes the enhancement while retaining the final diagram. The figure exposes one Persian process label and its SVG drawing is hidden from the accessibility tree.
+- QA passed: `pnpm typecheck`; `pnpm lint` (137-row traceability contract); `pnpm test` (22 passed, 1 opted-out integration skipped); `pnpm --filter web build` (25 routes); `git diff --check`; full public Chromium smoke (4 passed, 2 synthetic-token skips); and a Chromium no-JavaScript home smoke. The focused browser test covers the process label, four visible nodes, three flows, 320/768/1440 no-overflow screenshots and reduced-motion final state; the public smoke includes axe serious/critical checks and dark RTL tokens.
+- Manually inspected `artifacts/screenshots/hero-diagram-{320,768,1440}.png`; the mobile vertical diagram and desktop RTL flow have no clipped labels or horizontal page scroll. The Impeccable detector reported only the pre-existing R6 `.legal-draft, .notice` 3px side-tab rule at `globals.css:207` (`b45f147`); the changed HeroDiagram targets introduced no detector finding. The existing non-production Tailwind config module-type warning remains; build/typecheck pass without weakening configuration.
+- Implementation commit: `80e7bd4` (`feat(r7): add responsive hero process diagram`). No push, merge or deployment was performed; no traceability mapping changed because this is a shared presentation illustration, not a new PRD requirement.
 
 Copy unresolved gates from `DECISIONS.md` and close them only with evidence.
 
