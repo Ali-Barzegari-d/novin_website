@@ -1,6 +1,6 @@
 # Implementation progress
 
-Status: R6 UI/intake checkpoint validated locally; R7 Tailwind token, global-style, Button, Input, Badge, Card, Checkbox, Select, Textarea and Toast primitive checkpoints validated locally. Public production remains blocked by external gates and unverified launch work.
+Status: R6 UI/intake checkpoint validated locally; R7 Tailwind token, global-style, Button, Input, Badge, Card, Checkbox, Select, Textarea, Toast, Header and Footer checkpoints validated locally. Public production remains blocked by external gates and unverified launch work.
 
 ## Environment
 
@@ -21,7 +21,7 @@ Status: R6 UI/intake checkpoint validated locally; R7 Tailwind token, global-sty
 | R4 | Passed (dev/demo) | `7fc56c4` | migration `0001_service_settings.sql`; `pnpm typecheck`, `pnpm lint`, `pnpm test` (10), secrets scan, production build, Chromium 4/4 at 320/768/1440, synthetic contract invoice | Legal/company identity acceptance remains externally blocked; production preflight fails closed as designed |
 | R5 | Passed (dev/demo); public production blocked | `97f9253` | final static/security gates, Docker image rehearsal, API/web health smoke, Chromium + Firefox E2E; see R5 evidence below | Legal/company/provider/TLS/backup/ClamAV gates and isolated restore drill remain open |
 | R6 | Validated checkpoint; not a production release | `b45f147` | frozen install, lint, typecheck, 22 unit tests, production build, disposable PostgreSQL/Redis integration, Chromium/Firefox E2E, Docker production-like image smoke | WebKit runner failure; all existing launch gates plus security/commerce/CMS/operations backlog remain open |
-| R7 | Tailwind token/global-style/Button/Input/Badge/Card/Checkbox/Select/Textarea/Toast checkpoints validated; not a production release | `645c429`, `1ec7663`, `f8bf9cf`, `4671dbd`, `06e31db`, `b3ce320`, `eeda580` | frozen install, workspace typecheck, web production build, lint, 22 unit/integration tests and focused Chromium RTL/dark/focus/axe checks | R6 and launch gates are unchanged |
+| R7 | Tailwind token/global-style/Button/Input/Badge/Card/Checkbox/Select/Textarea/Toast/Header/Footer checkpoints validated; not a production release | `645c429`, `1ec7663`, `f8bf9cf`, `4671dbd`, `06e31db`, `b3ce320`, `eeda580`, `e22ef57` | frozen install, workspace typecheck, web production build, lint, 22 unit/integration tests and focused Chromium RTL/dark/focus/axe checks | R6 and launch gates are unchanged |
 
 ## Execution log
 
@@ -185,6 +185,15 @@ Add dated entries with commands, results, decisions, defects, and the next actio
 - QA passed: `pnpm install --frozen-lockfile`; `pnpm typecheck`; `pnpm lint` (137-row traceability contract); `pnpm test` (22 passed, 1 opted-out integration skipped); `pnpm --filter web build` (25 routes); and `git diff --check`. Focused Chromium browser coverage at 320/768/1440 verifies RTL, Select opening/selection and physical-left check indicator, native `FormData` value, Textarea maxLength/counter, Toast success/error rendering and keyboard close, no horizontal overflow, and zero axe violations in settled light and dark themes. Impeccable detector returned `[]`.
 - Manually inspected `artifacts/screenshots/select-textarea-toast-preview-light-{320,768,1440}.png` and `artifacts/screenshots/select-textarea-toast-preview-dark-320.png`; mobile and desktop show readable tokens, no clipped controls and no fixed-toast overlap. The pre-existing non-production Tailwind config module-type warning remains; no type-safety setting was changed to suppress it.
 - Implementation commit: `eeda580` (`feat(r7): add Select Textarea and Toast primitives`). No remote action was taken.
+
+### 2026-09-02 — R7 Header and Footer layout shell
+
+- Applied Ponytail `full`, the retained UI UX Pro Max guidance and Impeccable `4.0.4` to `~/amir/prompt-07.md`. The detector returned `[]`; this was a constrained extension of the existing visual system, not a replacement of its product claims, fonts or colour tokens.
+- Added the pinned Radix Navigation Menu `1.2.22` and Dialog `1.1.23` dependencies. The new client Header provides a keyboard-accessible desktop solutions menu for the two existing solution routes, active-route state, a 44px mobile trigger, scroll shadow, and an RTL Dialog drawer that closes through Escape, overlay click and link selection. The root layout retains the skip link, main landmark, global toaster and strictly development-only SMS inbox condition.
+- Replaced the duplicate legacy `Header`/`SiteChrome` shell with the new layout components. The responsive Footer uses only implemented routes and the confirmed legal name. Missing national ID, registration number, legal address, contact details and trust approvals remain visibly marked as publication blockers; no invented company fact, contact method, trust logo or unavailable route was added.
+- QA passed: `pnpm install --frozen-lockfile`; `pnpm typecheck`; `pnpm lint` (137-row traceability contract); `pnpm test` (22 passed, 1 opted-out integration skipped); `pnpm --filter web build` (25 routes); and `git diff --check`. The existing non-production Tailwind config module-type warning remains during Next commands; the build/typecheck pass without relaxing the TypeScript configuration.
+- Focused Chromium coverage at 320/768/1440 verified no horizontal overflow, RTL physical-right mobile drawer, focus return after Escape, overlay/link close, desktop Navigation Menu, active-link `aria-current`, scroll state and zero axe violations in settled light/dark themes. Manually inspected `artifacts/screenshots/layout-shell-home-{320,768,1440}.png`. A production-built, JavaScript-disabled 320px home page still exposed the heading, legal identity placeholder and footer without horizontal overflow.
+- Implementation commit: `e22ef57` (`feat(r7): add accessible layout shell`). No push, merge or deployment was performed; no traceability mapping changed because this is a shared presentation shell rather than a new PRD requirement.
 
 Copy unresolved gates from `DECISIONS.md` and close them only with evidence.
 
