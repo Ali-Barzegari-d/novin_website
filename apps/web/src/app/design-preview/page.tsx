@@ -1,4 +1,14 @@
 import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/Card';
+import { Checkbox } from '@/components/ui/Checkbox';
 import { Input } from '@/components/ui/Input';
 
 export const metadata = { title: 'پیش‌نمایش طراحی', robots: { index: false, follow: false } };
@@ -124,6 +134,84 @@ export default function Preview() {
                 size="sm"
               />
               <Input label="نام کاربری" disabled defaultValue="ali.rezaei" />
+            </div>
+          </article>
+          <article className="card">
+            <h2 style={{ fontSize: '1.2rem' }}>Badge</h2>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              <Badge dot>پیش‌نویس</Badge>
+              <Badge variant="success" dot>
+                تأیید شد
+              </Badge>
+              <Badge variant="danger" dot>
+                رد شد
+              </Badge>
+              <Badge variant="warning" dot>
+                نیازمند اقدام
+              </Badge>
+              <Badge variant="info" dot>
+                در حال بررسی
+              </Badge>
+              <Badge variant="accent" dot>
+                ویژه
+              </Badge>
+              <Badge variant="solid" size="lg" icon={<CheckIcon />}>
+                ای‌نماد
+              </Badge>
+            </div>
+          </article>
+          <article className="card">
+            <h2 style={{ fontSize: '1.2rem' }}>Card</h2>
+            <div style={{ display: 'grid', gap: 12 }}>
+              <Card variant="outlined" padding="sm">
+                <CardTitle>کارت مرزبندی‌شده</CardTitle>
+              </Card>
+              <Card variant="elevated" padding="sm">
+                <CardTitle>کارت برجسته</CardTitle>
+              </Card>
+              <Card
+                variant="interactive"
+                asButton
+                padding="sm"
+                aria-label="مشاهده جزئیات تحلیل بنیادی پرتفو"
+              >
+                <CardHeader>
+                  <CardTitle>تحلیل بنیادی پرتفو</CardTitle>
+                  <Badge variant="info">خصوصی</Badge>
+                </CardHeader>
+                <CardDescription>
+                  ارزیابی مستقل دارایی‌ها پیش از تصمیم سرمایه‌گذاری.
+                </CardDescription>
+                <CardFooter>
+                  <span className="text-xs text-(--color-text-muted)">گزارش مکتوب</span>
+                  <span className="text-sm font-medium text-(--color-primary)">بیشتر</span>
+                </CardFooter>
+              </Card>
+              <Card variant="offer" padding="sm">
+                <CardHeader>
+                  <CardTitle as="h4">پیشنهاد اختصاصی</CardTitle>
+                  <Badge variant="warning" dot>
+                    ۴۸ ساعت
+                  </Badge>
+                </CardHeader>
+                <CardContent className="text-sm text-(--color-text-muted)">
+                  خروجی روشن، زمان‌بندی مشخص و شرایط قابل بازبینی.
+                </CardContent>
+              </Card>
+            </div>
+          </article>
+          <article className="card">
+            <h2 style={{ fontSize: '1.2rem' }}>Checkbox</h2>
+            <div style={{ display: 'grid', gap: 16 }}>
+              <Checkbox
+                label="تأیید محرمانگی اسناد"
+                description="فقط مستندات عمومی و غیرمحرمانه را ارسال کنید."
+              />
+              <Checkbox
+                label="پذیرش شرایط همکاری"
+                error="برای ادامه ثبت درخواست، پذیرش شرایط الزامی است."
+              />
+              <Checkbox label="گزینه غیرفعال" disabled defaultChecked />
             </div>
           </article>
           <article className="card">
