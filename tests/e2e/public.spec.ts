@@ -30,6 +30,32 @@ test('public home is Persian RTL, accessible, and has no public price', async ({
   for (const size of sizes) { await page.setViewportSize({ width: size.width, height: size.height }); await activateHomeSections(page); expect(await page.locator('body').evaluate((element) => element.scrollWidth <= window.innerWidth)).toBe(true); await page.screenshot({ path: `artifacts/screenshots/home-${size.name}.png`, fullPage: true }); }
 });
 
+test('hero diagram describes the process and retains its static state with reduced motion', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 960 });
+  await page.goto('/');
+  const diagram = page.getByRole('img', { name: /نمودار فرایند همکاری/ });
+  await expect(diagram).toBeVisible();
+  await expect(diagram.locator('svg:visible')).toHaveAttribute('aria-hidden', 'true');
+  await expect(diagram.locator('.hero-diagram__node:visible')).toHaveCount(4);
+  await expect(diagram.locator('.hero-diagram__mobile .hero-diagram__flow')).toHaveCount(3);
+  for (const size of sizes) {
+    await page.setViewportSize({ width: size.width, height: size.height });
+    const mode = size.width < 700 ? 'mobile' : 'desktop';
+    await expect(diagram.locator(`.hero-diagram__${mode} .hero-diagram__node`).last()).toHaveCSS(
+      'opacity',
+      '1'
+    );
+    expect(await page.locator('body').evaluate((element) => element.scrollWidth <= window.innerWidth)).toBe(true);
+    await diagram.screenshot({ path: `artifacts/screenshots/hero-diagram-${size.name}.png` });
+  }
+
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.setViewportSize({ width: 320, height: 960 });
+  await page.reload();
+  await expect(page.getByRole('img', { name: /نمودار فرایند همکاری/ })).toBeVisible();
+  await expect(page.locator('.hero-diagram__mobile .hero-diagram__node').first()).toHaveCSS('animation-name', 'none');
+});
+
 test('global semantic tokens apply RTL dark mode', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 960 });
   await page.goto('/');

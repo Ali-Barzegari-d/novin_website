@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ProcessArt } from './ProcessArt';
+import { HeroDiagram } from './sections/HeroDiagram';
 
 const problems = [
   ['اطلاعات هست؛ تصویر واحدی از مسئله نیست.', 'وقتی نیازهای ذی‌نفعان پراکنده یا متعارض‌اند، ابتدا مسئله مشترک، مرز تصمیم‌ها و معیار موفقیت را روشن می‌کنیم.', 'صورت‌بندی مسئله و نیازمندی‌ها'],
@@ -22,7 +22,7 @@ export function HomeExperience() {
         <div className="hero-masthead"><span>طراحی و تحلیل مالی نوین ایرانیان</span><span>از شناخت مسئله تا پذیرش نتیجه</span></div>
         <div className="editorial-hero-grid">
           <div className="hero-statement"><p className="eyebrow">برای مسائل واقعی سازمان‌ها</p><h1>پیچیدگی‌های مالی و کسب‌وکاری را به <em>فرایند، سامانه و محصول</em> قابل‌اجرا تبدیل می‌کنیم.</h1><p className="hero-copy">از صورت‌بندی مسئله و طراحی مدل مالی تا اتوماسیون، توسعه نرم‌افزار، راهبری اجرا و پذیرش نهایی.</p><div className="hero-actions"><Link className="button button-primary" href="/request">ثبت مسئله و درخواست بررسی <span aria-hidden="true">↙</span></Link><Link className="text-link" href="/projects">مشاهده پروژه‌ها <span aria-hidden="true">←</span></Link></div><p className="hero-footnote">ثبت مسئله و تماس اولیه رایگان است؛ بدون تعهد به خرید.</p></div>
-          <figure className="blueprint"><div className="blueprint-caption"><span>نگاهی به روش ما</span><span className="drawing-index" aria-hidden="true">۰۱ / ۰۳</span></div><ProcessArt/><figcaption><strong>از پیچیدگی، به منطق قابل اجرا.</strong><span>شناخت · طراحی · راهبری</span></figcaption></figure>
+          <div className="blueprint"><div className="blueprint-caption"><span>نگاهی به روش ما</span><span className="drawing-index" aria-hidden="true">۰۱ / ۰۳</span></div><HeroDiagram/><div className="blueprint-summary"><strong>از پیچیدگی، به منطق قابل اجرا.</strong><span>شناخت · طراحی · راهبری</span></div></div>
         </div>
       </div>
     </section>
