@@ -4,6 +4,7 @@
 @import '@fontsource/vazirmatn/700.css';
 @import '@fontsource/estedad/600.css';
 @import '@fontsource/estedad/700.css';
+@config '../../tailwind.config.ts';
 @import 'tailwindcss';
 
 /* Primitive → semantic → component. Original brand palette; no runtime font CDN. */
