@@ -30,6 +30,19 @@ test('public home is Persian RTL, accessible, and has no public price', async ({
   for (const size of sizes) { await page.setViewportSize({ width: size.width, height: size.height }); await activateHomeSections(page); expect(await page.locator('body').evaluate((element) => element.scrollWidth <= window.innerWidth)).toBe(true); await page.screenshot({ path: `artifacts/screenshots/home-${size.name}.png`, fullPage: true }); }
 });
 
+test('global semantic tokens apply RTL dark mode', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 960 });
+  await page.goto('/');
+  await expect(page.locator('html')).toHaveCSS('direction', 'rtl');
+  await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(248, 246, 240)');
+  await page.locator('html').evaluate((element) => element.classList.add('dark'));
+  await page.waitForTimeout(250);
+  await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(13, 15, 18)');
+  await expect(page.locator('html')).toHaveCSS('--color-text-primary', '#eaedf0');
+  expect(await page.locator('body').evaluate((element) => element.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.screenshot({ path: 'artifacts/screenshots/home-dark-320.png', fullPage: true });
+});
+
 test('primary public routes render a single request CTA without horizontal overflow', async ({ page }) => {
   for (const route of ['/solutions/public', '/solutions/private', '/capabilities', '/process', '/initial-assessment', '/projects', '/about', '/contact', '/terms', '/privacy', '/cancellation', '/complaints']) {
     await page.setViewportSize({ width: 320, height: 900 }); await page.goto(route); expect(await page.locator('body').evaluate((element) => element.scrollWidth <= window.innerWidth)).toBe(true); await expect(page.locator('main')).toBeVisible();

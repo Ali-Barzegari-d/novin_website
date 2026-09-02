@@ -1,6 +1,6 @@
 # Implementation progress
 
-Status: R6 UI/intake checkpoint validated locally; R7 Tailwind token foundation validated locally. Public production remains blocked by external gates and unverified launch work.
+Status: R6 UI/intake checkpoint validated locally; R7 Tailwind token and global-style checkpoints validated locally. Public production remains blocked by external gates and unverified launch work.
 
 ## Environment
 
@@ -21,7 +21,7 @@ Status: R6 UI/intake checkpoint validated locally; R7 Tailwind token foundation 
 | R4 | Passed (dev/demo) | `7fc56c4` | migration `0001_service_settings.sql`; `pnpm typecheck`, `pnpm lint`, `pnpm test` (10), secrets scan, production build, Chromium 4/4 at 320/768/1440, synthetic contract invoice | Legal/company identity acceptance remains externally blocked; production preflight fails closed as designed |
 | R5 | Passed (dev/demo); public production blocked | `97f9253` | final static/security gates, Docker image rehearsal, API/web health smoke, Chromium + Firefox E2E; see R5 evidence below | Legal/company/provider/TLS/backup/ClamAV gates and isolated restore drill remain open |
 | R6 | Validated checkpoint; not a production release | `b45f147` | frozen install, lint, typecheck, 22 unit tests, production build, disposable PostgreSQL/Redis integration, Chromium/Firefox E2E, Docker production-like image smoke | WebKit runner failure; all existing launch gates plus security/commerce/CMS/operations backlog remain open |
-| R7 | Tailwind token foundation validated; not a production release | `645c429` | web typecheck, web production build, lint and traceability contract | R6 and launch gates are unchanged |
+| R7 | Tailwind token/global-style checkpoints validated; not a production release | `645c429` + pending global-style commit | web typecheck, web production build, lint, traceability contract and focused Chromium RTL/dark-mode checks | R6 and launch gates are unchanged |
 
 ## Execution log
 
@@ -140,6 +140,13 @@ Add dated entries with commands, results, decisions, defects, and the next actio
 - Reconciled malformed prompt values with project constraints: corrected the duplicate/broken neutral/spacing entries and invalid primary hex, used `DESIGN.md` navy values (`#0B2545`/`#153A63`), and retained licensed self-hosted Vazirmatn/Estedad rather than adding unlicensed IranYekan or undeclared mono fonts.
 - QA passed: `pnpm --filter web typecheck`; `pnpm --filter web build` (25 routes); `pnpm lint` (including the 137-row traceability contract); `git diff --check`.
 - Token implementation commit: `645c429` (`feat(r7): add Tailwind design tokens`). No remote action was taken.
+
+### 2026-09-02 — R7 global semantic styles
+
+- Reconciled `~/amir/prompt-02.md` with the existing R6 stylesheet instead of replacing the working component rules with its malformed draft. Added primitive-to-semantic CSS aliases, a `dark` variable set, RTL/base defaults, theme-aware body/focus/selection behavior, and dark-safe shared heading, brand, field, status, table and development-inbox styles.
+- `DESIGN.md` remains authoritative: warm ivory/navy/teal/burgundy is the default visual system, while the dark values use high-contrast semantic aliases. The prompt's broken values were not copied. IranYekanX was not added because no licensed redistributable font files were supplied; existing self-hosted OFL Vazirmatn and Estedad remain the font stack.
+- QA passed: `pnpm --filter web typecheck`; `pnpm --filter web build` (25 routes); `pnpm lint` (137-row traceability contract); `git diff --check`; Chromium dark-token test at 320px; Chromium 320px public-route no-horizontal-overflow test.
+- Visually inspected dark-mode evidence at `artifacts/screenshots/home-dark-320.png`: RTL hierarchy, dark surface/text contrast, native focus treatment and the existing page composition remain intact.
 
 Copy unresolved gates from `DECISIONS.md` and close them only with evidence.
 
