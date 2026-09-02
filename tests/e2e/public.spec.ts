@@ -30,18 +30,20 @@ test('public home is Persian RTL, accessible, and has no public price', async ({
   for (const size of sizes) { await page.setViewportSize({ width: size.width, height: size.height }); await activateHomeSections(page); expect(await page.locator('body').evaluate((element) => element.scrollWidth <= window.innerWidth)).toBe(true); await page.screenshot({ path: `artifacts/screenshots/home-${size.name}.png`, fullPage: true }); }
 });
 
-test('hero diagram describes the process and retains its static state with reduced motion', async ({ page }) => {
+test('hero diagram explains the transformation method and retains its static state with reduced motion', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 960 });
   await page.goto('/');
-  const diagram = page.getByRole('img', { name: /نمودار فرایند همکاری/ });
+  const diagram = page.getByRole('img', { name: /تصویرسازی روش کار/ });
   await expect(diagram).toBeVisible();
   await expect(diagram.locator('svg:visible')).toHaveAttribute('aria-hidden', 'true');
-  await expect(diagram.locator('.hero-diagram__node:visible')).toHaveCount(4);
-  await expect(diagram.locator('.hero-diagram__mobile .hero-diagram__flow')).toHaveCount(3);
+  await expect(diagram.locator('.hero-diagram__source:visible')).toHaveCount(3);
+  await expect(diagram.locator('.hero-diagram__model:visible')).toHaveCount(1);
+  await expect(diagram.locator('.hero-diagram__outcome:visible')).toHaveCount(1);
+  await expect(diagram.locator('.hero-diagram__mobile .hero-diagram__connection path')).toHaveCount(4);
   for (const size of sizes) {
     await page.setViewportSize({ width: size.width, height: size.height });
     const mode = size.width < 700 ? 'mobile' : 'desktop';
-    await expect(diagram.locator(`.hero-diagram__${mode} .hero-diagram__node`).last()).toHaveCSS(
+    await expect(diagram.locator(`.hero-diagram__${mode} .hero-diagram__outcome`)).toHaveCSS(
       'opacity',
       '1'
     );
@@ -52,8 +54,8 @@ test('hero diagram describes the process and retains its static state with reduc
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.setViewportSize({ width: 320, height: 960 });
   await page.reload();
-  await expect(page.getByRole('img', { name: /نمودار فرایند همکاری/ })).toBeVisible();
-  await expect(page.locator('.hero-diagram__mobile .hero-diagram__node').first()).toHaveCSS('animation-name', 'none');
+  await expect(page.getByRole('img', { name: /تصویرسازی روش کار/ })).toBeVisible();
+  await expect(page.locator('.hero-diagram__mobile .hero-diagram__outcome')).toHaveCSS('animation-name', 'none');
 });
 
 test('global semantic tokens apply RTL dark mode', async ({ page }) => {
