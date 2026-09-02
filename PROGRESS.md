@@ -1,6 +1,6 @@
 # Implementation progress
 
-Status: R6 UI/intake checkpoint validated locally; R7 Tailwind token, global-style, Button, Input, Badge, Card and Checkbox primitive checkpoints validated locally. Public production remains blocked by external gates and unverified launch work.
+Status: R6 UI/intake checkpoint validated locally; R7 Tailwind token, global-style, Button, Input, Badge, Card, Checkbox, Select, Textarea and Toast primitive checkpoints validated locally. Public production remains blocked by external gates and unverified launch work.
 
 ## Environment
 
@@ -21,7 +21,7 @@ Status: R6 UI/intake checkpoint validated locally; R7 Tailwind token, global-sty
 | R4 | Passed (dev/demo) | `7fc56c4` | migration `0001_service_settings.sql`; `pnpm typecheck`, `pnpm lint`, `pnpm test` (10), secrets scan, production build, Chromium 4/4 at 320/768/1440, synthetic contract invoice | Legal/company identity acceptance remains externally blocked; production preflight fails closed as designed |
 | R5 | Passed (dev/demo); public production blocked | `97f9253` | final static/security gates, Docker image rehearsal, API/web health smoke, Chromium + Firefox E2E; see R5 evidence below | Legal/company/provider/TLS/backup/ClamAV gates and isolated restore drill remain open |
 | R6 | Validated checkpoint; not a production release | `b45f147` | frozen install, lint, typecheck, 22 unit tests, production build, disposable PostgreSQL/Redis integration, Chromium/Firefox E2E, Docker production-like image smoke | WebKit runner failure; all existing launch gates plus security/commerce/CMS/operations backlog remain open |
-| R7 | Tailwind token/global-style/Button/Input/Badge/Card/Checkbox checkpoints validated; not a production release | `645c429`, `1ec7663`, `f8bf9cf`, `4671dbd`, `06e31db`, `b3ce320` | frozen install, workspace typecheck, web production build, lint, 22 unit/integration tests and focused Chromium RTL/dark/focus/axe checks | R6 and launch gates are unchanged |
+| R7 | Tailwind token/global-style/Button/Input/Badge/Card/Checkbox/Select/Textarea/Toast checkpoints validated; not a production release | `645c429`, `1ec7663`, `f8bf9cf`, `4671dbd`, `06e31db`, `b3ce320`, `eeda580` | frozen install, workspace typecheck, web production build, lint, 22 unit/integration tests and focused Chromium RTL/dark/focus/axe checks | R6 and launch gates are unchanged |
 
 ## Execution log
 
@@ -175,6 +175,16 @@ Add dated entries with commands, results, decisions, defects, and the next actio
 - Expanded the development-only `/design-preview` to show every new variant and state; it remains empty in production. QA passed: `pnpm typecheck`; `pnpm --filter web build` (25 routes); `pnpm lint` (137-row traceability contract); `pnpm test` (22 passed, 1 opted-out integration skipped); `git diff --check`; and focused Chromium + axe smoke. The browser test verifies Badge RTL dot order; Card outlined/elevated/offer rendering and Enter/Space activation; Checkbox label toggle, native checked visual, error/described-by/alert semantics, disabled state and keyboard focus; light/dark tokens, no 320px overflow, and no axe violations after the theme transition settled.
 - Manually inspected `artifacts/screenshots/badge-card-checkbox-preview-light-320.png` and `artifacts/screenshots/badge-card-checkbox-preview-dark-320.png`. The known non-production Tailwind config module-type warning is unchanged; no type-safety setting was weakened to suppress it.
 - Primitive implementation commit: `06e31db` (`feat(r7): add status and form primitives`). Dark contrast correction: `b3ce320` (`fix(r7): strengthen dark muted contrast`). No remote action was taken.
+
+### 2026-09-02 — R7 Select, Textarea and Toast primitives
+
+- Applied Ponytail `full`, retained UI UX Pro Max design-system/UI-styling guidance, and Impeccable `4.0.4` to `~/amir/prompt-06.md`. The Impeccable context confirmed this as a narrow extension of the incumbent design system; no replacement visual world, product claims, font or raw component colour was introduced.
+- Added pinned Radix Select `2.3.7` and Toast `1.2.23` to the web workspace for their accessible keyboard, focus-management and announcement primitives. Added token-driven `Select` (RTL, grouped/disabled options, labels, helper/error association and native form contribution), controlled/uncontrolled `Textarea` (error/success/disabled states and Persian character counter), and a bounded three-item global Toast store/provider with close button, keyboard close, swipe and semantic success/warning/error icons.
+- Placed the global `Toaster` in the root layout. Replaced the RequestFlow organization native select and problem textarea with the new components: the former retains `FormData` submission under `organizationType`; the latter retains controlled text through review/edit/retry and exposes the ۸٬۰۰۰-character limit. A successful final request creates a customer-safe success Toast without exposing an internal status or note. The development-only preview demonstrates all new states and still returns no preview content in a production build.
+- Browser QA found the existing `Input` outer wrapper could force 40px of horizontal overflow in the three-column preview at 768px. Added `min-w-0` at that shared wrapper, then verified 320/768/1440 page widths again; no layout workaround or overflow hiding was used.
+- QA passed: `pnpm install --frozen-lockfile`; `pnpm typecheck`; `pnpm lint` (137-row traceability contract); `pnpm test` (22 passed, 1 opted-out integration skipped); `pnpm --filter web build` (25 routes); and `git diff --check`. Focused Chromium browser coverage at 320/768/1440 verifies RTL, Select opening/selection and physical-left check indicator, native `FormData` value, Textarea maxLength/counter, Toast success/error rendering and keyboard close, no horizontal overflow, and zero axe violations in settled light and dark themes. Impeccable detector returned `[]`.
+- Manually inspected `artifacts/screenshots/select-textarea-toast-preview-light-{320,768,1440}.png` and `artifacts/screenshots/select-textarea-toast-preview-dark-320.png`; mobile and desktop show readable tokens, no clipped controls and no fixed-toast overlap. The pre-existing non-production Tailwind config module-type warning remains; no type-safety setting was changed to suppress it.
+- Implementation commit: `eeda580` (`feat(r7): add Select Textarea and Toast primitives`). No remote action was taken.
 
 Copy unresolved gates from `DECISIONS.md` and close them only with evidence.
 
