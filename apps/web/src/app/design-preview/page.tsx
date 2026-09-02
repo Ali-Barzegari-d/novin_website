@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 
 export const metadata = { title: 'پیش‌نمایش طراحی', robots: { index: false, follow: false } };
 
@@ -12,6 +13,29 @@ function ArrowIcon() {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+    </svg>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path
+        d="m3 8 3 3 7-7"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function SearchIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <circle cx="7" cy="7" r="4" stroke="currentColor" strokeWidth="1.5" />
+      <path d="m10 10 3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
 }
@@ -63,6 +87,43 @@ export default function Preview() {
               <Button variant="ghost" size="icon-md" aria-label="حرکت به صفحه بعد">
                 <ArrowIcon />
               </Button>
+            </div>
+          </article>
+          <article className="card">
+            <h2 style={{ fontSize: '1.2rem' }}>Input</h2>
+            <div style={{ display: 'grid', gap: 16 }}>
+              <Input
+                label="نام کامل"
+                placeholder="مثلاً علی رضایی"
+                required
+                helperText="این اطلاعات فقط برای پیگیری درخواست استفاده می‌شود."
+              />
+              <Input
+                label="ایمیل"
+                state="error"
+                helperText="فرمت ایمیل نادرست است."
+                defaultValue="user@"
+              />
+              <Input
+                label="کد ملی"
+                state="success"
+                helperText="کد ملی تأیید شد."
+                leadingAddon={<CheckIcon />}
+              />
+              <Input
+                label="شماره موبایل"
+                state="warning"
+                size="lg"
+                helperText="شماره را بدون خط تیره وارد کنید."
+                trailingAddon={<ArrowIcon />}
+              />
+              <Input
+                aria-label="جست‌وجو"
+                placeholder="جست‌وجو…"
+                leadingAddon={<SearchIcon />}
+                size="sm"
+              />
+              <Input label="نام کاربری" disabled defaultValue="ali.rezaei" />
             </div>
           </article>
           <article className="card">
