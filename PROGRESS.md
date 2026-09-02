@@ -1,6 +1,6 @@
 # Implementation progress
 
-Status: R5 passed (dev/demo); public production blocked by external gates. UI refresh QA passed and committed as `8c752d2`.
+Status: R6 UI/intake checkpoint validated locally; public production remains blocked by external gates and unverified launch work.
 
 ## Environment
 
@@ -20,6 +20,7 @@ Status: R5 passed (dev/demo); public production blocked by external gates. UI re
 | R3 | Passed (dev/demo) | `83575ff` | `pnpm typecheck`, `pnpm lint`, `pnpm test` (10), production build, Chromium 3/3 including private-offer 320/768/1440, local offer-to-receipt lifecycle with duplicate callback | Approved gateway endpoint/merchant credentials and legal approval remain production-gated |
 | R4 | Passed (dev/demo) | `7fc56c4` | migration `0001_service_settings.sql`; `pnpm typecheck`, `pnpm lint`, `pnpm test` (10), secrets scan, production build, Chromium 4/4 at 320/768/1440, synthetic contract invoice | Legal/company identity acceptance remains externally blocked; production preflight fails closed as designed |
 | R5 | Passed (dev/demo); public production blocked | `97f9253` | final static/security gates, Docker image rehearsal, API/web health smoke, Chromium + Firefox E2E; see R5 evidence below | Legal/company/provider/TLS/backup/ClamAV gates and isolated restore drill remain open |
+| R6 | Validated checkpoint; not a production release | pending checkpoint commit | frozen install, lint, typecheck, 22 unit tests, production build, disposable PostgreSQL/Redis integration, Chromium/Firefox E2E, Docker production-like image smoke | WebKit runner failure; all existing launch gates plus security/commerce/CMS/operations backlog remain open |
 
 ## Execution log
 
@@ -109,6 +110,26 @@ Add dated entries with commands, results, decisions, defects, and the next actio
 - UI commit: `9c33cd1` (`feat(ui): elevate Persian visual system`).
 
 ## Production gates
+
+### 2026-09-02 — R6 execution checklist
+
+- [x] Read the mandatory product/security/acceptance documents, activate Ponytail `full` and apply retained UI UX Pro Max guidance.
+- [x] Preserve `master` at `670ef4c`, create `codex/r6-ux-intake-checkpoint`, inspect the supplied draft patch, and confirm `git apply --check` succeeds.
+- [x] Reconcile the draft with the current implementation: browser-scoped OTP inbox, retry-safe onboarding/request intake, screening/audit constraints, build-time web/API routing, responsive editorial UI and focus handling.
+- [x] Run frozen install, lint, typecheck, unit tests, production build, disposable PostgreSQL/Redis tests, browser matrix, visual review, and Docker configuration/image checks.
+- [x] Record observed R6 evidence in traceability/progress, add the prioritized non-R6 backlog, and prepare reviewable checkpoint commits without push/merge/deploy.
+
+### 2026-09-02 — R6 validation evidence
+
+- Preserved `master` at `670ef4c`; created isolated branch `codex/r6-ux-intake-checkpoint`. Read the supplied patch before applying it; `git apply --check ../0001-feat-ux-checkpoint-editorial-experience-and-intake-r.patch` passed. No reset, forced apply, push, merge or deploy was used.
+- Reconciled the editorial/intake patch using Ponytail `full` and the retained UI UX Pro Max design-system/UI-styling guidance. Kept self-hosted OFL Vazirmatn and Estedad; no IranYekan, stock image, fabricated company fact, client, metric, team member or project was added.
+- Production-safe functional coverage now includes: browser-capability, expiring dev OTP inbox; OTP expiry/attempt/replay rejection; transactional onboarding retry; preserved form state on review/edit/network retry; request idempotency; customer DTO minimization; first screening transition without a constraint conflict; and transactional internal note/audit. The web build receives the API rewrite and public inbox flag at build time; runtime API routing stays `http://api:4000` in Compose.
+- Toolchain evidence: Node `v22.23.1`, pnpm `9.0.0`; `pnpm install --frozen-lockfile`, `pnpm lint` (including 137-row traceability contract), `pnpm typecheck`, `pnpm test` (22 passed, 1 opted-out integration skipped), and `pnpm build` all passed.
+- Real integration evidence (separate from browser mocks): migrated an ephemeral PostgreSQL 17 database named `novin_test` and an ephemeral Redis 7.4 instance, both loopback-only/tmpfs. With `APP_ENV=test` and `NOVIN_RUN_DATABASE_TESTS=true`, `tests/integration/intake-postgres.test.ts` passed: failed/expired/replayed OTP, concurrent OTP verify, concurrent onboarding, concurrent duplicate submission, customer-data minimization, screening and audit note behavior. No project Compose database or production data was used.
+- Browser evidence: Chromium 6 passed / 2 synthetic private-token cases skipped; Firefox 6 passed / 2 skipped. The intake browser test uses mocked API responses by design and is not reported as the database integration. It checks account-load retry, login → onboarding → problem → review/edit → transient error/retry → successful submit, keyboard skip-link focus, mobile navigation Escape close, no-JS home content, axe serious/critical issues, and 320/768/1440 no-horizontal-overflow captures. The attempted WebKit cases failed before assertions with `page.goto: WebKit encountered an internal error`; retain the failure and reproduce in a provisioned CI/WebKit runner before considering browser-matrix acceptance complete.
+- Manually reviewed current screenshots: `artifacts/screenshots/home-{320,768,1440}.png` and `artifacts/screenshots/request-{draft,review,success}-{320,768,1440}.png`. They show a coherent RTL editorial hierarchy, readable 16px-base body copy, 44px+ compact navigation targets/48px main controls, warm/natural surface contrast, and no observed horizontal overflow in the tested flows. The browser-only development SMS toggle may appear only in development screenshots; the production-like image check below confirms it is absent from production SSR.
+- Docker evidence: `docker compose --env-file .env config --quiet` passed with production-like, non-secret overrides. `docker compose ... build web api` built `novin-financial-web:r6-checkpoint` and `novin-financial-api:r6-checkpoint`; the temporary loopback web container returned `{\"status\":\"ok\"}` from `/health`, and its SSR HTML contained no development SMS inbox. It was stopped immediately. This is image/route validation, not a production deployment or a complete API/provider lifecycle rehearsal.
+- No external provider, real customer data, payment, migration on a persistent environment, publish action or production preflight approval was performed. See `docs/R6_FOLLOWUP.md` and `docs/R6_BACKLOG.md` for remaining R6 and launch work.
 
 Copy unresolved gates from `DECISIONS.md` and close them only with evidence.
 

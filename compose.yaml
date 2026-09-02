@@ -6,6 +6,11 @@ services:
     build:
       context: .
       dockerfile: docker/web.Dockerfile
+      args:
+        API_INTERNAL_URL: http://api:4000
+        APP_ENV: ${APP_ENV:-production}
+        DEV_SMS_INBOX_ENABLED: ${DEV_SMS_INBOX_ENABLED:-false}
+        PUBLIC_BASE_URL: ${PUBLIC_BASE_URL}
     init: true
     restart: unless-stopped
     user: "${APP_UID:-1000}:${APP_GID:-1000}"

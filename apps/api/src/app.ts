@@ -36,7 +36,7 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
   const { db, pool } = createDatabase(config.DATABASE_URL);
   const redis = createClient({ url: config.REDIS_URL });
   const paymentsAdapter = paymentAdapter(config);
-  const app = Fastify({ logger: { level: config.APP_ENV === 'production' ? 'info' : 'debug', redact: ['req.headers.cookie', 'req.headers.authorization', 'req.body.code', 'req.body.description'] }, trustProxy: config.TRUSTED_PROXY_COUNT > 0 });
+  const app = Fastify({ logger: { level: config.APP_ENV === 'production' ? 'info' : 'debug', redact: ['req.headers.cookie', 'req.headers.authorization', 'req.body.code', 'req.body.description'] }, trustProxy: (_address, hop) => hop < config.TRUSTED_PROXY_COUNT });
   await redis.connect();
   await mkdir(join(process.cwd(), 'var/logs'), { recursive: true, mode: 0o700 });
   await app.register(cookie);
@@ -46,6 +46,7 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
 
   app.addHook('onRequest', async (request, reply) => {
     request.correlationId = randomUUID();
+    if (request.url.startsWith('/api/')) reply.header('cache-control', 'private, no-store');
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method)) {
       const origin = request.headers.origin;
       if (origin && origin !== config.PUBLIC_BASE_URL) return reply.code(403).send({ error: 'درخواست از مبدأ مجاز نیست.' });
@@ -102,6 +103,25 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
   function setSession(reply: FastifyReply, token: string) {
     reply.setCookie('novin_session', token, { httpOnly: true, secure: config.APP_ENV === 'production', sameSite: 'lax', path: '/', maxAge: config.SESSION_TTL_SECONDS });
   }
+  // The mock inbox is an expiring browser capability, never a global message list.
+  const devInboxEnabled = config.APP_ENV !== 'production' && config.SMS_PROVIDER === 'mock' && config.DEV_SMS_INBOX_ENABLED;
+  async function sendLoginCode(request: FastifyRequest, reply: FastifyReply, mobile: string, code: string) {
+    const body = `نوین ایرانیان: رمز تأیید شما ${code} است. این رمز را در اختیار دیگران نگذارید.`;
+    // Authentication codes must not be persisted in the durable notification outbox.
+    await deliverSms(config, mobile, body);
+    if (devInboxEnabled) {
+      const capability = /^[A-Za-z0-9_-]{32,100}$/.test(request.cookies.novin_dev_inbox ?? '') ? request.cookies.novin_dev_inbox! : opaqueToken();
+      await redis.set(`dev-inbox:${secretHash(capability, config.SESSION_SECRET)}`, JSON.stringify({ body, mobile, expiresAt: new Date(Date.now() + config.OTP_TTL_SECONDS * 1000).toISOString() }), { EX: config.OTP_TTL_SECONDS });
+      reply.setCookie('novin_dev_inbox', capability, { httpOnly: true, sameSite: 'strict', path: '/api/v1', maxAge: config.OTP_TTL_SECONDS });
+    }
+  }
+  if (devInboxEnabled) {
+    app.get('/api/v1/dev/sms-inbox', async (request) => {
+      const capability = request.cookies.novin_dev_inbox;
+      const message = capability ? await redis.get(`dev-inbox:${secretHash(capability, config.SESSION_SECRET)}`) : null;
+      return { messages: message ? [JSON.parse(message)] : [] };
+    });
+  }
   const uploadPolicySchema = z.object({ maxBytes: z.number().int().min(1_024).max(50 * 1024 * 1024), allowedTypes: z.array(z.string().min(3).max(160)).min(1).max(12) });
   async function activeUploadConfig() {
     const saved = await db.query.serviceSettings.findFirst({ where: eq(serviceSettings.key, 'upload_policy') });
@@ -115,34 +135,40 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
   app.get('/health', async () => ({ status: 'ok' }));
   app.get('/api/v1/openapi.json', async () => ({ openapi: '3.1.0', info: { title: 'Novin API', version: '0.1.0', description: 'API داخلی و مشتری؛ تمام مسیرهای تغییر‌دهنده داده به نشست، RBAC و ثبت ممیزی متکی هستند.' }, servers: [{ url: config.PUBLIC_BASE_URL }], paths: { '/api/v1/auth/otp': { post: { summary: 'Issue OTP', responses: { 200: { description: 'Accepted without account enumeration' }, 429: { description: 'Rate limited' } } } }, '/api/v1/auth/verify': { post: { summary: 'Verify OTP and set an opaque session cookie', responses: { 200: { description: 'Authenticated' }, 401: { description: 'Invalid OTP' } } } }, '/api/v1/requests': { post: { summary: 'Submit an idempotent customer request', security: [{ sessionCookie: [] }], responses: { 200: { description: 'Created or idempotent duplicate' } } } }, '/api/v1/offers/{token}': { get: { summary: 'Read a private opaque-token offer', parameters: [{ name: 'token', in: 'path', required: true, schema: { type: 'string' } }] } }, '/api/v1/offers/{token}/accept': { post: { summary: 'Record versioned consent and create an order' } }, '/api/v1/offers/{token}/payments/gateway': { post: { summary: 'Create a gateway redirect transaction after production configuration' } }, '/api/v1/admin/requests': { get: { summary: 'Search/filter internal requests', security: [{ sessionCookie: [] }] } }, '/api/v1/admin/settings': { get: { summary: 'Read non-secret service settings; superadmin MFA required', security: [{ sessionCookie: [] }] } } }, components: { securitySchemes: { sessionCookie: { type: 'apiKey', in: 'cookie', name: 'novin_session' } } } }));
 
-  app.post('/api/v1/auth/otp', { config: { rateLimit: { max: 5, timeWindow: '10 minutes' } } }, async (request) => {
+  app.post('/api/v1/auth/otp', { config: { rateLimit: { max: 5, timeWindow: '10 minutes' } } }, async (request, reply) => {
     const input = sendOtpSchema.parse(request.body);
     for (const key of [`otp:ip:${hashIp(request.ip, config.SESSION_SECRET)}`, `otp:mobile:${secretHash(input.mobile, config.SESSION_SECRET)}`]) {
       const count = await redis.incr(key); if (count === 1) await redis.expire(key, 600); if (count > 5) throw Object.assign(new Error('تعداد درخواست بیش از حد مجاز است. کمی بعد دوباره تلاش کنید.'), { statusCode: 429 });
     }
     const resendKey = `otp:resend:${input.mobile}`;
-    if (await redis.get(resendKey)) return { accepted: true, retryAfterSeconds: config.OTP_RESEND_SECONDS };
+    if (!await redis.set(resendKey, '1', { EX: config.OTP_RESEND_SECONDS, NX: true })) return { accepted: true, retryAfterSeconds: config.OTP_RESEND_SECONDS };
     const code = String(randomInt(0, 1_000_000)).padStart(6, '0');
     await db.insert(otpChallenges).values({ mobile: input.mobile, codeHash: secretHash(`${input.mobile}:${code}`, config.SESSION_SECRET), expiresAt: new Date(Date.now() + config.OTP_TTL_SECONDS * 1000), ipHash: hashIp(request.ip, config.SESSION_SECRET) });
-    await redis.set(resendKey, '1', { EX: config.OTP_RESEND_SECONDS });
-    if (config.APP_ENV !== 'production') await notify('SMS', 'OTP', input.mobile, `محیط آزمایشی نوین: رمز یک‌بارمصرف ${code} تا دو دقیقه معتبر است.`);
+    await sendLoginCode(request, reply, input.mobile, code);
     return { accepted: true, retryAfterSeconds: config.OTP_RESEND_SECONDS };
   });
 
   app.post('/api/v1/auth/verify', { config: { rateLimit: { max: 10, timeWindow: '10 minutes' } } }, async (request, reply) => {
     const input = verifyOtpSchema.parse(request.body);
-    const challenge = await db.query.otpChallenges.findFirst({ where: and(eq(otpChallenges.mobile, input.mobile), isNull(otpChallenges.consumedAt), gt(otpChallenges.expiresAt, new Date())), orderBy: [desc(otpChallenges.createdAt)] });
-    if (!challenge || challenge.attempts >= config.OTP_MAX_ATTEMPTS || !safeEqual(challenge.codeHash, secretHash(`${input.mobile}:${input.code}`, config.SESSION_SECRET))) {
-      if (challenge) await db.update(otpChallenges).set({ attempts: sql`${otpChallenges.attempts} + 1` }).where(eq(otpChallenges.id, challenge.id));
-      throw Object.assign(new Error('رمز یک‌بارمصرف نامعتبر یا منقضی است.'), { statusCode: 401 });
-    }
-    await db.transaction(async (tx) => {
+    const verified = await db.transaction(async (tx) => {
+      const [challenge] = await tx.select().from(otpChallenges).where(and(eq(otpChallenges.mobile, input.mobile), isNull(otpChallenges.consumedAt), gt(otpChallenges.expiresAt, new Date()))).orderBy(desc(otpChallenges.createdAt)).limit(1).for('update');
+      if (!challenge || challenge.attempts >= config.OTP_MAX_ATTEMPTS) return false;
+      if (!safeEqual(challenge.codeHash, secretHash(`${input.mobile}:${input.code}`, config.SESSION_SECRET))) {
+        await tx.update(otpChallenges).set({ attempts: sql`${otpChallenges.attempts} + 1` }).where(eq(otpChallenges.id, challenge.id));
+        return false; // Commit the attempt counter; do not roll it back by throwing.
+      }
       await tx.update(otpChallenges).set({ consumedAt: new Date() }).where(eq(otpChallenges.id, challenge.id));
+      return true;
     });
+    if (!verified) throw Object.assign(new Error('رمز یک‌بارمصرف نامعتبر یا منقضی است.'), { statusCode: 401 });
     let user = await db.query.users.findFirst({ where: eq(users.mobile, input.mobile) });
     if (!user) [user] = await db.insert(users).values({ mobile: input.mobile }).returning();
     const token = await sessionFor(user!.id);
     setSession(reply, token);
+    if (devInboxEnabled && request.cookies.novin_dev_inbox) {
+      await redis.del(`dev-inbox:${secretHash(request.cookies.novin_dev_inbox, config.SESSION_SECRET)}`);
+      reply.clearCookie('novin_dev_inbox', { path: '/api/v1' });
+    }
     await audit(db, { actorId: user!.id, actorRole: user!.role, action: 'AUTH_OTP_VERIFIED', entity: 'user', entityId: user!.id, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) });
     return { authenticated: true, onboardingRequired: !user!.firstName };
   });
@@ -181,13 +207,17 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
   app.post('/api/v1/account/onboarding', async (request) => {
     const auth = requireAuth(request);
     const input = onboardingSchema.parse(request.body);
-    const [organization] = await db.insert(organizations).values({ displayName: input.organizationName, type: input.organizationType }).returning();
     await db.transaction(async (tx) => {
+      // Serialize retries for this representative: one active organization in MVP.
+      await tx.select({ id: users.id }).from(users).where(eq(users.id, auth.id)).for('update');
+      const existing = await tx.query.memberships.findFirst({ where: and(eq(memberships.userId, auth.id), eq(memberships.active, true)) });
+      if (existing) return;
+      const [organization] = await tx.insert(organizations).values({ displayName: input.organizationName, type: input.organizationType }).returning();
       await tx.update(users).set({ firstName: input.firstName, lastName: input.lastName, email: input.email, jobTitle: input.jobTitle, updatedAt: new Date() }).where(eq(users.id, auth.id));
       await tx.insert(memberships).values({ userId: auth.id, organizationId: organization!.id, representationConfirmedAt: new Date() });
       await tx.insert(consentLogs).values({ userId: auth.id, documentKind: 'privacy', documentVersion: input.privacyVersion, ipHash: hashIp(request.ip, config.SESSION_SECRET) });
+      await audit(tx, { actorId: auth.id, actorRole: auth.role, action: 'ONBOARDING_COMPLETED', entity: 'organization', entityId: organization!.id, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) });
     });
-    await audit(db, { actorId: auth.id, actorRole: auth.role, action: 'ONBOARDING_COMPLETED', entity: 'organization', entityId: organization!.id, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) });
     return { ok: true };
   });
 
@@ -195,7 +225,8 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
     const auth = requireAuth(request);
     const profile = await db.select(customerFields).from(users).where(eq(users.id, auth.id)).limit(1);
     const own = await db.select({ reference: requests.reference, title: requests.title, submittedAt: requests.submittedAt }).from(requests).where(eq(requests.createdByUserId, auth.id)).orderBy(desc(requests.submittedAt));
-    return { profile: profile[0], requests: own };
+    const [organization] = await db.select({ displayName: organizations.displayName, type: organizations.type }).from(memberships).innerJoin(organizations, eq(memberships.organizationId, organizations.id)).where(and(eq(memberships.userId, auth.id), eq(memberships.active, true))).limit(1);
+    return { profile: profile[0], organization: organization ?? null, requests: own };
   });
 
   app.patch('/api/v1/account', async (request) => {
@@ -205,12 +236,12 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
     return { ok: true };
   });
 
-  app.post('/api/v1/account/mobile-change/request', async (request) => {
+  app.post('/api/v1/account/mobile-change/request', { config: { rateLimit: { max: 5, timeWindow: '10 minutes' } } }, async (request, reply) => {
     const auth = requireAuth(request); const input = z.object({ mobile: sendOtpSchema.shape.mobile }).parse(request.body);
     if (input.mobile === auth.mobile) return { accepted: true };
     const code = String(randomInt(0, 1_000_000)).padStart(6, '0');
     await redis.set(`mobile-change:${auth.id}`, secretHash(`${input.mobile}:${code}`, config.SESSION_SECRET), { EX: config.OTP_TTL_SECONDS });
-    if (config.APP_ENV !== 'production') await notify('SMS', 'MOBILE_CHANGE', input.mobile, `محیط آزمایشی نوین: رمز تأیید تغییر همراه ${code}`);
+    await sendLoginCode(request, reply, input.mobile, code);
     return { accepted: true };
   });
   app.post('/api/v1/account/mobile-change/verify', async (request, reply) => {
@@ -243,12 +274,18 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
     const membership = await db.query.memberships.findFirst({ where: and(eq(memberships.userId, auth.id), eq(memberships.active, true)) });
     if (!membership) throw Object.assign(new Error('ابتدا اطلاعات سازمان را تکمیل کنید.'), { statusCode: 422 });
     const duplicate = await db.query.requests.findFirst({ where: and(eq(requests.createdByUserId, auth.id), eq(requests.idempotencyKey, input.idempotencyKey)) });
-    if (duplicate) return { reference: duplicate.reference, duplicate: true };
+    if (duplicate) return { id: duplicate.id, reference: duplicate.reference, duplicate: true };
     const [created] = await db.transaction(async (tx) => {
-      const result = await tx.insert(requests).values({ reference: publicReference('REQ'), organizationId: membership.organizationId, createdByUserId: auth.id, title: input.title, description: input.description, source: input.source, idempotencyKey: input.idempotencyKey, privacyVersion: input.privacyVersion }).returning();
+      const result = await tx.insert(requests).values({ reference: publicReference('REQ'), organizationId: membership.organizationId, createdByUserId: auth.id, title: input.title, description: input.description, source: input.source, idempotencyKey: input.idempotencyKey, privacyVersion: input.privacyVersion }).onConflictDoNothing({ target: [requests.createdByUserId, requests.idempotencyKey] }).returning();
+      if (!result.length) return result;
       await tx.insert(consentLogs).values({ userId: auth.id, documentKind: 'privacy', documentVersion: input.privacyVersion, ipHash: hashIp(request.ip, config.SESSION_SECRET) });
       return result;
     });
+    if (!created) {
+      const existing = await db.query.requests.findFirst({ where: and(eq(requests.createdByUserId, auth.id), eq(requests.idempotencyKey, input.idempotencyKey)) });
+      if (!existing) throw Object.assign(new Error('ثبت درخواست کامل نشد. دوباره تلاش کنید.'), { statusCode: 503 });
+      return { id: existing.id, reference: existing.reference, duplicate: true };
+    }
     const person = await db.query.users.findFirst({ where: eq(users.id, auth.id) });
     await notify('SMS', 'REQUEST_SUBMITTED', auth.mobile, `درخواست شما با شماره ${created!.reference} ثبت شد. بررسی اولیه رایگان است.`, created!.id);
     if (person?.email) await notify('EMAIL', 'REQUEST_SUBMITTED', person.email, `درخواست شما با شماره ${created!.reference} ثبت شد.`, created!.id);
@@ -299,16 +336,20 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
 
   app.post('/api/v1/admin/requests/:id/transition', async (request) => {
     const auth = requirePermission(request, 'requests:screen');
-    const input = z.object({ state: z.enum(['SUBMITTED', 'UNDER_REVIEW', 'CONTACT_PENDING', 'NEED_MORE_INFO', 'QUALIFIED', 'REJECTED', 'OFFER_SENT', 'PAID', 'SESSION_SCHEDULED', 'SESSION_COMPLETED', 'PROJECT_PROPOSED', 'ARCHIVED']), expectedVersion: z.number().int().nonnegative(), outcome: z.string().trim().min(3).max(32).optional(), note: z.string().trim().min(3).max(4_000), contactedAt: z.string().datetime().optional() }).parse(request.body);
+    const input = z.object({ state: z.enum(['SUBMITTED', 'UNDER_REVIEW', 'CONTACT_PENDING', 'NEED_MORE_INFO', 'QUALIFIED', 'REJECTED', 'OFFER_SENT', 'PAID', 'SESSION_SCHEDULED', 'SESSION_COMPLETED', 'PROJECT_PROPOSED', 'ARCHIVED']), expectedVersion: z.number().int().nonnegative(), outcome: z.enum(['QUALIFIED', 'REJECTED', 'NEED_MORE_INFO']).optional(), note: z.string().trim().min(3).max(4_000), contactedAt: z.string().datetime().optional() }).parse(request.body);
     const requestId = (request.params as { id: string }).id;
     const current = await db.query.requests.findFirst({ where: eq(requests.id, requestId) });
     if (!current || current.version !== input.expectedVersion) throw Object.assign(new Error('درخواست تغییر کرده یا یافت نشد.'), { statusCode: 409 });
     assertTransition(current.state, input.state);
+    if (input.state === 'PAID' || input.state === 'OFFER_SENT') throw Object.assign(new Error('این مرحله تنها از مسیر ثبت وصول یا صدور پیشنهاد قابل انجام است.'), { statusCode: 422 });
+    const outcome = ['QUALIFIED', 'REJECTED', 'NEED_MORE_INFO'].includes(input.state) ? input.state : undefined;
+    if (input.outcome && input.outcome !== outcome) throw Object.assign(new Error('نتیجه بررسی با مرحله انتخاب‌شده سازگار نیست.'), { statusCode: 422 });
     await db.transaction(async (tx) => {
-      await tx.insert(screenings).values({ requestId, actorId: auth.id, outcome: input.outcome ?? input.state, note: input.note, contactedAt: input.contactedAt ? new Date(input.contactedAt) : undefined });
-      await tx.update(requests).set({ state: input.state, version: sql`${requests.version} + 1`, updatedAt: new Date() }).where(and(eq(requests.id, requestId), eq(requests.version, input.expectedVersion)));
+      const changed = await tx.update(requests).set({ state: input.state, version: sql`${requests.version} + 1`, updatedAt: new Date() }).where(and(eq(requests.id, requestId), eq(requests.version, input.expectedVersion))).returning({ id: requests.id });
+      if (!changed.length) throw Object.assign(new Error('درخواست هم‌زمان تغییر کرده است؛ صفحه را تازه کنید.'), { statusCode: 409 });
+      if (outcome) await tx.insert(screenings).values({ requestId, actorId: auth.id, outcome, note: input.note, contactedAt: input.contactedAt ? new Date(input.contactedAt) : undefined });
+      await audit(tx, { actorId: auth.id, actorRole: auth.role, action: 'REQUEST_TRANSITION', entity: 'request', entityId: requestId, before: { state: current.state }, after: { state: input.state, note: input.note }, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) });
     });
-    await audit(db, { actorId: auth.id, actorRole: auth.role, action: 'REQUEST_TRANSITION', entity: 'request', entityId: requestId, before: { state: current.state }, after: { state: input.state }, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) });
     return { ok: true };
   });
 

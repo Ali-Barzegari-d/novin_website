@@ -5,6 +5,10 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   typedRoutes: true,
   experimental: { useTypeScriptCli: false },
+  env: {
+    // Public build flag; never a credential. Production always wins.
+    NEXT_PUBLIC_DEV_SMS_INBOX_ENABLED: process.env.APP_ENV === 'production' ? 'false' : (process.env.DEV_SMS_INBOX_ENABLED ?? 'true')
+  },
   async rewrites() {
     return [{ source: '/api/:path*', destination: `${process.env.API_INTERNAL_URL ?? 'http://127.0.0.1:4000'}/api/:path*` }];
   },
