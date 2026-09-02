@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { SiteChrome } from '@/components/SiteChrome';
+import { Footer } from '@/components/layout/Footer';
+import { Header } from '@/components/layout/Header';
+import { SmsInbox } from '@/components/SmsInbox';
 import { Toaster } from '@/components/ui/Toaster';
 
 export const metadata: Metadata = {
@@ -12,11 +14,19 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const demoInboxEnabled = process.env.NEXT_PUBLIC_DEV_SMS_INBOX_ENABLED === 'true';
+
   return (
-    <html lang="fa" dir="rtl">
-      <body>
-        <SiteChrome>{children}</SiteChrome>
+    <html lang="fa" dir="rtl" data-scroll-behavior="smooth">
+      <body className={demoInboxEnabled ? 'has-dev-inbox' : undefined}>
+        <a className="skip-link" href="#main">
+          پرش به محتوای اصلی
+        </a>
+        <Header />
+        <main id="main">{children}</main>
+        <Footer />
         <Toaster />
+        {demoInboxEnabled ? <SmsInbox /> : null}
       </body>
     </html>
   );
