@@ -1,6 +1,6 @@
 # Implementation progress
 
-Status: R6 UI/intake checkpoint validated locally; R7 Tailwind token, global-style, Button and Input primitive checkpoints validated locally. Public production remains blocked by external gates and unverified launch work.
+Status: R6 UI/intake checkpoint validated locally; R7 Tailwind token, global-style, Button, Input, Badge, Card and Checkbox primitive checkpoints validated locally. Public production remains blocked by external gates and unverified launch work.
 
 ## Environment
 
@@ -21,7 +21,7 @@ Status: R6 UI/intake checkpoint validated locally; R7 Tailwind token, global-sty
 | R4 | Passed (dev/demo) | `7fc56c4` | migration `0001_service_settings.sql`; `pnpm typecheck`, `pnpm lint`, `pnpm test` (10), secrets scan, production build, Chromium 4/4 at 320/768/1440, synthetic contract invoice | Legal/company identity acceptance remains externally blocked; production preflight fails closed as designed |
 | R5 | Passed (dev/demo); public production blocked | `97f9253` | final static/security gates, Docker image rehearsal, API/web health smoke, Chromium + Firefox E2E; see R5 evidence below | Legal/company/provider/TLS/backup/ClamAV gates and isolated restore drill remain open |
 | R6 | Validated checkpoint; not a production release | `b45f147` | frozen install, lint, typecheck, 22 unit tests, production build, disposable PostgreSQL/Redis integration, Chromium/Firefox E2E, Docker production-like image smoke | WebKit runner failure; all existing launch gates plus security/commerce/CMS/operations backlog remain open |
-| R7 | Tailwind token/global-style/Button/Input checkpoints validated; not a production release | `645c429`, `1ec7663`, `f8bf9cf`, `4671dbd` | frozen install, workspace typecheck, web production build, lint, 22 unit/integration tests and focused Chromium RTL/dark/focus/axe checks | R6 and launch gates are unchanged |
+| R7 | Tailwind token/global-style/Button/Input/Badge/Card/Checkbox checkpoints validated; not a production release | `645c429`, `1ec7663`, `f8bf9cf`, `4671dbd`, `06e31db`, `b3ce320` | frozen install, workspace typecheck, web production build, lint, 22 unit/integration tests and focused Chromium RTL/dark/focus/axe checks | R6 and launch gates are unchanged |
 
 ## Execution log
 
@@ -166,6 +166,15 @@ Add dated entries with commands, results, decisions, defects, and the next actio
 - QA passed: `pnpm typecheck`; `pnpm --filter web build` (25 routes); `pnpm lint` (137-row traceability contract); `pnpm test` (22 passed, 1 opted-out integration skipped); `git diff --check`; and a focused local Chromium + axe smoke. The browser check covers unique generated IDs, label click-to-focus, `required`, `aria-invalid`, helper alert/description, disabled behavior, 44px large-field geometry, RTL addon ordering, keyboard Tab focus, light/dark focus tokens, no 320px overflow and no serious/critical axe findings.
 - Manually inspected `artifacts/screenshots/input-preview-light-320.png` and `artifacts/screenshots/input-preview-dark-320.png`. The known non-production Tailwind config module-type warning remains unchanged and is recorded in the preceding R7 Button entry; no type-safety control was relaxed to silence it.
 - Input implementation commit: `4671dbd` (`feat(r7): add accessible Input primitive`). No remote action was taken.
+
+### 2026-09-02 — R7 status, card and checkbox primitives
+
+- Applied Ponytail `full` plus retained UI UX Pro Max design-system/UI-styling guidance to `~/amir/prompt-05.md`. Added token-driven `Badge` (seven semantic variants, size, dot and decorative icon), composable `Card` (outlined/elevated/interactive/offer variants and header/title/description/content/footer), and native `Checkbox` (label, description, error and disabled states).
+- Reconciled malformed prompt values with existing semantic aliases: info/accent badges use the existing primary/accent subtle surfaces, solid uses the semantic primary foreground pair, and no package or raw colour was introduced into a component. `Card` is a minimal Client Component only because its `asButton`/interactive mode implements the required Enter/Space activation as well as focus behavior; other rendering remains native and stateless.
+- Browser accessibility QA found a genuine 3.44:1 small-text contrast failure in the light warning Badge. Added primitive `--gold-700` and mapped `--color-warning` to it in the light semantic layer, raising the shared warning foreground to a compliant value for Badge and Input helper text. A separate dark-theme check found the previous `--color-text-muted` value insufficient on raised surfaces, so it now reuses the contrast-safe secondary text value (`#aeb7c2`).
+- Expanded the development-only `/design-preview` to show every new variant and state; it remains empty in production. QA passed: `pnpm typecheck`; `pnpm --filter web build` (25 routes); `pnpm lint` (137-row traceability contract); `pnpm test` (22 passed, 1 opted-out integration skipped); `git diff --check`; and focused Chromium + axe smoke. The browser test verifies Badge RTL dot order; Card outlined/elevated/offer rendering and Enter/Space activation; Checkbox label toggle, native checked visual, error/described-by/alert semantics, disabled state and keyboard focus; light/dark tokens, no 320px overflow, and no axe violations after the theme transition settled.
+- Manually inspected `artifacts/screenshots/badge-card-checkbox-preview-light-320.png` and `artifacts/screenshots/badge-card-checkbox-preview-dark-320.png`. The known non-production Tailwind config module-type warning is unchanged; no type-safety setting was weakened to suppress it.
+- Primitive implementation commit: `06e31db` (`feat(r7): add status and form primitives`). Dark contrast correction: `b3ce320` (`fix(r7): strengthen dark muted contrast`). No remote action was taken.
 
 Copy unresolved gates from `DECISIONS.md` and close them only with evidence.
 
