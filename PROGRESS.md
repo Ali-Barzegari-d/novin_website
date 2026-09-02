@@ -21,7 +21,7 @@ Status: R6 UI/intake checkpoint validated locally; R7 Tailwind token foundation 
 | R4 | Passed (dev/demo) | `7fc56c4` | migration `0001_service_settings.sql`; `pnpm typecheck`, `pnpm lint`, `pnpm test` (10), secrets scan, production build, Chromium 4/4 at 320/768/1440, synthetic contract invoice | Legal/company identity acceptance remains externally blocked; production preflight fails closed as designed |
 | R5 | Passed (dev/demo); public production blocked | `97f9253` | final static/security gates, Docker image rehearsal, API/web health smoke, Chromium + Firefox E2E; see R5 evidence below | Legal/company/provider/TLS/backup/ClamAV gates and isolated restore drill remain open |
 | R6 | Validated checkpoint; not a production release | `b45f147` | frozen install, lint, typecheck, 22 unit tests, production build, disposable PostgreSQL/Redis integration, Chromium/Firefox E2E, Docker production-like image smoke | WebKit runner failure; all existing launch gates plus security/commerce/CMS/operations backlog remain open |
-| R7 | Tailwind token foundation validated; not a production release | pending token commit | web typecheck, web production build, lint and traceability contract | R6 and launch gates are unchanged |
+| R7 | Tailwind token foundation validated; not a production release | `645c429` | web typecheck, web production build, lint and traceability contract | R6 and launch gates are unchanged |
 
 ## Execution log
 
@@ -139,6 +139,7 @@ Add dated entries with commands, results, decisions, defects, and the next actio
 - Added `apps/web/tailwind.config.ts` and explicitly loaded it from `globals.css`. Tailwind 4 does not auto-detect legacy JavaScript/TypeScript configuration, so `@config` makes the new utility tokens available to the actual web build.
 - Reconciled malformed prompt values with project constraints: corrected the duplicate/broken neutral/spacing entries and invalid primary hex, used `DESIGN.md` navy values (`#0B2545`/`#153A63`), and retained licensed self-hosted Vazirmatn/Estedad rather than adding unlicensed IranYekan or undeclared mono fonts.
 - QA passed: `pnpm --filter web typecheck`; `pnpm --filter web build` (25 routes); `pnpm lint` (including the 137-row traceability contract); `git diff --check`.
+- Token implementation commit: `645c429` (`feat(r7): add Tailwind design tokens`). No remote action was taken.
 
 Copy unresolved gates from `DECISIONS.md` and close them only with evidence.
 
