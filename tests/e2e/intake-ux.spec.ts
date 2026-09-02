@@ -65,7 +65,7 @@ test('new representative can onboard, revise, retry and submit at 320px', async 
   await page.getByRole('button', { name: 'ثبت نهایی درخواست' }).click();
   await expect(page.locator('.error[role="alert"]')).toContainText('دوباره تلاش کنید');
   await page.getByRole('button', { name: 'ثبت نهایی درخواست' }).click();
-  await expect(page.getByRole('status')).toContainText('REQ-TEST-EXAMPLE');
+  await expect(page.locator('.success[role="status"]')).toContainText('REQ-TEST-EXAMPLE');
   await captureState(page, 'success');
   expect(keys).toHaveLength(2); expect(keys[0]).toBe(keys[1]);
 });
@@ -90,13 +90,15 @@ test('mobile navigation includes both audiences and login, closes with Escape an
   await page.keyboard.press('Tab');
   await expect(page.locator('.skip-link')).toBeFocused();
   await expect(page.locator('.skip-link')).toBeVisible();
-  const menu = page.locator('.mobile-menu'); await menu.locator('summary').click();
-  await expect(menu.getByRole('link', { name: 'دولتی و عمومی', exact: true })).toBeVisible();
-  await expect(menu.getByRole('link', { name: 'شرکت‌های خصوصی', exact: true })).toBeVisible();
+  const trigger = page.getByRole('button', { name: 'باز کردن منوی اصلی' });
+  await trigger.click();
+  const menu = page.getByRole('dialog', { name: 'منوی اصلی' });
+  await expect(menu.getByRole('link', { name: 'راهکارهای دولتی و عمومی', exact: true })).toBeVisible();
+  await expect(menu.getByRole('link', { name: 'راهکارهای شرکت‌های خصوصی', exact: true })).toBeVisible();
   await expect(menu.getByRole('link', { name: 'ورود / درخواست‌های من' })).toBeVisible();
-  await page.keyboard.press('Escape'); await expect(menu).not.toHaveAttribute('open', '');
-  await menu.locator('summary').click(); await menu.getByRole('link', { name: 'توانمندی‌ها' }).click();
-  await expect(page).toHaveURL(/capabilities/); await expect(menu).not.toHaveAttribute('open', '');
+  await page.keyboard.press('Escape'); await expect(menu).not.toBeVisible();
+  await trigger.click(); await menu.getByRole('link', { name: 'توانمندی‌ها' }).click();
+  await expect(page).toHaveURL(/capabilities/); await expect(menu).not.toBeVisible();
 });
 
 test('home content is visible without JavaScript and accordion works natively', async ({ browser }) => {

@@ -62,7 +62,7 @@ test('global semantic tokens apply RTL dark mode', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 960 });
   await page.goto('/');
   await expect(page.locator('html')).toHaveCSS('direction', 'rtl');
-  await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(248, 246, 240)');
+  await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(248, 245, 237)');
   await page.locator('html').evaluate((element) => element.classList.add('dark'));
   await page.waitForTimeout(250);
   await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(13, 15, 18)');

@@ -199,6 +199,13 @@ function Header() {
           </Link>
         </div>
 
+        <Link
+          href="/request"
+          className={cn(buttonVariants({ variant: 'primary', size: 'lg' }), 'mobile-header-request xl:hidden')}
+        >
+          ثبت مسئله
+        </Link>
+
         <Dialog.Root open={mobileOpen} onOpenChange={setMobileOpen}>
           <Dialog.Trigger asChild>
             <button
