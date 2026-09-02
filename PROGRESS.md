@@ -21,7 +21,7 @@ Status: R6 UI/intake checkpoint validated locally; R7 Tailwind token and global-
 | R4 | Passed (dev/demo) | `7fc56c4` | migration `0001_service_settings.sql`; `pnpm typecheck`, `pnpm lint`, `pnpm test` (10), secrets scan, production build, Chromium 4/4 at 320/768/1440, synthetic contract invoice | Legal/company identity acceptance remains externally blocked; production preflight fails closed as designed |
 | R5 | Passed (dev/demo); public production blocked | `97f9253` | final static/security gates, Docker image rehearsal, API/web health smoke, Chromium + Firefox E2E; see R5 evidence below | Legal/company/provider/TLS/backup/ClamAV gates and isolated restore drill remain open |
 | R6 | Validated checkpoint; not a production release | `b45f147` | frozen install, lint, typecheck, 22 unit tests, production build, disposable PostgreSQL/Redis integration, Chromium/Firefox E2E, Docker production-like image smoke | WebKit runner failure; all existing launch gates plus security/commerce/CMS/operations backlog remain open |
-| R7 | Tailwind token/global-style checkpoints validated; not a production release | `645c429` + pending global-style commit | web typecheck, web production build, lint, traceability contract and focused Chromium RTL/dark-mode checks | R6 and launch gates are unchanged |
+| R7 | Tailwind token/global-style checkpoints validated; not a production release | `645c429`, `1ec7663` | web typecheck, web production build, lint, traceability contract and focused Chromium RTL/dark-mode checks | R6 and launch gates are unchanged |
 
 ## Execution log
 
@@ -147,6 +147,7 @@ Add dated entries with commands, results, decisions, defects, and the next actio
 - `DESIGN.md` remains authoritative: warm ivory/navy/teal/burgundy is the default visual system, while the dark values use high-contrast semantic aliases. The prompt's broken values were not copied. IranYekanX was not added because no licensed redistributable font files were supplied; existing self-hosted OFL Vazirmatn and Estedad remain the font stack.
 - QA passed: `pnpm --filter web typecheck`; `pnpm --filter web build` (25 routes); `pnpm lint` (137-row traceability contract); `git diff --check`; Chromium dark-token test at 320px; Chromium 320px public-route no-horizontal-overflow test.
 - Visually inspected dark-mode evidence at `artifacts/screenshots/home-dark-320.png`: RTL hierarchy, dark surface/text contrast, native focus treatment and the existing page composition remain intact.
+- Global-style implementation commit: `1ec7663` (`feat(r7): add semantic global styles`). No remote action was taken.
 
 Copy unresolved gates from `DECISIONS.md` and close them only with evidence.
 
