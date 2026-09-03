@@ -21,7 +21,7 @@ Status: R6 UI/intake checkpoint validated locally; R7 visual-system, component, 
 | R4 | Passed (dev/demo) | `7fc56c4` | migration `0001_service_settings.sql`; `pnpm typecheck`, `pnpm lint`, `pnpm test` (10), secrets scan, production build, Chromium 4/4 at 320/768/1440, synthetic contract invoice | Legal/company identity acceptance remains externally blocked; production preflight fails closed as designed |
 | R5 | Passed (dev/demo); public production blocked | `97f9253` | final static/security gates, Docker image rehearsal, API/web health smoke, Chromium + Firefox E2E; see R5 evidence below | Legal/company/provider/TLS/backup/ClamAV gates and isolated restore drill remain open |
 | R6 | Validated checkpoint; not a production release | `b45f147` | frozen install, lint, typecheck, 22 unit tests, production build, disposable PostgreSQL/Redis integration, Chromium/Firefox E2E, Docker production-like image smoke | WebKit runner failure; all existing launch gates plus security/commerce/CMS/operations backlog remain open |
-| R7 | Visual-system, component, layout-shell and public-experience checkpoints validated; not a production release | `645c429`, `1ec7663`, `f8bf9cf`, `4671dbd`, `06e31db`, `b3ce320`, `eeda580`, `e22ef57`, `80e7bd4`, `a25350f`, `f61df0b`, `bd9115a` | frozen install, workspace typecheck, web production build, lint, 22 unit/integration tests and Chromium RTL/focus/axe checks | R6 and launch gates are unchanged |
+| R7 | Visual-system, component, layout-shell and public-experience checkpoints validated; not a production release | `645c429`, `1ec7663`, `f8bf9cf`, `4671dbd`, `06e31db`, `b3ce320`, `eeda580`, `e22ef57`, `80e7bd4`, `a25350f`, `f61df0b`, `bd9115a`, `a474e50`, `6a9db1f` | frozen install, workspace typecheck, web production build, lint, 22 unit/integration tests and Chromium RTL/focus/axe checks | R6 and launch gates are unchanged |
 
 ## Execution log
 
@@ -43,6 +43,15 @@ Add dated entries with commands, results, decisions, defects, and the next actio
 - Added `ConvergenceMark` (decorative no-text SVG under the problems heading: scattered categorical dots converge into one measured line) and `ClosingMark` (quiet original SVG arrow replacing the oversized "↙" glyph). Journey section on desktop now reads as one continuous path via a horizontal gradient rail with a directional arrowhead; mobile keeps the per-phase vertical rail. Hero columns are center-aligned so the brief no longer hangs at the bottom of the aqua field.
 - Verified the whole surface with full Playwright/Chrome screenshot passes at 320/768/1440 on `/`, `/projects`, `/projects/sample-financial-flow`, `/solutions/public` and `/process`, plus 2× close-ups of every diagram; no horizontal overflow at 320px.
 - QA passed: `pnpm typecheck`; `pnpm lint` (137-row traceability contract). Presentation-only change: no PRD behavior, copy claims or traceability mapping changed.
+
+### 2026-09-04 — R7 visual-review correction
+
+- Per owner review, inspected the actual home screenshots at 320, 768 and 1440px and compared the earlier `ProcessArt` concept. The correct information model is a restrained, non-quantitative transformation sequence (`مسئله → مدل → سامانه → پذیرش → نتیجه`), not a trading/finance chart and not a decorative object repeated across the page.
+- Removed the served Hero collage after it proved too small and decorative on mobile, and removed the unhelpful convergence and closing SVG marks. The raw draft remains archived but is explicitly marked rejected in `docs/ASSET_SOURCES.md`; no generated raster image is currently shipped to the public surface.
+- Simplified Hero, integration and process summaries into readable semantic HTML. The remaining ordered lists explain actual method/order; they are no longer presented as code-drawn illustrations. Removed the now-unused `framer-motion` runtime dependency and its lockfile entries.
+- Replaced the earlier image guide with `docs/IMAGE_PROMPTS.md`: it records the rejection criteria, when no image should be used, and two reviewable prompts (conceptual transformation map and permissioned documentary photo). No image enters a public route before owner visual approval at all three reference widths.
+- QA passed: `pnpm install --frozen-lockfile`; `pnpm test` (22 passed, 1 opted-out integration test skipped); `pnpm --filter web build` (25 routes); `pnpm typecheck`; `pnpm lint` (137 traceability rows); `git diff --check`; and Chromium public smoke (4 passed, 2 private-token cases skipped). Manually inspected the regenerated `artifacts/screenshots/home-{320,768,1440}.png` for visual hierarchy, RTL, text legibility and no horizontal overflow.
+- Visual correction commit: `6a9db1f` (`fix(r7): remove ineffective visual charts`). `docs/TRACEABILITY.csv` is unchanged because neither a new PRD behavior nor acceptance mapping was introduced. No push, merge or deployment was performed; production gates remain unchanged.
 
 ### 2026-09-01 — Startup and execution checklist
 
