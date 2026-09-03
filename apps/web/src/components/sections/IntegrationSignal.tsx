@@ -7,11 +7,17 @@ const stages = [
   ['منطق', 'قواعد مالی و کنترل‌ها', 'مدل داده، گردش‌کار و نقاط بررسی'],
   ['اتصال', 'سامانه‌ها و ثبت‌ها', 'حسابداری، محصول و سامانه‌های قانونی'],
   ['خروجی', 'نتیجه قابل ارزیابی', 'ثبت قابل پیگیری و معیار پذیرش روشن']
-];
+] as const;
 
 /**
  * Original, intentionally non-quantitative process illustration.
- * The list is the semantic, no-JavaScript equivalent; SVG is supplementary.
+ * Flow runs right-to-left to match the RTL stage list below it: ورودی on the
+ * right, خروجی on the left. The list is the semantic, no-JavaScript
+ * equivalent; SVG is supplementary. All text stays in HTML — never inside SVG.
+ * Colors are diagram slots validated against the turquoise-900 panel:
+ * line/anchors turquoise-100, logic gold-tint, output rose-tint.
+ * Node fills are pre-mixed opaque against the panel so the flow line reads
+ * as connecting edge-to-edge instead of showing through.
  */
 export function IntegrationSignal() {
   const shouldReduceMotion = useReducedMotion();
@@ -30,14 +36,40 @@ export function IntegrationSignal() {
       یک جریان منسجم، از رویداد تا پذیرش
       <span aria-hidden="true">↙</span>
     </figcaption>
-    <svg className="integration-signal-art" viewBox="0 0 520 148" aria-hidden="true" focusable="false">
-      <path className="integration-signal-line" d="M66 75H154L202 37H302L350 111H454" />
-      <path className="integration-signal-guide" d="M66 112H154M202 112H302M350 112H454" />
-      <g className="integration-signal-node integration-signal-node-input"><rect x="38" y="48" width="56" height="56" rx="8" /><path d="M54 76h24M66 64v24" /></g>
-      <g className="integration-signal-node integration-signal-node-logic"><rect x="174" y="9" width="56" height="56" rx="8" /><path d="M190 37h24M190 47h16" /></g>
-      <g className="integration-signal-node integration-signal-node-connection"><rect x="322" y="83" width="56" height="56" rx="8" /><circle cx="340" cy="111" r="4" /><circle cx="360" cy="111" r="4" /></g>
-      <g className="integration-signal-node integration-signal-node-output"><rect x="426" y="48" width="56" height="56" rx="8" /><path d="M442 88l12-12 8 8 14-18" /></g>
-      <circle className="integration-signal-anchor" cx="154" cy="75" r="4" /><circle className="integration-signal-anchor" cx="202" cy="37" r="4" /><circle className="integration-signal-anchor" cx="302" cy="37" r="4" /><circle className="integration-signal-anchor" cx="350" cy="111" r="4" />
+    <svg className="integration-signal-art" viewBox="0 0 520 168" aria-hidden="true" focusable="false">
+      {/* Hairline value guides — solid, one step off the panel (never dashed). */}
+      <path className="integration-signal-guide" d="M66 140H454" />
+      {/* Main flow line: right (ورودی) to left (خروجی), 2px, round caps. */}
+      <path className="integration-signal-line" d="M454 86H366L318 44H218L170 118H66" />
+      <g className="integration-signal-node integration-signal-node-input">
+        <rect x="426" y="58" width="56" height="56" rx="8" />
+        {/* Document glyph: a real event recorded. */}
+        <path d="M440 74h28M440 86h20M440 98h12" />
+      </g>
+      <g className="integration-signal-node integration-signal-node-logic">
+        <rect x="290" y="16" width="56" height="56" rx="8" />
+        {/* Branch glyph: one rule splitting into checked paths. */}
+        <path d="M302 44h10M312 44l11-9M312 44l11 9" />
+        <circle cx="328" cy="33" r="2.5" />
+        <circle cx="328" cy="55" r="2.5" />
+      </g>
+      <g className="integration-signal-node integration-signal-node-connection">
+        <rect x="142" y="90" width="56" height="56" rx="8" />
+        {/* Linked rings glyph: systems joined. */}
+        <circle cx="161" cy="118" r="6.5" />
+        <circle cx="179" cy="118" r="6.5" />
+      </g>
+      <g className="integration-signal-node integration-signal-node-output">
+        <rect x="38" y="58" width="56" height="56" rx="8" />
+        {/* Measured outcome glyph: rising line with arrowhead. */}
+        <path d="M46 104l12-10 8 6 12-14" />
+        <path d="M87 87L78 86l1 9" />
+      </g>
+      {/* Junction anchors: 8px marks with the panel-colored 2px ring. */}
+      <circle className="integration-signal-anchor" cx="366" cy="86" r="4" />
+      <circle className="integration-signal-anchor" cx="318" cy="44" r="4" />
+      <circle className="integration-signal-anchor" cx="218" cy="44" r="4" />
+      <circle className="integration-signal-anchor" cx="170" cy="118" r="4" />
     </svg>
     <ol>
       {stages.map(([label, title, detail]) => <li key={label}>

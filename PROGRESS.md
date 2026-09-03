@@ -27,6 +27,23 @@ Status: R6 UI/intake checkpoint validated locally; R7 visual-system, component, 
 
 Add dated entries with commands, results, decisions, defects, and the next action. Never paste secrets or real personal data here.
 
+### 2026-09-03 — R7 owner hero collage integration and image prompts
+
+- Reviewed the owner-supplied change: a 2 MB AI-generated conceptual collage PNG placed in `apps/web/public/images/` with no code reference. Per the owner's instruction it is used directly rather than redrawn in code; early-project chart references (`ProcessArt` flow art, `docs/ASSET_SOURCES.md` provenance register) were reviewed before choosing placement.
+- Optimized the asset: a 4:3 WebP crop at 900px / 18 KB (`financial-process-collage-hero.webp`) now renders in the hero aside through `next/image` (priority, responsive `sizes`), framed with the shared 2px/20px corner language and a «تصویر مفهومی» caption tag so no real customer, project or data claim is implied. The 2 MB master PNG moved to `docs/assets-src/financial-process-collage-v1.png` (kept for provenance and future re-crops, not shipped). Provenance row added to `docs/ASSET_SOURCES.md` (source: owner-supplied generated artwork; company holds rights).
+- Added `docs/IMAGE_PROMPTS.md`: the shared style DNA extracted from the owner's collage (deep teal-navy, ivory paper-craft, brushed gold, girih motifs, no text inside images) plus ready-to-use generation prompts for remaining image slots — solutions banners (public/private), closing background motif, and the projects badge-card placeholder. Labels stay in HTML; generated images never carry text or real-world claims.
+- QA passed: `pnpm typecheck`; `pnpm lint` (137-row traceability contract). Verified with a Playwright/Chrome pass at 1440/768/320 on `/` (hero figure renders; `scrollWidth === clientWidth` at 320px checked programmatically, no horizontal overflow).
+- Presentation-only checkpoint: no PRD behavior or traceability mapping changed. Production gates unchanged; no deploy performed.
+
+### 2026-09-03 — R7 diagram craft and composition polish
+
+- Root-caused the broken hero diagram: SVG `<text>` with an LTR writing mode anchored at the rail clipped Persian labels to unreadable tail fragments. Rewrote `HeroPathArt` as an HTML stepper (semantic `<ol>`) on a shared vertical rail with diamond nodes in the categorical turquoise/azure/rose set and a rail terminus; labels are real HTML text, RTL-safe, selectable and readable without JavaScript.
+- Redrew `IntegrationSignal` so the flow runs right-to-left in step with the RTL stage list (ورودی on the right, خروجی on the left) instead of mirroring it. Replaced crude glyphs with documented metaphors — recorded-event document, branching rule, linked systems rings, measured rising outcome with arrowhead — and made node fills opaque panel mixes so the flow line connects edge-to-edge.
+- Added `StationPath`, a reusable horizontal RTL station path (gradient rail through the validated ordinal ramp, arrow terminus, HTML labels) used where a small chart adds clarity: the مسئله/اقدام/نتیجه summary in the home proof aside, the case-study head (`/projects/[slug]`), and the five-step cooperation path on `/process` (same copy as the home journey; no new claims).
+- Added `ConvergenceMark` (decorative no-text SVG under the problems heading: scattered categorical dots converge into one measured line) and `ClosingMark` (quiet original SVG arrow replacing the oversized "↙" glyph). Journey section on desktop now reads as one continuous path via a horizontal gradient rail with a directional arrowhead; mobile keeps the per-phase vertical rail. Hero columns are center-aligned so the brief no longer hangs at the bottom of the aqua field.
+- Verified the whole surface with full Playwright/Chrome screenshot passes at 320/768/1440 on `/`, `/projects`, `/projects/sample-financial-flow`, `/solutions/public` and `/process`, plus 2× close-ups of every diagram; no horizontal overflow at 320px.
+- QA passed: `pnpm typecheck`; `pnpm lint` (137-row traceability contract). Presentation-only change: no PRD behavior, copy claims or traceability mapping changed.
+
 ### 2026-09-01 — Startup and execution checklist
 
 - Read the mandatory documents in the exact `AGENTS.md` order, including PRD, discovery, decisions, architecture, security, acceptance, deployment, and traceability matrix.
