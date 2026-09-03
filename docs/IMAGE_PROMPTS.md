@@ -1,72 +1,73 @@
-# پرامپت‌های تولید تصویر برای اسلات‌های نموداری
+# پرامپت‌های تصویر برای بازبینی مدیر
 
-هدف: تصویرهای «کاغذ-کرافت ایرانی» در همان خانواده‌ی کلاژ تأییدشده‌ی مدیر (`docs/assets-src/financial-process-collage-v1.png`) تولید شود، تا جاهایی که نمودار کدی (SVG) نمی‌تواند زیبایی بصری کافی بدهد، تصویر واقعی و باکیفیت جایگزین شود.
+## تصمیم فعلی
 
-**قانون اجرا:** متن و حروف داخل تصویر تولید **نشود** (متن فارسی در ابزارهای تولید تصویر خراب رندر می‌شود). همه برچسب‌ها در HTML/CSS دور تصویر می‌مانند. هر تصویر پس از تولید، ۱۵۳۶×۱۰۲۴ (یا نسبت ذکرشده) به من بدهید؛ من کراپ/بهینه‌سازی WebP و اتصال به کد و ثبت در `docs/ASSET_SOURCES.md` را انجام می‌دهم.
+کلاژ `financial-process-collage-v1.png` پس از بازبینی در ۳۲۰، ۷۶۸ و
+۱۴۴۰ پیکسل رد شد و در سایت نمایش داده نمی‌شود. مشکل آن، شلوغی استعاری،
+حجم کوچک در Hero موبایل و تبدیل «روش همکاری» به یک شیء تزئینی بود. فایل
+خام تنها برای تاریخچه در `docs/assets-src/` نگه‌داری می‌شود.
 
-## DNA مشترک سبک (پایه‌ی همه پرامپت‌ها)
+مرجع مفهومیِ درست از نسخه‌های نخست پروژه این است:
 
-- رنگ پس‌زمینه: سبز-فیروزه‌ای عمیق و کم‌اشباع بین `#0d4740` و `#075c57`.
-- مصالح: کاغذ برش‌خورده چندلایه (paper cutout)، حجم ملایم سه‌بعدی، سایه‌های نرم مات، پرداخت کاغذی مات (بدون براقیت پلاستیکی).
-- رنگ‌های تأکیدی: طلایی برس‌خورده `#b98a2e`، کرم شیری `#efe9dc`، زرشکی محو `#8b1e3f`، سبز ملایم.
-- موتیف‌های مجاز: هندسه گره/شمسه ایرانی، قاب‌های طاق‌دار، اسناد و پرونده‌های کاغذی، ماشین‌حساب، خطوط جریان نقطه‌چین طلایی، مهر و مدال.
-- نور: استودیویی نرم از بالا-چپ، سایه‌های کوتاه و لطیف.
-- ممنوع: هرگونه نوشته/حرف/عدد خوانا، چهره انسان، لوگو، نمودار کندل/قیمت سهام، پرچم، نماد ارز، گرادیان بنفش/صورتی «هوش مصنوعی».
+`مسئله → مدل → سامانه → پذیرش → نتیجه`
 
-**Negative prompt (برای همه اسلات‌ها):**
+این یک نقشهٔ تحولِ مفهومی است، نه نمودار مالی، نمودار رشد، کندل استیک یا
+ادعای عملکرد. برچسب‌های فارسی همیشه در HTML قرار می‌گیرند، نه داخل تصویر.
 
-```
-text, letters, numbers, words, typography, watermark, logo, human, face, hands, candlestick chart, stock chart, price ticker, currency symbols, flags, neon, purple, pink, glossy plastic, photorealistic people, clutter, noise
-```
+| جایگاه | تصمیم فعلی | شرط استفاده از تصویر |
+|---|---|---|
+| Hero | تصویر ندارد؛ پیام و سه گام همکاری کافی‌اند. | فقط اگر نسخهٔ نهایی در موبایل هم نقش روشنی داشته باشد. |
+| یکپارچه‌سازی | فهرست متنی چهارمرحله‌ای دارد. | تصویر باید «رویداد → کنترل → اتصال → خروجی» را بدون عدد نشان دهد. |
+| نحوهٔ همکاری | فهرست مرحله‌ای HTML. | تصویر لازم نیست؛ ترتیب و شرایط تجاری باید خوانا بماند. |
+| مطالعات موردی | تصویر یا نمودار ندارد. | فقط پس از تأیید کارفرما و همراه با داده/اجازهٔ واقعی. |
 
-## اسلات‌ها
+## قوانین مشترک
 
-### ۱) Hero — وضعیت: انجام شد با کلاژ خودتان
+- هیچ متن، عدد، لوگو، نام مشتری، نشان ارز، نمودار سهام، کندل یا KPI در تصویر نباشد.
+- از چهره، دست، عکس اداریِ ساختگی، پرچم، پول نقد و داشبوردهای SaaS پرهیز شود.
+- نسبت تصویر Hero یا یکپارچه‌سازی: ۳:۲ یا ۴:۳. فایل نهایی PNG/WebP با ضلع بلند ۱۵۳۶px.
+- رنگ‌ها: زمینه گرم `#F8F6F0` یا فیروزه‌ای عمیق `#075C57`، فیروزه‌ای `#0A766F`، کرم `#F2EEE5` و تأکید بسیار محدود زرشکی `#8B1E3F`. سرمه‌ای فقط جزئی.
+- تصویر باید در ۳۲۰px هم قابل فهم باشد؛ عناصر اصلی در مرکز امن کادر بمانند.
 
-`financial-process-collage-hero.webp` در `HomeExperience` متصل شد؛ مستر در `docs/assets-src/`. اگر نسخه‌ی جایگزین خواستید، همان پرامپت پایه با سوژه‌ی «document → rule → connected system → acceptance certificate» و نسبت ۴:۳.
+**Negative prompt برای همهٔ گزینه‌ها:**
 
-### ۲) نوار بنر مسیر اجرا برای صفحات راهکار (دولتی/خصوصی)
-
-- جای اتصال: اسلات جدید `illustration` در `PublicPage` (وقتی تصویر را دادید اضافه می‌کنم) — نوار پهن بالای فصل‌ها.
-- نسبت: ۱۶:۶ پهن (مثلاً ۱۵۳۶×۵۷۶). سوژه در سمت چپ کادر تا زیر متن راست‌چین خالی بماند.
-
-**پرامپت — مسیر دولتی و عمومی:**
-
-```
-Elegant paper-craft conceptual illustration, wide banner composition, on a deep desaturated teal-navy background (#0d4740). Right side intentionally empty. Left half: a stately Iranian pointed-arch frame in layered ivory paper, inside it layered official documents with ornamental girih lattice edges, a golden rule/ledger strip passing through a small eight-point-star seal, thin gold dotted flow lines exiting the arch and branching into three small teal paper modules (process, data, checklist) with tiny gold connectors. Accents in brushed gold (#b98a2e), muted burgundy seal, soft green leaf motif. Soft studio light, gentle paper shadows, matte finish, generous negative space, minimalist editorial composition.
-```
-
-**پرامپت — شرکت‌های خصوصی:**
-
-```
-Elegant paper-craft conceptual illustration, wide banner composition, on a deep desaturated teal-navy background (#0d4740). Right side intentionally empty. Left half: a row of four ivory and teal paper cards connected by thin gold flow lines into one continuous line ending in a small gold arrowhead; above the line a layered financial-model paper sheet with girih corner ornaments and a small brushed-gold calculator; below, two linked paper rings symbolizing integrated systems. Accents in brushed gold (#b98a2e), muted burgundy dot, soft green. Soft studio light, matte paper texture, calm editorial negative space.
+```text
+text, letters, numbers, typography, logo, watermark, client name, KPI,
+stock chart, candlestick chart, currency symbol, dashboard UI, SaaS cards,
+human, face, hands, office stock photo, flag, cash, neon, purple gradient,
+pink AI aesthetic, glossy glass, clutter
 ```
 
-### ۳) موتیف پس‌زمینه‌ی بخش پایانی (Closing)
+## گزینهٔ پیشنهادی ۱ — نقشهٔ تحول مفهومی (اولویت اول)
 
-- جای اتصال: پس‌زمینه‌ی کم‌رنگ پنل `closing-editorial` (با اوورلی ۸–۱۲٪ تا خوانایی متن حفظ شود).
-- نسبت: ۴:۳ یا ۱:۱؛ بعداً به‌صورت تاکتی-چرخشی/کاور استفاده می‌شود.
+این تنها تصویر پیشنهادی برای بخش یکپارچه‌سازی است؛ نه Hero.
 
-**پرامپت:**
-
-```
-Very minimal paper-craft scene on deep teal-navy background (#0d4740), intended as a low-opacity background layer. One large quiet composition: a single long ivory paper path strip descending gently from upper right to lower left, ending in a small brushed-gold eight-point star and a tiny burgundy seal stamp; along the path two small detached paper squares (a checklist, a ledger) fading into shadow. Vast empty background, extremely restrained, soft studio light, matte paper texture, no border, no frame.
-```
-
-### ۴) کارت «نشان مشتریان» در صفحه پروژه‌ها (اختیاری)
-
-- جای اتصال: کارت `case-badge` در `/projects` — قاب تصویری برای وقتی که هنوز نشان واقعی تایید نشده.
-- نسبت: ۴:۳.
-
-**پرامپت:**
-
-```
-Elegant paper-craft still life on deep teal-navy background (#0d4740): one empty ivory certificate sheet with torn-deckle edge and a blank ornamental girih border, a folded teal ribbon beneath it, and beside it a brushed-gold seal blank (no emblem engraved) and a small stack of two muted burgundy and green papers. Composition centered with generous negative space above. Soft studio light, matte finish, minimalist.
+```text
+Use case: infographic-diagram
+Asset type: editorial website illustration for a Persian financial and operations consulting firm
+Primary request: a calm, premium conceptual transformation map with five unlabelled stages arranged right to left: a fragmented paper record, a precise abstract model, an interconnected systems module, a verification checkpoint, and one resolved outcome document. The path between stages is simple, quiet and unmistakable.
+Style/medium: refined two-dimensional editorial illustration, tactile matte paper and ink textures, Iranian girih-inspired proportions used very sparingly; not 3D, not a dashboard, not a technical wireframe.
+Composition/framing: 3:2 landscape, generous breathing room, all five stages readable in a 320px crop, central composition, no element touches the edges.
+Color palette: warm ivory background, deep turquoise and peacock green, soft teal, restrained deep burgundy detail; navy only as a fine outline.
+Lighting/mood: calm, formal, intelligent, trustworthy.
+Text (verbatim): no text anywhere in the image.
+Constraints: symbolic only; no claims, no real customer data, no financial values.
+Avoid: text, letters, numbers, typography, logo, watermark, stock chart, candlestick chart, dashboard UI, SaaS cards, human, face, hands, office stock photo, currency symbol, flag, neon, purple gradient, pink AI aesthetic, glossy glass, clutter.
 ```
 
-## نکات اتصال
+## گزینهٔ پیشنهادی ۲ — تصویر واقعیِ مجاز (فقط با مجوز)
 
-1. فایل خام را در `docs/assets-src/` بگذارید/بدهید تا با نام اسلات آرشیو شود.
-2. من کراپ بهینه (WebP، عرض ۹۰۰–۱۲۰۰) می‌سازم و در `apps/web/public/images/` قرار می‌دهم.
-3. ردیف پروونانس (منبع = تأمین‌شده توسط مدیر شرکت) در `docs/ASSET_SOURCES.md` ثبت می‌شود.
-4. هیچ تصویری بدون برچسب «تصویر مفهومی» نمایش داده نمی‌شود و هیچ تصویری ادعای مشتری/آمار واقعی القا نمی‌کند.
+اگر یک فضای واقعی شرکت، جلسهٔ کاری یا مدارک غیرمحرمانه برای عکس دارید، این
+گزینه از هر تصویر تولیدی معتبرتر است. چهره/دادهٔ قابل‌شناسایی تنها با رضایت
+کتبی منتشر شود.
+
+```text
+Editorial documentary photograph for an Iranian professional financial and operations consulting firm: a real, permissioned worktable seen from above, one person’s face out of frame, unidentifiable hands only if release is confirmed, neutral printed process papers with all private content blank or blurred, a closed notebook, soft natural daylight, warm ivory, deep teal and restrained burgundy details, calm premium editorial composition, 3:2 landscape, generous clean space for surrounding Persian HTML copy. No logos, no readable documents, no money, no stock screens, no staged handshake.
+```
+
+## تحویل برای اتصال
+
+فایل خام را همراه با منبع/مالکیت و نسبت تصویر بدهید. پس از بررسی ۳۲۰، ۷۶۸ و
+۱۴۴۰px، نسخهٔ بهینه در `apps/web/public/images/` قرار می‌گیرد و رجیستر
+`docs/ASSET_SOURCES.md` به‌روز می‌شود. هیچ تصویر تولیدشده‌ای پیش از تأیید
+بصری شما در مسیر عمومی قرار نمی‌گیرد.

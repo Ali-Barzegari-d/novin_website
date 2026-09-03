@@ -6,7 +6,7 @@ type PublicPageProps = {
   lead: string;
   sections: { title: string; items: string[] }[];
   cta?: boolean;
-  /** Optional path diagram rendered under the intro on flow-heavy pages. */
+  /** Optional semantic journey summary rendered under flow-heavy page intros. */
   pathStations?: { title: string; note?: string }[];
   pathLabel?: string;
 };

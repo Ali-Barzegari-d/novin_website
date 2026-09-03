@@ -34,10 +34,12 @@ test('public home is Persian RTL, accessible, and has no public price', async ({
 test('hero keeps the method legible without a decorative diagram', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('complementary', { name: 'روش شروع همکاری' })).toBeVisible();
-  await expect(page.getByText('مسئله چیست؟')).toBeVisible();
-  await expect(page.getByText('چه چیزی قابل اجراست؟')).toBeVisible();
-  await expect(page.getByText('پذیرش چگونه سنجیده می‌شود؟')).toBeVisible();
+  const heroPath = page.locator('.hero-path');
+  await expect(heroPath).toContainText('مسئله');
+  await expect(heroPath).toContainText('اجرا');
+  await expect(heroPath).toContainText('پذیرش');
   await expect(page.locator('.hero-diagram')).toHaveCount(0);
+  await expect(page.locator('.hero-figure')).toHaveCount(0);
   for (const size of sizes) {
     await page.setViewportSize({ width: size.width, height: size.height });
     expect(await page.locator('body').evaluate((element) => element.scrollWidth <= window.innerWidth)).toBe(true);

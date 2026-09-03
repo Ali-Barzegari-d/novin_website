@@ -146,24 +146,10 @@ img, svg, video { display: block; max-width: 100%; }
 .hero-footnote { font-size: .8125rem; color: var(--color-muted); margin-top: 16px; }
 .hero-brief { position: relative; max-width: 440px; padding-inline-start: 28px; border-inline-start: 2px solid var(--color-accent); }
 .hero-brief::after { position: absolute; inset-block-start: 0; inset-inline-start: -2px; width: 2px; height: 34%; content: ''; background: var(--color-highlight); }
-/* Owner-supplied conceptual collage: framed like the integration panel
-   (two squared, two 20px corners) so imagery and diagrams share one language. */
-.hero-figure { margin: 0 0 22px; }
-.hero-figure img { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; border: 1px solid color-mix(in srgb, var(--navy-900) 18%, transparent); border-radius: 2px 20px 2px 20px; box-shadow: 0 14px 34px color-mix(in srgb, var(--navy-900) 16%, transparent); }
-.hero-figure figcaption { display: flex; align-items: center; gap: 10px; margin-top: 10px; color: var(--color-muted); font-size: .75rem; }
-.figure-tag { padding: 2px 8px; border: 1px solid color-mix(in srgb, var(--color-highlight) 45%, transparent); border-radius: 4px; color: var(--color-highlight); font-size: .625rem; font-weight: 700; white-space: nowrap; }
 .hero-brief-label { margin-bottom: 14px; color: var(--turquoise-900); font-family: var(--font-display); font-size: .9375rem; font-weight: 700; }
 .hero-brief-copy { margin-bottom: 20px; color: var(--color-muted); font-size: .875rem; line-height: 1.9; }
-/* Cooperation-path stepper: shared vertical rail on the inline-start edge,
-   diamond nodes in the categorical set, terminus pointing down (پذیرش).
-   All labels are HTML — the previous SVG-text version clipped Persian text. */
-:root { --path-step-1: #0e9084; --path-step-2: #0a66c2; --path-step-3: #a0325c; }
-.hero-path { --path-rail: color-mix(in srgb, var(--navy-900) 22%, transparent); position: relative; max-width: 368px; margin: 6px 0 0; padding: 2px 0 22px; padding-inline-start: 24px; list-style: none; }
-.hero-path::before { content: ''; position: absolute; inset-block: 8px 14px; inset-inline-start: 5px; width: 2px; background: var(--path-rail); }
-.hero-path::after { content: ''; position: absolute; inset-block-end: 0; inset-inline-start: 1px; border: 5px solid transparent; border-block-start: 7px solid var(--path-rail); transform: translateX(50%); }
-.hero-path li { position: relative; display: grid; margin: 0; }
-.hero-path li + li { margin-top: 18px; }
-.hero-path-node { position: absolute; inset-block-start: 7px; inset-inline-start: -24px; width: 12px; height: 12px; background: var(--path-step); outline: 2px solid var(--ivory-50); transform: rotate(45deg); }
+.hero-path { max-width: 368px; margin: 6px 0 0; padding: 0; border-top: 1px solid color-mix(in srgb, var(--navy-900) 14%, transparent); list-style: none; }
+.hero-path li { display: grid; margin: 0; padding-block: 13px; border-bottom: 1px solid color-mix(in srgb, var(--navy-900) 11%, transparent); }
 .hero-path-body { display: grid; gap: 2px; min-width: 0; }
 .hero-path-title { display: flex; align-items: baseline; gap: 10px; color: var(--navy-900); font-family: var(--font-display); font-size: 1rem; font-weight: 700; }
 .hero-path-no { color: var(--color-link); font-size: .6875rem; font-weight: 700; letter-spacing: .04em; }
@@ -202,22 +188,12 @@ img, svg, video { display: block; max-width: 100%; }
 .problem-answer { padding: 0 44px 24px 0; color: var(--color-muted); }
 .problem-output { display: flex; flex-wrap: wrap; gap: 12px; color: var(--color-accent-hover); font-size: .8125rem; margin: 0; }
 .problem-output span { color: var(--color-muted); }
-/* Section-aside motif frame: quiet diagrams under the problem/proof headings. */
-.aside-motif { margin-top: 28px; padding-top: 24px; border-top: 1px solid color-mix(in srgb, var(--navy-900) 12%, transparent); }
-.convergence-mark { display: block; width: min(100%, 320px); }
-.convergence-thread { fill: none; stroke: color-mix(in srgb, var(--navy-900) 26%, transparent); stroke-width: 1.25; stroke-linecap: round; }
-.convergence-main { fill: none; stroke: var(--navy-900); stroke-width: 2; stroke-linecap: round; opacity: .72; }
-.convergence-cap { fill: var(--navy-900); opacity: .72; }
-.convergence-dot { stroke: var(--paper-100); stroke-width: 1.5; }
-.convergence-joint { fill: var(--navy-900); stroke: var(--paper-100); stroke-width: 2; }
-/* Station path: one continuous RTL rail with a gradient through the ordinal
-   ramp; terminus arrow points with the reading direction. */
-.station-path { --rail-stops: #12a094, #0a66c2, #a0325c, #7a4a00, #06524a; position: relative; display: grid; grid-template-columns: repeat(var(--station-count, 3), minmax(0, 1fr)); gap: 8px; margin: 26px 0 0; padding: 0 0 0 18px; list-style: none; }
-.station-path::before { content: ''; position: absolute; inset-block-start: 5px; inset-inline: 8px 4px; height: 2px; background: linear-gradient(to left, var(--rail-stops)); opacity: .55; }
-.station-path::after { content: ''; position: absolute; inset-block-start: 1px; inset-inline-start: -6px; border: 5px solid transparent; border-inline-end: 8px solid #06524a; }
-.station-path li { position: relative; display: grid; gap: 6px; margin: 0; }
-.station-node { position: absolute; inset-block-start: 0; inset-inline-end: calc(50% - 6px); width: 12px; height: 12px; background: var(--station-color); outline: 2px solid var(--ivory-50); border-radius: 50%; }
-.station-title { margin-top: 22px; color: var(--navy-900); font-family: var(--font-display); font-size: .9375rem; font-weight: 700; }
+/* Station path is an ordered reading aid, not a graphical chart. */
+.station-path { display: grid; grid-template-columns: repeat(var(--station-count, 3), minmax(0, 1fr)); gap: 0; margin: 30px 0 0; padding: 0; border-top: 2px solid var(--color-accent); list-style: none; }
+.station-path li { display: grid; grid-template-columns: 28px 1fr; gap: 4px 8px; margin: 0; padding: 18px 12px; border-inline-start: 1px solid var(--color-border); }
+.station-path li:first-child { padding-inline-start: 0; border-inline-start: 0; }
+.station-index { grid-row: span 2; color: var(--color-accent); font-family: var(--font-display); font-size: .875rem; font-weight: 700; }
+.station-title { color: var(--navy-900); font-family: var(--font-display); font-size: .9375rem; font-weight: 700; }
 .station-note { color: var(--slate-600); font-size: .75rem; }
 .page-intro-path .station-path { margin-block: 34px 6px; }
 .page-intro-path .station-title { color: var(--navy-900); }
@@ -228,23 +204,8 @@ img, svg, video { display: block; max-width: 100%; }
 .integration-layout { display: grid; gap: 40px; align-items: center; }
 .integration-editorial h2 { color: var(--white); }
 .integration-editorial .eyebrow, .integration-editorial .text-link { color: var(--turquoise-100); }
-.integration-signal { margin: 0; border: 1px solid color-mix(in srgb, var(--white) 38%, transparent); border-radius: 2px 20px 2px 20px; background: color-mix(in srgb, var(--turquoise-900) 72%, transparent); box-shadow: 16px 16px 0 color-mix(in srgb, var(--turquoise-700) 34%, transparent); }
-.spec-title { padding: 20px; display: flex; justify-content: space-between; color: var(--white); border-bottom: 1px solid color-mix(in srgb, var(--white) 30%, transparent); font-size: .875rem; }
-.integration-signal-art { width: 100%; height: auto; padding: 28px 20px 12px; }
-.integration-signal-line, .integration-signal-guide { fill: none; stroke-linecap: round; stroke-linejoin: round; }
-.integration-signal-line { stroke: var(--art-line); stroke-width: 2; }
-.integration-signal-guide { stroke: color-mix(in srgb, var(--turquoise-100) 26%, transparent); stroke-width: 1; }
-.integration-signal-node rect { fill: color-mix(in srgb, var(--turquoise-700) 24%, transparent); stroke: var(--white); stroke-width: 1.5; }
-.integration-signal-node path, .integration-signal-node circle { fill: none; stroke: var(--white); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.integration-signal-node-logic rect { fill: color-mix(in srgb, #f2c94c 30%, transparent); }
-.integration-signal-node-output rect { fill: color-mix(in srgb, #f0a3ba 26%, transparent); }
-.integration-signal-anchor { fill: var(--turquoise-100); stroke: var(--turquoise-900); stroke-width: 2; }
-/* Node fills: opaque mixes against the panel so the flow line connects
-   edge-to-edge without the panel showing through the glyphs. */
-.integration-signal-node-input rect { fill: #1d6a63; }
-.integration-signal-node-logic rect { fill: #6e5a24; }
-.integration-signal-node-connection rect { fill: #1d6a63; }
-.integration-signal-node-output rect { fill: #6d3a4c; }
+.integration-signal { margin: 0; border-block: 1px solid color-mix(in srgb, var(--white) 38%, transparent); }
+.spec-title { display: flex; justify-content: space-between; margin: 0; padding: 16px 0; color: var(--white); border-bottom: 1px solid color-mix(in srgb, var(--white) 30%, transparent); font-family: var(--font-display); font-size: .9375rem; }
 .integration-signal ol { list-style: none; margin: 0; padding: 0 20px; }
 .integration-signal li { display: grid; grid-template-columns: 48px 1fr; gap: 2px 16px; margin: 0; padding: 16px 0; border-bottom: 1px solid color-mix(in srgb, var(--white) 15%, transparent); }
 .integration-signal li > span { grid-row: span 2; font-size: .75rem; color: var(--turquoise-100); }
@@ -254,17 +215,7 @@ img, svg, video { display: block; max-width: 100%; }
 .section-heading-row { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 32px; }
 .journey-track { display: grid; list-style: none; padding: 0; margin: 0; border-top: 2px solid var(--color-primary); }
 .journey-track li { position: relative; margin: 0; padding: 28px 0; border-bottom: 1px solid var(--color-border); }
-/* Connected rail between steps: the timeline reads as one continuous path.
-   Colors are the validated light-surface ordinal ramp (turquoise, monotone):
-   #12a094 → #0d8478 → #096a60 → #06524a. Stage label picks the accent. */
-.journey-track li[data-phase]::before { content: ''; position: absolute; inset-block-start: 44px; inset-inline-start: 1.06rem; width: 2px; height: calc(100% - 88px); background: var(--journey-rail, var(--color-accent)); opacity: .38; }
-.journey-track li[data-phase='0'] { --journey-rail: #12a094; }
-.journey-track li[data-phase='1'] { --journey-rail: #0d8478; }
-.journey-track li[data-phase='2'] { --journey-rail: #096a60; }
-.journey-track li[data-phase='3'] { --journey-rail: #06524a; }
-/* Desktop: one horizontal gradient rail behind the numbered stops. */
-.journey-track::after { content: ''; position: absolute; display: none; }
-.journey-number { display: grid; width: 2.5rem; height: 2.5rem; place-items: center; margin-bottom: 20px; background: var(--color-page); border: 1px solid color-mix(in srgb, var(--journey-rail, var(--color-accent)) 44%, transparent); border-radius: 50%; color: var(--journey-rail, var(--color-accent)); font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; line-height: 1; }
+.journey-number { display: grid; width: 2.5rem; height: 2.5rem; place-items: center; margin-bottom: 20px; background: var(--color-page); border: 1px solid color-mix(in srgb, var(--color-accent) 44%, transparent); border-radius: 50%; color: var(--color-accent); font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; line-height: 1; }
 .journey-stage { font-size: .6875rem; color: var(--color-highlight); }
 .journey-track h3 { font-size: 1.05rem; margin-block: 12px 8px; }
 .journey-track p { font-size: .875rem; color: var(--color-muted); margin: 0; }
@@ -275,13 +226,8 @@ img, svg, video { display: block; max-width: 100%; }
 .team-editorial h2 { font-size: clamp(1.4rem, 2vw, 2rem); }
 .closing-editorial { position: relative; overflow: hidden; padding-block: clamp(72px, 10vw, 136px); background: color-mix(in srgb, var(--burgundy-700) 6%, var(--color-paper)); }
 .closing-editorial::before { position: absolute; inset-inline-end: 0; inset-block-end: 0; width: min(26vw, 400px); height: 100%; content: ''; background: color-mix(in srgb, var(--burgundy-700) 10%, transparent); border-inline-start: 1px solid color-mix(in srgb, var(--burgundy-700) 24%, transparent); }
-.closing-editorial .shell { display: grid; align-items: start; gap: 24px; }
 .closing-editorial .shell { position: relative; }
-.closing-mark { display: block; width: 96px; height: 96px; color: var(--color-highlight); }
-.closing-mark-art { width: 100%; height: 100%; }
-.closing-mark-line { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; opacity: .85; }
-.closing-mark-head { fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-.closing-mark-tail { fill: currentColor; }
+.closing-editorial .shell > div { max-width: 720px; }
 .closing-editorial p:not(.eyebrow) { color: var(--color-muted); }
 .closing-editorial .button { margin-top: 12px; }
 .page-intro { position: relative; overflow: hidden; padding-block: clamp(72px, 9vw, 128px) clamp(48px, 6vw, 80px); background: var(--color-paper); }
@@ -401,18 +347,11 @@ td select { min-height: 44px; padding: 8px; border: 1px solid var(--input-border
   .section { padding-block: clamp(72px, 8vw, 112px); }
   .intake-page { padding-block-start: 0; }
   .section-spread, .team-editorial { grid-template-columns: .8fr 1.4fr; gap: 64px; }
-  .journey-track { grid-template-columns: repeat(5, minmax(0, 1fr)); position: relative; }
-  /* Gradient rail flows with reading direction (right → left); the start
-     cap aligns under the first stop's number. */
-  .journey-track::before { content: ''; position: absolute; inset-block-start: 1.25rem; inset-inline: 1.25rem 0.75rem; height: 2px; background: linear-gradient(to left, #12a094, #0d8478, #096a60, #06524a); opacity: .45; }
-  .journey-track::after { content: ''; position: absolute; inset-block-start: .85rem; inset-inline-start: -8px; display: block; border: 5px solid transparent; border-inline-end: 9px solid #06524a; opacity: .45; }
-  .journey-track li { padding-inline: 16px; padding-top: 44px; border-inline-start: 1px solid var(--color-border); background: var(--color-page); }
+  .journey-track { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .journey-track li { padding-inline: 16px; border-inline-start: 1px solid var(--color-border); }
   .journey-track li:first-child { padding-inline-start: 0; border-inline-start: 0; }
   .journey-track li:last-child { padding-inline-end: 0; }
-  .journey-track li[data-phase]::before { display: none; }
   .journey-number { position: relative; margin-bottom: 16px; }
-  .closing-editorial .shell { grid-template-columns: 1fr 3fr; }
-  .closing-mark { width: 128px; height: 128px; }
   .case-study-head { grid-template-columns: 1fr 1fr; align-items: end; gap: 40px; }
   .footer-grid { grid-template-columns: 1.6fr 1fr 1fr; }
 }
