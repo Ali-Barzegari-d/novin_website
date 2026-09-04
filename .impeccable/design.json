@@ -1,0 +1,217 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-04T13:00:14Z",
+  "title": "Design System: شرکت طراحی و تحلیل مالی نوین ایرانیان",
+  "extensions": {
+    "colorMeta": {
+      "institutional-navy": {
+        "role": "primary",
+        "displayName": "سرمه‌ای نهادی",
+        "canonical": "#0f2742",
+        "tonalRamp": ["oklch(15% 0.035 250)", "oklch(24% 0.050 250)", "oklch(34% 0.060 250)", "oklch(45% 0.055 250)", "oklch(58% 0.045 250)", "oklch(70% 0.032 250)", "oklch(84% 0.018 250)", "oklch(95% 0.008 250)"]
+      },
+      "slate-ink": {
+        "role": "neutral",
+        "displayName": "جوهر اسلیتی",
+        "canonical": "#28415d",
+        "tonalRamp": ["oklch(15% 0.025 250)", "oklch(25% 0.038 250)", "oklch(36% 0.045 250)", "oklch(47% 0.040 250)", "oklch(59% 0.032 250)", "oklch(71% 0.024 250)", "oklch(84% 0.014 250)", "oklch(95% 0.006 250)"]
+      },
+      "operational-teal": {
+        "role": "primary",
+        "displayName": "فیروزه‌ای عملیاتی",
+        "canonical": "#087f82",
+        "tonalRamp": ["oklch(15% 0.050 195)", "oklch(25% 0.075 195)", "oklch(36% 0.095 195)", "oklch(47% 0.105 195)", "oklch(59% 0.090 195)", "oklch(71% 0.066 195)", "oklch(84% 0.038 195)", "oklch(95% 0.014 195)"]
+      },
+      "operational-teal-dark": {
+        "role": "primary",
+        "displayName": "فیروزه‌ای عمیق",
+        "canonical": "#056669",
+        "tonalRamp": ["oklch(15% 0.045 195)", "oklch(24% 0.068 195)", "oklch(34% 0.085 195)", "oklch(45% 0.092 195)", "oklch(57% 0.080 195)", "oklch(70% 0.058 195)", "oklch(84% 0.032 195)", "oklch(95% 0.012 195)"]
+      },
+      "teal-mist": {
+        "role": "secondary",
+        "displayName": "مه فیروزه‌ای",
+        "canonical": "#e8f5f4",
+        "tonalRamp": ["oklch(15% 0.025 195)", "oklch(27% 0.035 195)", "oklch(39% 0.040 195)", "oklch(52% 0.038 195)", "oklch(65% 0.032 195)", "oklch(77% 0.024 195)", "oklch(88% 0.016 195)", "oklch(96% 0.009 195)"]
+      },
+      "technical-ice": {
+        "role": "neutral",
+        "displayName": "یخ فنی",
+        "canonical": "#f4f8fa",
+        "tonalRamp": ["oklch(15% 0.010 230)", "oklch(27% 0.014 230)", "oklch(39% 0.016 230)", "oklch(52% 0.015 230)", "oklch(65% 0.013 230)", "oklch(77% 0.010 230)", "oklch(88% 0.007 230)", "oklch(97% 0.004 230)"]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "کاغذ روشن",
+        "canonical": "#ffffff",
+        "tonalRamp": ["oklch(15% 0 0)", "oklch(27% 0 0)", "oklch(39% 0 0)", "oklch(52% 0 0)", "oklch(65% 0 0)", "oklch(77% 0 0)", "oklch(89% 0 0)", "oklch(100% 0 0)"]
+      },
+      "structural-line": {
+        "role": "neutral",
+        "displayName": "خط ساختاری",
+        "canonical": "#cedbe2",
+        "tonalRamp": ["oklch(15% 0.012 230)", "oklch(27% 0.018 230)", "oklch(39% 0.021 230)", "oklch(52% 0.022 230)", "oklch(65% 0.020 230)", "oklch(77% 0.017 230)", "oklch(87% 0.013 230)", "oklch(95% 0.007 230)"]
+      },
+      "structural-line-dark": {
+        "role": "neutral",
+        "displayName": "خط ساختاری تیره",
+        "canonical": "#8da4b2",
+        "tonalRamp": ["oklch(15% 0.016 230)", "oklch(27% 0.024 230)", "oklch(39% 0.030 230)", "oklch(52% 0.032 230)", "oklch(65% 0.028 230)", "oklch(77% 0.021 230)", "oklch(87% 0.014 230)", "oklch(95% 0.007 230)"]
+      },
+      "success": {
+        "role": "tertiary",
+        "displayName": "سبز تأیید",
+        "canonical": "#147455",
+        "tonalRamp": ["oklch(15% 0.045 155)", "oklch(26% 0.070 155)", "oklch(37% 0.090 155)", "oklch(49% 0.095 155)", "oklch(61% 0.080 155)", "oklch(73% 0.058 155)", "oklch(85% 0.032 155)", "oklch(95% 0.012 155)"]
+      },
+      "warning": {
+        "role": "tertiary",
+        "displayName": "کهربایی هشدار",
+        "canonical": "#8a5a00",
+        "tonalRamp": ["oklch(15% 0.055 80)", "oklch(26% 0.085 80)", "oklch(37% 0.110 80)", "oklch(49% 0.120 80)", "oklch(61% 0.100 80)", "oklch(73% 0.072 80)", "oklch(85% 0.040 80)", "oklch(95% 0.014 80)"]
+      },
+      "danger": {
+        "role": "tertiary",
+        "displayName": "قرمز خطا",
+        "canonical": "#a12d37",
+        "tonalRamp": ["oklch(15% 0.060 22)", "oklch(26% 0.095 22)", "oklch(37% 0.130 22)", "oklch(49% 0.145 22)", "oklch(61% 0.120 22)", "oklch(73% 0.085 22)", "oklch(85% 0.046 22)", "oklch(95% 0.016 22)"]
+      },
+      "focus": {
+        "role": "tertiary",
+        "displayName": "آبی تمرکز",
+        "canonical": "#0d6efd",
+        "tonalRamp": ["oklch(15% 0.075 255)", "oklch(26% 0.125 255)", "oklch(37% 0.175 255)", "oklch(49% 0.210 255)", "oklch(61% 0.180 255)", "oklch(73% 0.125 255)", "oklch(85% 0.068 255)", "oklch(95% 0.022 255)"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "نمایشی", "purpose": "تیتر اصلی صفحات و پیام‌های تصمیم‌ساز." },
+      "headline": { "displayName": "تیتر بخش", "purpose": "بیان یک ایده اصلی در هر بخش." },
+      "title": { "displayName": "عنوان", "purpose": "عنوان کارت، ردیف و زیرسامانه." },
+      "body": { "displayName": "بدنه", "purpose": "متن توضیحی خوانا در رابط فارسی RTL." },
+      "label": { "displayName": "برچسب", "purpose": "فرم، ناوبری، وضعیت و metadata." }
+    },
+    "shadows": [
+      { "name": "panel-ambient", "value": "0 18px 44px rgba(15, 39, 66, .09)", "purpose": "نقشه، فرم اصلی و کارت نمونه." },
+      { "name": "workspace-quiet", "value": "0 10px 32px rgba(15, 39, 66, .05)", "purpose": "کارت‌های حساب، پیشنهاد، پرداخت و رسید." },
+      { "name": "action-rest", "value": "0 8px 24px rgba(8, 127, 130, .16)", "purpose": "CTA اصلی در حالت عادی." },
+      { "name": "action-hover", "value": "0 13px 30px rgba(8, 127, 130, .22)", "purpose": "CTA اصلی در حالت hover." },
+      { "name": "drawer", "value": "-18px 0 60px rgba(15, 39, 66, .22)", "purpose": "پنل ویرایش داخلی روی لایه modal." }
+    ],
+    "motion": [
+      { "name": "ease-exit", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "گذار صفحه، drawer و رسم مسیر." },
+      { "name": "state-fast", "value": "200ms", "purpose": "hover، border، رنگ و آیکون." },
+      { "name": "surface-enter", "value": "300ms", "purpose": "ورود مرحله فرم با جابه‌جایی عمودی کوتاه." },
+      { "name": "page-enter", "value": "350ms", "purpose": "ورود صفحه با opacity و ۸ پیکسل حرکت." },
+      { "name": "path-draw", "value": "1100ms–1400ms", "purpose": "رسم یک‌باره اتصال‌های نقشه مسئله." },
+      { "name": "press-spring", "value": "spring(stiffness: 520, damping: 32)", "purpose": "lift دوپیکسلی hover و scale برابر ۰٫۹۸۵ هنگام press." },
+      { "name": "reduced-motion", "value": "0.001ms; 1 iteration", "purpose": "حذف عملی transition و animation در prefers-reduced-motion." }
+    ],
+    "breakpoints": [
+      { "name": "wide-navigation", "value": "1180px" },
+      { "name": "stacked-layout", "value": "860px" },
+      { "name": "compact-mobile", "value": "560px" },
+      { "name": "acceptance-mobile", "value": "320px" },
+      { "name": "acceptance-tablet", "value": "768px" },
+      { "name": "acceptance-desktop", "value": "1440px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "اقدام اصلی با فیروزه‌ای عملیاتی و حرکت کوتاه در جهت جریان RTL.",
+      "html": "<button class=\"ds-btn-primary\">شرح مسئله‌تان را شروع کنید <svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M19 12H5m6-6-6 6 6 6\"/></svg></button>",
+      "css": ".ds-btn-primary{min-height:50px;display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:12px 23px;color:var(--paper,#fff);background:var(--teal,#087f82);border:1px solid var(--teal,#087f82);border-radius:10px;font:780 .86rem/1.7 'Noto Sans Arabic Variable',Tahoma,sans-serif;box-shadow:0 8px 24px rgba(8,127,130,.16);cursor:pointer;transition:background .2s,box-shadow .2s,transform .2s}.ds-btn-primary svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;transition:transform .2s}.ds-btn-primary:hover{background:var(--teal-dark,#056669);box-shadow:0 13px 30px rgba(8,127,130,.22);transform:translateY(-2px)}.ds-btn-primary:hover svg{transform:translateX(-4px)}.ds-btn-primary:active{transform:scale(.985)}.ds-btn-primary:focus-visible{outline:3px solid #0d6efd;outline-offset:4px}"
+    },
+    {
+      "name": "Inverse Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "CTA روشن برای قرارگیری روی بخش سرمه‌ای.",
+      "html": "<button class=\"ds-btn-inverse\">جزئیات ارزیابی اولیه</button>",
+      "css": ".ds-btn-inverse{min-height:50px;padding:12px 23px;color:var(--ink,#0f2742);background:var(--paper,#fff);border:1px solid var(--paper,#fff);border-radius:10px;font:780 .86rem/1.7 'Noto Sans Arabic Variable',Tahoma,sans-serif;cursor:pointer;transition:color .2s,background .2s,border-color .2s}.ds-btn-inverse:hover{color:var(--paper,#fff);background:var(--teal,#087f82);border-color:var(--teal,#087f82)}.ds-btn-inverse:active{transform:scale(.985)}.ds-btn-inverse:focus-visible{outline:3px solid #0d6efd;outline-offset:4px}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "اقدام کم‌اولویت و اصلاح فرم با سطح کاغذی و مرز ساختاری.",
+      "html": "<button class=\"ds-btn-secondary\">بازگشت</button>",
+      "css": ".ds-btn-secondary{min-height:42px;padding:8px 15px;color:var(--ink,#0f2742);background:var(--paper,#fff);border:1px solid var(--line-dark,#8da4b2);border-radius:8px;font:730 .86rem/1.7 'Noto Sans Arabic Variable',Tahoma,sans-serif;cursor:pointer;transition:background .2s,border-color .2s}.ds-btn-secondary:hover{background:var(--ice,#f4f8fa);border-color:var(--teal,#087f82)}.ds-btn-secondary:active{transform:scale(.985)}.ds-btn-secondary:focus-visible{outline:3px solid #0d6efd;outline-offset:4px}"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input-default",
+      "description": "فیلد فارسی با label مستقل، سطح یخ‌مانند و focus فیروزه‌ای واضح.",
+      "html": "<label class=\"ds-field\">عنوان کوتاه<input type=\"text\" placeholder=\"مثلاً یکپارچه‌سازی گزارش و فرایند مالی\"></label>",
+      "css": ".ds-field{display:grid;gap:8px;color:var(--ink,#0f2742);font:730 .86rem/1.7 'Noto Sans Arabic Variable',Tahoma,sans-serif;direction:rtl}.ds-field input{width:100%;min-height:52px;padding:11px 14px;color:var(--ink,#0f2742);background:#fbfdfe;border:1px solid #afc1cb;border-radius:9px;outline:none;font:400 1rem/1.75 'Noto Sans Arabic Variable',Tahoma,sans-serif;transition:background .2s,border-color .2s,box-shadow .2s}.ds-field input:hover{border-color:#6f8c9c}.ds-field input:focus{background:var(--paper,#fff);border-color:var(--teal,#087f82);box-shadow:0 0 0 3px rgba(8,127,130,.15)}.ds-field input:focus-visible{outline:3px solid #0d6efd;outline-offset:4px}"
+    },
+    {
+      "name": "Placeholder Chip",
+      "kind": "chip",
+      "refersTo": "chip-placeholder",
+      "description": "نشان صریح محتوای ساختگی یا دارایی در انتظار تأیید.",
+      "html": "<span class=\"ds-chip-placeholder\">نمونه ساختگی</span>",
+      "css": ".ds-chip-placeholder{width:max-content;display:inline-flex;padding:4px 10px;color:var(--warning,#8a5a00);background:#fff5d7;border:1px solid #ead292;border-radius:999px;font:760 .72rem/1.7 'Noto Sans Arabic Variable',Tahoma,sans-serif}"
+    },
+    {
+      "name": "Panel Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "محفظه اصلی با خط فنی، گوشه کنترل‌شده و سایه محیطی آرام.",
+      "html": "<article class=\"ds-panel-card\"><span class=\"ds-panel-kicker\">مسیر قابل‌ردیابی</span><h3>از مسئله مبهم تا تصمیم روشن</h3><p>رابطه مالی، فرایند، داده و سامانه در یک محفظه خوانا نمایش داده می‌شود.</p></article>",
+      "css": ".ds-panel-card{padding:clamp(24px,4vw,54px);color:var(--ink,#0f2742);background:var(--paper,#fff);border:1px solid var(--line,#cedbe2);border-radius:14px;box-shadow:0 18px 44px rgba(15,39,66,.09);font-family:'Noto Sans Arabic Variable',Tahoma,sans-serif;direction:rtl}.ds-panel-card h3{margin:10px 0;font-size:1.55rem;line-height:1.45}.ds-panel-card p{margin:0;color:#526a7d;line-height:1.75}.ds-panel-kicker{color:var(--teal-dark,#056669);font-size:.78rem;font-weight:760}.ds-panel-card:focus-within{outline:3px solid #0d6efd;outline-offset:4px}"
+    },
+    {
+      "name": "Primary Navigation",
+      "kind": "nav",
+      "description": "ناوبری عمومی RTL با active underline که از راست رشد می‌کند.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"ناوبری اصلی\"><a href=\"#\" aria-current=\"page\">خانه</a><a href=\"#\">راهکارها</a><a href=\"#\">فرایند همکاری</a></nav>",
+      "css": ".ds-nav{display:flex;gap:26px;align-items:center;color:var(--ink-2,#28415d);font:650 .9rem/1.7 'Noto Sans Arabic Variable',Tahoma,sans-serif;direction:rtl}.ds-nav a{position:relative;color:inherit;text-decoration:none}.ds-nav a::after{content:'';position:absolute;right:0;bottom:-12px;left:0;height:2px;background:var(--teal,#087f82);transform:scaleX(0);transform-origin:right;transition:transform .25s ease}.ds-nav a:hover::after,.ds-nav a[aria-current='page']::after{transform:scaleX(1)}.ds-nav a:focus-visible{outline:3px solid #0d6efd;outline-offset:4px;border-radius:4px}"
+    },
+    {
+      "name": "Live Problem Map",
+      "kind": "custom",
+      "description": "امضای تصویری محصول برای اتصال مسئله، مالی، فرایند، داده، سامانه و نتیجه.",
+      "html": "<div class=\"ds-system-map\" dir=\"rtl\"><svg viewBox=\"0 0 420 170\" aria-hidden=\"true\"><path class=\"ds-loop\" d=\"M360 45C400 100 350 145 280 145H105C35 145 20 85 65 45\"/><path class=\"ds-link\" d=\"M350 48H285L245 95H185L145 48H75\"/><circle cx=\"350\" cy=\"48\" r=\"8\"/><circle cx=\"285\" cy=\"48\" r=\"6\"/><circle cx=\"245\" cy=\"95\" r=\"6\"/><circle cx=\"185\" cy=\"95\" r=\"6\"/><circle cx=\"145\" cy=\"48\" r=\"6\"/><circle cx=\"75\" cy=\"48\" r=\"6\"/></svg><div class=\"ds-map-legend\"><button aria-pressed=\"true\">مسئله</button><button>مالی</button><button>فرایند</button><button>داده</button><button>سامانه</button></div></div>",
+      "css": ".ds-system-map{overflow:hidden;color:var(--ink,#0f2742);background:linear-gradient(180deg,#fbfdfe,#f1f7f9);border:1px solid var(--line,#cedbe2);border-radius:14px;box-shadow:0 18px 44px rgba(15,39,66,.09);font-family:'Noto Sans Arabic Variable',Tahoma,sans-serif}.ds-system-map svg{width:100%;height:auto}.ds-loop,.ds-link{fill:none;stroke:var(--teal,#087f82);stroke-width:2}.ds-link{stroke:var(--ink,#0f2742)}.ds-system-map circle{fill:var(--paper,#fff);stroke:var(--teal,#087f82);stroke-width:4}.ds-system-map circle:first-of-type{fill:var(--teal,#087f82)}.ds-map-legend{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--line,#cedbe2);background:var(--paper,#fff)}.ds-map-legend button{min-height:48px;padding:8px;color:var(--ink,#0f2742);background:transparent;border:0;border-left:1px solid var(--line,#cedbe2);font:790 .74rem/1.5 'Noto Sans Arabic Variable',Tahoma,sans-serif;cursor:pointer}.ds-map-legend button[aria-pressed='true']{background:var(--teal-pale,#e8f5f4);box-shadow:inset 0 3px var(--teal,#087f82)}.ds-map-legend button:hover{background:var(--ice,#f4f8fa)}.ds-map-legend button:focus-visible{outline:3px solid #0d6efd;outline-offset:-4px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Traceable Decision Room",
+    "overview": "این جهان بصری مانند اتاق تصمیمی روشن و منظم عمل می‌کند: کاغذ سفید و فضای منفی برای فهم، سرمه‌ای برای وزن نهادی، فیروزه‌ای برای اقدام و خطوط فنی برای نشان‌دادن رابطه‌ها. ظاهر باید حرفه‌ای، دقیق و آرام بماند، اما از سادگی کم‌مایه دور باشد؛ ریتم بزرگ تیترها، سطوح حساب‌شده و «نقشه زنده مسئله تا نتیجه» شخصیت متمایز آن را می‌سازند. مرجع تصویری تأییدشده، `.impeccable/mocks/decision/canon.png` با seed تصمیم `3701d870` است. جهت نهایی از ترکیب‌بندی دو ستونه، تیتر فارسی راست‌چین، CTA روشن، دیاگرام فرایند و نوار اعتماد آن پیروی می‌کند، اما خود تصویر فقط مرجع داخلی است و دارایی قابل انتشار نیست. تیتر اصلی ثابت و تأییدشده است: «پیچیدگی‌های مالی و کسب‌وکاری را به فرایند، سامانه و محصول قابل‌اجرا تبدیل می‌کنیم.»",
+    "keyCharacteristics": [
+      "RTL فارسی واقعی با سلسله‌مراتب قاطع و فضای تنفس زیاد.",
+      "سفید روشن، سرمه‌ای سازمانی و فیروزه‌ای عملیاتی با رنگ‌های وضعیت محدود و معنایی.",
+      "خطوط یک‌پیکسلی، شبکه‌های فنی و اتصال‌های فرایندی به‌جای تزئینات آزاد.",
+      "عمق کم‌صدا و کنترل‌شده؛ بدون گرادیان نمایشی، شیشه‌گرایی یا جلوه‌های پرزرق‌وبرق.",
+      "حرکت هدفمند برای پیشرفت، ارتباط و بازخورد؛ همیشه قابل حذف با تنظیم کاهش حرکت."
+    ],
+    "rules": [
+      { "name": "The Operational Teal Rule", "body": "فیروزه‌ای نشانه عمل یا اتصال است؛ آن را به رنگ پرکننده همه سطوح یا تزئین بی‌هدف تبدیل نکنید.", "section": "colors" },
+      { "name": "The Honest Status Rule", "body": "سبز، کهربایی و قرمز فقط برای موفقیت، هشدار و خطا هستند و نباید نقش برند یا دکور بگیرند.", "section": "colors" },
+      { "name": "The Persian First Rule", "body": "متن رابط، اعداد نمایشی و تاریخ‌ها فارسی و راست‌به‌چپ‌اند؛ شناسه فنی، شماره همراه و کد فقط در محفظه LTR قرار می‌گیرند.", "section": "typography" },
+      { "name": "The One Statement Rule", "body": "تیتر نمای اول باید همان متن تأییدشده مالک باشد و با شکستن بی‌قاعده، متن تزئینی یا ادعای تبلیغاتی رقابت نکند.", "section": "typography" },
+      { "name": "The RTL Geometry Rule", "body": "ترتیب دیداری، مبدأ حرکت، underline ناوبری، جدول‌ها و مسیر دیاگرام باید از راست آغاز شوند؛ RTL صرفاً یک ویژگی متن نیست.", "section": "layout" },
+      { "name": "The One Map Rule", "body": "اتصال مالی، فرایند، داده و سامانه با همان زبان نقطه، خط و چرخه بیان می‌شود؛ برای هر بخش استعاره تصویری تازه نسازید.", "section": "layout" },
+      { "name": "The Bordered Before Elevated Rule", "body": "ابتدا با سطح، مرز و فاصله سلسله‌مراتب بسازید؛ سایه فقط برای سطوح تعاملی یا محفظه‌های اصلی اضافه می‌شود.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do تیتر تأییدشده، CTA روشن و نقشه مسئله تا نتیجه را به‌عنوان سه لنگر نمای اول حفظ کنید.",
+      "Do سطوح را ابتدا با فاصله، خط یک‌پیکسلی و تضاد تونال سازمان دهید و سایه را محدود نگه دارید.",
+      "Do برای هر کنترل حالت hover، focus-visible، active یا pressed، disabled، loading، error و success مرتبط را تعریف کنید.",
+      "Do RTL واقعی، ناوبری کامل صفحه‌کلید، WCAG 2.2 AA و کاهش حرکت را در ۳۲۰، ۷۶۸ و ۱۴۴۰ پیکسل کنترل کنید.",
+      "Do placeholder و داده ساختگی را آشکار برچسب بزنید و رنگ هشدار آن را از محتوای واقعی متمایز نگه دارید.",
+      "Do فقط دارایی‌هایی را منتشر کنید که منبع، مجوز یا رضایت، مالک حقوقی، متن جایگزین و محدودیت استفاده‌شان در `docs/ASSET_SOURCES.md` ثبت شده است."
+    ],
+    "donts": [
+      "Don't `canon.png` را در سایت سرو کنید؛ این فایل فقط مرجع ترکیب‌بندی داخلی است.",
+      "Don't لوگوی هندسی موقت، تصویر تیم یا پروژه، نشان مشتری یا ادعای قابل انتساب را پیش از تأیید هویت و مجوز انتشار production-ready معرفی کنید.",
+      "Don't از گرادیان نمایشی، glassmorphism، تصاویر دست‌دادن استوک، dashboard جعلی، metric ساختگی یا متن ریز استفاده کنید.",
+      "Don't قیمت عمومی، وعده نتیجه یا ظاهر تبلیغاتی اغراق‌آمیز را وارد الگوی بصری کنید.",
+      "Don't برای جذابیت، رنگ‌های وضعیت را تزئینی یا موشن‌های پراکنده و بی‌ارتباط با پیشرفت و اتصال اضافه کنید."
+    ]
+  }
+}

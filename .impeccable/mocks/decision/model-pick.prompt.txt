@@ -1,0 +1,29 @@
+Use case: ui-mockup
+Asset type: high-fidelity first-viewport direction comp for a Persian RTL B2B/B2G financial transformation platform website
+Primary request: Create exactly one shippable-looking 16:10 landscape desktop website first viewport for «شرکت طراحی و تحلیل مالی نوین ایرانیان», based on the art direction «میز تحلیل لایه‌ای».
+Scene/backdrop: An ice-white #EDF2F7 canvas crossed edge-to-edge by one strong diagonal field of overlapping translucent analysis sheets, like precise vellum engineering drawings spread across an expert analyst’s desk. The layered sheets reveal relationships rather than becoming separate cards.
+Subject and information architecture: a compact RTL navigation at the very top; large Persian headline placed in generous negative space near the upper right; the diagonal sheet field is the main visual and contains four clearly labeled analytical layers: «مالی»، «فرایند»، «داده»، «سامانه». Make «داده» the active layer. Attach the primary CTA directly to the active sheet’s tab, not as a floating generic button. Include only sparse, believable abstract linework, nodes, flow paths, small matrix fragments and marker circles—no invented metrics, proof, client logos, testimonials, awards, or partner marks.
+Style/medium: extremely polished realistic product UI mockup, modern Swiss editorial clarity blended with an engineering print table; trustworthy, bold, crisp, practical, and buildable—not concept art.
+Composition/framing: 16:10 landscape desktop browser-free crop, full bleed first viewport. RTL hierarchy. The diagonal translucent sheet system fills most of the frame from lower left toward upper middle/right, breaking the conventional hero grid. Preserve a clean headline zone at upper right. Navigation remains restrained and aligned to a precise column grid. The active sheet tab and CTA become the primary interaction point around lower-center/right. Do not use a generic two-column hero.
+Lighting/mood: flat professional daylight, subtle physical depth only from vellum overlap and fine contact shadows; crisp and calm.
+Color palette: ice #EDF2F7 background, ink #20242B typography, electric blue #3B49DF structural lines and active layer, acid lime #B8F12D for the CTA accent, plum #9A4DFF as one restrained cross-system relationship marker. No navy, teal, or gold. No gradients.
+Materials/textures: translucent vellum sheets, faint engineering print grid, thin technical rules, hand-marker notation used sparingly, precise dark ink typography.
+Text (verbatim, Persian RTL; render only these phrases and no gibberish):
+«نوین ایرانیان»
+«راهکارها»
+«رویکرد ما»
+«درباره ما»
+«تماس»
+«پیش از راه‌حل، مسئله را دقیق می‌فهمیم.»
+«مالی، فرایند، داده و سامانه را یکپارچه می‌بینیم.»
+«مالی»
+«فرایند»
+«داده»
+«سامانه»
+«شرح مسئله‌تان را شروع کنید»
+Typography: highly legible contemporary Persian sans-serif, large confident headline, generous line height, correct connected Persian letterforms, strong contrast, no tiny copy.
+Constraints: exactly one desktop UI comp; one coherent diagonal layered-sheet composition; CTA text must be readable and physically attached to the active «داده» sheet tab; correct Persian RTL; no device frame; no browser chrome; no watermark. If any illustrative dataset, chart, or example panel is introduced, it must be clearly labeled «نمونه ساختگی», but preferably avoid demo data entirely.
+Avoid: prior navy/teal/gold direction; gradients; stock imagery; people; photos; generic dashboard; generic two-column hero; excessive cards; pill overload; glassmorphism blobs; clutter; tiny text; fabricated proof; fake logos; English text; random characters; decorative 3D objects.
+
+Generation mode: built-in image generation tool.
+Source artifact: /home/ali-barzegari-d/.codex/generated_images/01a06c20-a10e-7423-bd60-2c07246e2822/exec-441b0423-f150-4400-9850-d9ad42614f65.png

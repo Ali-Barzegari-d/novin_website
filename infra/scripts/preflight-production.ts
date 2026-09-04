@@ -4,9 +4,8 @@ import { existsSync } from 'node:fs';
 
 type Gate = readonly [gate: string, owner: string, remediation: string];
 const gates: Gate[] = [];
-if (!existsSync('apps/web')) {
-  gates.push(['فرانت‌اند عمومی', 'Product/design', 'بریف جایگزین را تأیید و فرانت‌اند، تست مرورگر و شواهد دسترس‌پذیری را دوباره پیاده‌سازی کنید.']);
-}
+if (!existsSync('apps/web') || !existsSync('docker/web.Dockerfile')) gates.push(['فرانت‌اند عمومی', 'Product/design', 'فرانت‌اند و تصویر runtime وب را پیاده‌سازی کنید.']);
+if (process.env.NEXT_PUBLIC_RELEASE_READY !== 'true') gates.push(['ایندکس انتشار عمومی', 'Release owner', 'پس از بسته‌شدن همه دروازه‌ها NEXT_PUBLIC_RELEASE_READY=true را فقط در release production تنظیم کنید.']);
 let config: ReturnType<typeof loadConfig> | undefined;
 try {
   config = loadConfig({ ...process.env, APP_ENV: 'production', NODE_ENV: 'production' });

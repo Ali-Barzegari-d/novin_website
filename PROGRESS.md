@@ -1,6 +1,6 @@
 # Implementation progress
 
-Status: owner-requested frontend and visual reset completed. The retained API/domain stack passes lint, typecheck, unit tests, and build; browser/UI acceptance and public production are intentionally blocked until a replacement frontend brief is supplied.
+Status: fresh owner-approved replacement frontend implemented and validated for dev/demo. Public production remains intentionally blocked by external identity, legal, evidence, provider, TLS and operations gates.
 
 ## Environment
 
@@ -23,10 +23,36 @@ Status: owner-requested frontend and visual reset completed. The retained API/do
 | R6 | Validated checkpoint; not a production release | `b45f147` | frozen install, lint, typecheck, 22 unit tests, production build, disposable PostgreSQL/Redis integration, Chromium/Firefox E2E, Docker production-like image smoke | WebKit runner failure; all existing launch gates plus security/commerce/CMS/operations backlog remain open |
 | R7 | Visual-system, component, layout-shell and public-experience checkpoints validated; not a production release | `645c429`, `1ec7663`, `f8bf9cf`, `4671dbd`, `06e31db`, `b3ce320`, `eeda580`, `e22ef57`, `80e7bd4`, `a25350f`, `f61df0b`, `bd9115a`, `a474e50`, `6a9db1f` | frozen install, workspace typecheck, web production build, lint, 22 unit/integration tests and Chromium RTL/focus/axe checks | R6 and launch gates are unchanged |
 | Frontend reset | Completed; intentionally not a release | `8fcb9ab` | Previous frontend, design system, visual assets/prompts/evidence and browser harness removed; backend QA re-run | Replacement UI/UX brief and implementation required before any public release |
+| Replacement frontend | Passed for dev/demo; production intentionally gated | Pending local release commit | web production build (23 routes), Chromium 7/7 at 320/768/1440, Axe, keyboard/focus, 19 unit/integration tests, lint/traceability, secret scan, Docker image + loopback health | Approved company identity, legal copy, real evidence/assets, providers, TLS, backup/restore and ClamAV remain open |
 
 ## Execution log
 
 Add dated entries with commands, results, decisions, defects, and the next action. Never paste secrets or real personal data here.
+
+### 2026-09-04 — Replacement frontend discovery and execution checklist
+
+- [x] Re-read the complete mandatory product, architecture, security, acceptance, deployment, content, decision, and traceability sources after the owner supplied the replacement brief.
+- [x] Audit the retained API routes, shared contracts, data model, seed data, RBAC boundary, production gates, and frontend-reset state.
+- [x] Activate Ponytail `full` from retained commit `2ed6c52c9d7e5e56942508591085fd45dea277d3`; load the retained UI UX Pro Max guidance at `f23267105ad1f4ccd94af45d382584ad45b586f7`; follow the mandatory Impeccable redesign workflow without importing the discarded visual direction.
+- [x] Confirm the two remaining product-truth inputs with the owner: all three decision-maker groups have equal priority; no approved trust assets are currently available.
+- [x] Record confirmed durable product truth in a new `PRODUCT.md` before making visual decisions.
+- [x] Establish and approve a fresh, non-derivative visual direction; then implement its design system and record the built result in a new `DESIGN.md`.
+- [x] Rebuild the complete Persian RTL web application: public routes, OTP/onboarding, request/upload/review, account, opaque-token offer/payment/invoice flows, complaints, and role-aware internal workspaces.
+- [x] Restore web deployment/runtime wiring and automated acceptance coverage; keep mocks, draft legal content, placeholder facts, and missing production providers fail-closed and visibly non-production.
+- [x] Validate lint, typecheck, unit/integration suites, production build, traceability, security checks, WCAG 2.2 AA, reduced motion, keyboard/focus, and 320/768/1440 browser evidence before release commits.
+
+Current boundary: `canon.png` is the only owner-approved visual reference for this pass. The previous frontend and deleted design direction were not reconstructed. Real company facts, logo, people, clients and case-study media are still missing and visibly/procedurally production-gated.
+
+### 2026-09-04 — Owner-approved replacement frontend
+
+- Owner selected `.impeccable/mocks/decision/canon.png` and restored the primary statement as «پیچیدگی‌های مالی و کسب‌وکاری را به فرایند، سامانه و محصول قابل‌اجرا تبدیل می‌کنیم.» Typography and punctuation were normalized without changing the statement's meaning.
+- Built a new white/navy/teal visual system with a two-column RTL hero, interactive problem-to-product map, trust rail, equal entry paths for all three audiences, responsive public pages, secure OTP/onboarding, request/review/upload, account, offer, payment, invoice, complaints and role-aware internal workspace.
+- Added Next.js standalone runtime, web Docker image, Compose service on loopback host port 3050, API rewrite, health check, release-gated robots metadata, and restored deployment wiring. Mocks, placeholder identity/evidence and draft legal content remain excluded from a production-ready claim.
+- Fresh QA: `pnpm typecheck` passed; `pnpm lint` passed including the 137-row traceability contract; `pnpm test` passed 19 tests with one explicitly opted-out database suite; `pnpm security:secrets` passed; `pnpm --filter web build` passed with 23 routes; and `docker compose --env-file .env.example config --quiet` passed. The sandboxed build hit the known TypeScript `--showConfig` environment limitation; the approved production build outside that sandbox passed.
+- Chromium acceptance passed 7/7: exact Persian headline, RTL, release noindex gate, keyboard skip link, trapped mobile-menu focus and Escape return, all primary public/intake route headings, complete representative public/customer/commerce/internal surfaces, Axe serious/critical scans, reduced-motion state and no horizontal overflow at 320/768/1440. The mobile map assertion additionally verifies every legend rectangle remains inside its visual container; the internal navigation assertion verifies every 320px tab remains visible. Evidence: `artifacts/screenshots/replacement-first-viewport-{320,768,1440}.png`, `replacement-home-{320,768,1440}.png`, and `replacement-{public-detail,login,request,account,offer,payment,invoice,complaints,admin}-{320,768,1440}.png`.
+- The final Docker build produced `novin-financial-web:dev` (`sha256:3cc991185313ec7ca0c6df40749a3cee66e752a492166f6a9acd4595080debc7`). A disposable loopback container on port 3059 returned `{"status":"ok","service":"web"}` from `/health` and was then stopped and removed.
+- Static detector reported one layout-transition warning, fixed by removing padding animation, and one advisory grid signature intentionally retained only inside the semantic technical-map canvas. The independent Impeccable finish review returned PASS after inspecting the corrected mobile map, complete public-detail rendering, wrapped admin navigation, desktop first viewport, semantics, reduced motion and representative screenshots.
+- The fresh system is recorded in `DESIGN.md` and `.impeccable/design.json`; `canon.png` remains an internal approved direction reference and is not served by the application. No deploy, provider call, payment, publication or production-data operation was performed.
 
 ### 2026-09-04 — Frontend and visual reset checklist
 

@@ -1,0 +1,8 @@
+Use case: ui-mockup
+Asset type: full-fidelity conventional category-standard comp for a Persian RTL corporate consulting website, first viewport, 16:10 landscape.
+Product: «شرکت طراحی و تحلیل مالی نوین ایرانیان».
+Composition: familiar RTL two-column hero; large right-aligned statement, supporting paragraph and CTA «شرح مسئله‌تان را شروع کنید»; clean process diagram on the left; trust strip below; standard top navigation.
+Palette: white #FFFFFF, navy #0F2742, teal #1E8A88.
+Required labels: «مسئله را پیش از راه‌حل می‌فهمیم»؛ «مالی، فرایند، داده و سامانه؛ در یک مسیر»؛ «شرح مسئله‌تان را شروع کنید»؛ «نمونه ساختگی».
+Constraints: accurate RTL, no real customer logos or factual claims.
+Avoid: clutter, gradients, glassmorphism, fake metrics, stock-photo handshake, tiny text, English copy, watermark.

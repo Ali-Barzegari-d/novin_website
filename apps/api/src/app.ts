@@ -133,6 +133,11 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
   app.get('/health/live', async () => ({ status: 'ok' }));
   app.get('/health/ready', async () => { await pool.query('SELECT 1'); await redis.ping(); return { status: 'ready' }; });
   app.get('/health', async () => ({ status: 'ok' }));
+  app.get('/api/v1/session', async (request) => {
+    const auth = requireAuth(request);
+    const user = await db.query.users.findFirst({ where: eq(users.id, auth.id) });
+    return { authenticated: true, role: auth.role, authLevel: auth.authLevel, onboardingRequired: !user?.firstName };
+  });
   app.get('/api/v1/openapi.json', async () => ({ openapi: '3.1.0', info: { title: 'Novin API', version: '0.1.0', description: 'API داخلی و مشتری؛ تمام مسیرهای تغییر‌دهنده داده به نشست، RBAC و ثبت ممیزی متکی هستند.' }, servers: [{ url: config.PUBLIC_BASE_URL }], paths: { '/api/v1/auth/otp': { post: { summary: 'Issue OTP', responses: { 200: { description: 'Accepted without account enumeration' }, 429: { description: 'Rate limited' } } } }, '/api/v1/auth/verify': { post: { summary: 'Verify OTP and set an opaque session cookie', responses: { 200: { description: 'Authenticated' }, 401: { description: 'Invalid OTP' } } } }, '/api/v1/requests': { post: { summary: 'Submit an idempotent customer request', security: [{ sessionCookie: [] }], responses: { 200: { description: 'Created or idempotent duplicate' } } } }, '/api/v1/offers/{token}': { get: { summary: 'Read a private opaque-token offer', parameters: [{ name: 'token', in: 'path', required: true, schema: { type: 'string' } }] } }, '/api/v1/offers/{token}/accept': { post: { summary: 'Record versioned consent and create an order' } }, '/api/v1/offers/{token}/payments/gateway': { post: { summary: 'Create a gateway redirect transaction after production configuration' } }, '/api/v1/admin/requests': { get: { summary: 'Search/filter internal requests', security: [{ sessionCookie: [] }] } }, '/api/v1/admin/settings': { get: { summary: 'Read non-secret service settings; superadmin MFA required', security: [{ sessionCookie: [] }] } } }, components: { securitySchemes: { sessionCookie: { type: 'apiKey', in: 'cookie', name: 'novin_session' } } } }));
 
   app.post('/api/v1/auth/otp', { config: { rateLimit: { max: 5, timeWindow: '10 minutes' } } }, async (request, reply) => {
@@ -321,12 +326,37 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
     const conditions = [query.state ? eq(requests.state, query.state as never) : undefined, from && !Number.isNaN(from.valueOf()) ? gte(requests.submittedAt, from) : undefined, until && !Number.isNaN(until.valueOf()) ? lte(requests.submittedAt, until) : undefined, query.assigneeId ? eq(requestAssignments.assigneeId, query.assigneeId) : undefined, text ? or(ilike(requests.reference, `%${text}%`), ilike(requests.title, `%${text}%`), ilike(organizations.displayName, `%${text}%`), ilike(organizations.nationalId, `%${text}%`), ilike(users.mobile, `%${text}%`)) : undefined].filter(Boolean) as ReturnType<typeof eq>[];
     return db.select({ id: requests.id, reference: requests.reference, title: requests.title, state: requests.state, version: requests.version, submittedAt: requests.submittedAt, organization: organizations.displayName, mobile: users.mobile, assigneeId: requestAssignments.assigneeId }).from(requests).innerJoin(organizations, eq(requests.organizationId, organizations.id)).innerJoin(users, eq(requests.createdByUserId, users.id)).leftJoin(requestAssignments, and(eq(requestAssignments.requestId, requests.id), isNull(requestAssignments.revokedAt))).where(conditions.length ? and(...conditions) : undefined).orderBy(desc(requests.submittedAt));
   });
+  app.get('/api/v1/admin/dashboard', async (request) => {
+    const auth = requireAuth(request);
+    const result: Record<string, number> = {};
+    if (can(auth.role, 'requests:read')) {
+      const [all, newRows] = await Promise.all([
+        db.select({ count: sql<number>`count(*)::int` }).from(requests),
+        db.select({ count: sql<number>`count(*)::int` }).from(requests).where(eq(requests.state, 'SUBMITTED'))
+      ]);
+      result.requests = all[0]?.count ?? 0;
+      result.newRequests = newRows[0]?.count ?? 0;
+    }
+    if (can(auth.role, 'payments:review')) {
+      const rows = await db.select({ count: sql<number>`count(*)::int` }).from(bankTransfers).where(eq(bankTransfers.state, 'REVIEW_PENDING'));
+      result.pendingTransfers = rows[0]?.count ?? 0;
+    }
+    if (can(auth.role, 'content:manage')) {
+      const rows = await db.select({ count: sql<number>`count(*)::int` }).from(contentEntries).where(eq(contentEntries.state, 'DRAFT'));
+      result.contentDrafts = rows[0]?.count ?? 0;
+    }
+    return result;
+  });
   app.post('/api/v1/admin/requests/:id/assign', async (request) => {
     const auth = requirePermission(request, 'requests:assign'); const input = z.object({ assigneeId: z.string().uuid() }).parse(request.body); const requestId = (request.params as { id: string }).id;
     const assignee = await db.query.users.findFirst({ where: and(eq(users.id, input.assigneeId), eq(users.active, true)) });
     if (!assignee || !['EXPERT', 'OPERATIONS'].includes(assignee.role)) throw Object.assign(new Error('کارشناس فعال معتبر نیست.'), { statusCode: 422 });
     await db.transaction(async (tx) => { await tx.update(requestAssignments).set({ revokedAt: new Date() }).where(and(eq(requestAssignments.requestId, requestId), isNull(requestAssignments.revokedAt))); await tx.insert(requestAssignments).values({ requestId, assigneeId: assignee.id, assignedById: auth.id }); });
     await audit(db, { actorId: auth.id, actorRole: auth.role, action: 'REQUEST_ASSIGNED', entity: 'request', entityId: requestId, after: { assigneeId: assignee.id }, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) }); return { ok: true };
+  });
+  app.get('/api/v1/admin/assignees', async (request) => {
+    requirePermission(request, 'requests:assign');
+    return db.select({ id: users.id, firstName: users.firstName, lastName: users.lastName, role: users.role }).from(users).where(and(eq(users.active, true), sql`${users.role} in ('EXPERT', 'OPERATIONS')`)).orderBy(users.firstName);
   });
   app.get('/api/v1/admin/requests.csv', async (request, reply) => {
     requirePermission(request, 'requests:export'); const data = await db.select({ reference: requests.reference, title: requests.title, organization: organizations.displayName, state: requests.state, submittedAt: requests.submittedAt }).from(requests).innerJoin(organizations, eq(requests.organizationId, organizations.id)).orderBy(desc(requests.submittedAt));
@@ -432,6 +462,10 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
     });
     await audit(db, { actorId: auth.id, actorRole: auth.role, action: 'OFFER_VERSIONED', entity: 'offer', entityId: offer.id, before: { version: offer.currentVersion }, after: { version: nextVersion, totals }, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) });
     return { ok: true, version: nextVersion };
+  });
+  app.get('/api/v1/admin/offers', async (request) => {
+    requirePermission(request, 'offers:manage');
+    return db.select({ id: offers.id, state: offers.state, currentVersion: offers.currentVersion, validUntil: offers.validUntil, requestReference: requests.reference, requestTitle: requests.title }).from(offers).innerJoin(requests, eq(offers.requestId, requests.id)).orderBy(desc(offers.createdAt));
   });
 
   app.post('/api/v1/admin/offers/:id/revoke', async (request) => {
@@ -551,6 +585,10 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
     await audit(db, { actorId: auth.id, actorRole: auth.role, action: 'BANK_TRANSFER_CONFIRMED', entity: 'bank_transfer', entityId: transfer.id, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) });
     return { ok: true };
   });
+  app.get('/api/v1/admin/bank-transfers', async (request) => {
+    requirePermission(request, 'payments:review');
+    return db.select({ id: bankTransfers.id, state: bankTransfers.state, reference: bankTransfers.reference, amountIrr: bankTransfers.amountIrr, bankName: bankTransfers.bankName, depositorName: bankTransfers.depositorName, transferredAt: bankTransfers.transferredAt, orderReference: orders.reference }).from(bankTransfers).innerJoin(orders, eq(bankTransfers.orderId, orders.id)).orderBy(desc(bankTransfers.createdAt));
+  });
 
   app.post('/api/v1/admin/bank-transfers/:id/reject', async (request) => {
     const auth = requirePermission(request, 'payments:review');
@@ -577,6 +615,10 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
     });
     await audit(db, { actorId: auth.id, actorRole: auth.role, action: 'ORDER_REFUNDED', entity: 'order', entityId: order.id, before: { refunded }, after: { amountIrr: input.amountIrr, reference: input.reference }, correlationId: request.correlationId, ipHash: hashIp(request.ip, config.SESSION_SECRET) });
     return { id: refund!.id, totalRefundedIrr: refunded + input.amountIrr };
+  });
+  app.get('/api/v1/admin/orders', async (request) => {
+    requirePermission(request, 'payments:refund');
+    return db.select({ id: orders.id, reference: orders.reference, state: orders.state, totalAmountIrr: orders.totalAmountIrr, collectedAt: orders.collectedAt }).from(orders).orderBy(desc(orders.createdAt));
   });
 
   app.post('/api/v1/admin/contract-invoices', async (request) => {
@@ -659,6 +701,9 @@ export async function createApp(options: Options = {}): Promise<FastifyInstance>
     if (!row) throw Object.assign(new Error('محتوای منتشرشده یافت نشد.'), { statusCode: 404 });
     return row;
   });
+  app.get('/api/v1/public/clients', async () => db.select({ id: clients.id, name: clients.name, logoAlt: clients.logoAlt, logoUrl: clients.logoUrl }).from(clients).where(and(eq(clients.approvedForPublication, true), eq(clients.isSynthetic, false))).orderBy(clients.displayOrder));
+  app.get('/api/v1/public/case-studies', async () => db.select({ slug: caseStudies.slug, title: caseStudies.title, problem: caseStudies.problem, action: caseStudies.action, result: caseStudies.result }).from(caseStudies).where(and(eq(caseStudies.state, 'PUBLISHED'), eq(caseStudies.approvedForPublication, true), eq(caseStudies.isSynthetic, false))).orderBy(desc(caseStudies.updatedAt)));
+  app.get('/api/v1/public/team', async () => db.select({ id: teamMembers.id, name: teamMembers.name, role: teamMembers.role, expertise: teamMembers.expertise, biography: teamMembers.biography, imageUrl: teamMembers.imageUrl }).from(teamMembers).where(and(eq(teamMembers.state, 'PUBLISHED'), eq(teamMembers.approvedForPublication, true), eq(teamMembers.isSynthetic, false))).orderBy(desc(teamMembers.updatedAt)));
   app.get('/api/v1/admin/clients', async (request) => { requirePermission(request, 'content:manage'); return db.select().from(clients).orderBy(clients.displayOrder); });
   app.post('/api/v1/admin/clients', async (request) => {
     const auth = requirePermission(request, 'content:manage'); const input = request.body as { name: string; logoAlt: string; logoUrl?: string; displayOrder?: number; approvedForPublication?: boolean; isSynthetic?: boolean };

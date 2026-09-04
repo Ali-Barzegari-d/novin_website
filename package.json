@@ -14,12 +14,13 @@
     }
   },
   "scripts": {
-    "dev": "pnpm --filter contracts build && pnpm --filter config build && pnpm --filter db build && pnpm --filter api dev",
-    "build": "pnpm --filter contracts build && pnpm --filter config build && pnpm --filter db build && pnpm --filter api build",
+    "dev": "pnpm --filter contracts build && pnpm --filter config build && pnpm --filter db build && pnpm --parallel --filter api --filter web dev",
+    "build": "pnpm --filter contracts build && pnpm --filter config build && pnpm --filter db build && pnpm --filter api build && pnpm --filter web build",
     "lint": "eslint . --max-warnings=0 && pnpm traceability:check",
-    "typecheck": "pnpm --filter contracts build && pnpm --filter config build && pnpm --filter db build && pnpm --filter contracts typecheck && pnpm --filter db typecheck && pnpm --filter config typecheck && pnpm --filter api typecheck",
+    "typecheck": "pnpm --filter contracts build && pnpm --filter config build && pnpm --filter db build && pnpm --filter contracts typecheck && pnpm --filter db typecheck && pnpm --filter config typecheck && pnpm --filter api typecheck && pnpm --filter web typecheck",
     "test": "vitest run --project unit --project integration",
     "test:watch": "vitest --project unit",
+    "test:e2e": "playwright test",
     "security:secrets": "node infra/scripts/secret-scan.mjs",
     "security:sast": "eslint apps packages --max-warnings=0",
     "security:sbom": "node infra/scripts/generate-sbom.mjs",
@@ -30,6 +31,8 @@
     "preflight:production": "tsx infra/scripts/preflight-production.ts"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.11.0",
+    "@playwright/test": "1.58.2",
     "@types/node": "24.10.1",
     "@types/nodemailer": "7.0.11",
     "@types/pg": "8.15.6",

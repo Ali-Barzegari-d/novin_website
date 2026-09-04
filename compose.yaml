@@ -1,6 +1,47 @@
 name: novin-financial
 
 services:
+  web:
+    image: "novin-financial-web:${RELEASE_SHA:-dev}"
+    build:
+      context: .
+      dockerfile: docker/web.Dockerfile
+      target: runtime
+      args:
+        NEXT_PUBLIC_BASE_URL: ${PUBLIC_BASE_URL}
+        NEXT_PUBLIC_RELEASE_READY: ${NEXT_PUBLIC_RELEASE_READY:-false}
+    init: true
+    restart: unless-stopped
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+      - /app/apps/web/.next/cache:size=32m,mode=0755,uid=1000,gid=1000
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      PORT: 3050
+      HOSTNAME: 0.0.0.0
+      API_INTERNAL_URL: http://api:4000
+      NEXT_PUBLIC_BASE_URL: ${PUBLIC_BASE_URL}
+      NEXT_PUBLIC_RELEASE_READY: ${NEXT_PUBLIC_RELEASE_READY:-false}
+    ports:
+      - "127.0.0.1:${APP_PORT:-3050}:3050"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3050/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 30s
+    mem_limit: 384m
+    networks: [app]
+
   api:
     image: "novin-financial-api:${RELEASE_SHA:-dev}"
     build:

@@ -15,7 +15,7 @@ const config = [
       '@typescript-eslint/no-unused-vars': 'off'
     }
   },
-  { ignores: ['**/node_modules/**', '**/dist/**', 'artifacts/**', 'var/**', 'vendor/**'] }
+  { ignores: ['**/node_modules/**', '**/.next/**', '**/dist/**', 'artifacts/**', 'var/**', 'vendor/**'] }
 ];
 
 export default config;

@@ -1,6 +1,6 @@
 # Acceptance and QA contract
 
-> Current status (2026-09-04): frontend, browser tests, and visual evidence were intentionally removed for a complete redesign. All browser/UI acceptance gates are pending again; prior evidence is historical only.
+> Current status (2026-09-04): the replacement frontend is implemented and has fresh Chromium RTL, keyboard, Axe and 320/768/1440 evidence under `artifacts/screenshots/`. Production content, legal and provider gates remain open; older visual evidence is historical only.
 
 ## Global quality gates
 

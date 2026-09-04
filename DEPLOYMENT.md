@@ -1,6 +1,6 @@
 # Deployment and operations
 
-> Production deployment is intentionally blocked after the owner-requested frontend reset on 2026-09-04. The retained API/domain stack can be built and tested, but the public web service and port 3050 must not be reported healthy until a replacement frontend is implemented.
+> The replacement web service is implemented on host port 3050 and included in Compose. Production deployment remains intentionally blocked until `make preflight-production` passes and the release owner explicitly sets `NEXT_PUBLIC_RELEASE_READY=true`; dev/demo health must not be described as production readiness.
 
 ## Target
 

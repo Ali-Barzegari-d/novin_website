@@ -1,0 +1,9 @@
+Use case: ui-mockup
+Asset type: full-fidelity visual-direction comp for a Persian RTL desktop website, first viewport, 16:10 landscape
+Direction: «سطح اقدام روشن» for «شرکت طراحی و تحلیل مالی نوین ایرانیان».
+Core belief: «این تیم قبل از پیشنهاد راه‌حل، مسئله سازمان را دقیق می‌فهمد و مالی، فرایند، داده و سامانه را یکپارچه می‌بیند.»
+Composition: strong Persian statement at upper right; the CTA «شرح مسئله‌تان را شروع کنید» is the only saturated element; three equal audience entry points live inside one continuous surface; a compact problem-to-result strip previews مسئله، مالی، فرایند، داده، سامانه، نتیجه; no generic two-column hero.
+Palette: #F3F0EA, #FFFFFF, #202126, #3157F5 action-only.
+Material: restrained matte paper fiber and crisp one-pixel structural lines.
+Required labels: «مسئله را پیش از راه‌حل می‌فهمیم»؛ «مالی، فرایند، داده و سامانه؛ در یک مسیر»؛ «شرح مسئله‌تان را شروع کنید»؛ «نمونه ساختگی».
+Avoid: the discarded navy/teal/gold world, orange accent, generic fintech dashboard, repeated rounded cards, gradients, glassmorphism, stock photos, fake proof, tiny type, floating pills, English copy, watermark.
