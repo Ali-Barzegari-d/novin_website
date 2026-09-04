@@ -335,6 +335,13 @@ Reset evidence: clean offline install now has 250 dependency components (down fr
 - QA passed: full `pnpm typecheck`; `pnpm lint` (137 traceability rows); `pnpm --filter web build` (23 generated pages); focused Chromium map/responsive checks; and `git diff --check`. Manually inspected the final 1440px rendering at `artifacts/screenshots/replacement-diagram-1440.png` and adjusted the endpoint until the arrowhead was fully visible outside the analysis card.
 - Implementation commit: `b1cd089` (`fix(web): simplify transformation map arrows`).
 
+### 2026-09-04 — Mirrored convergence correction
+
+- Owner clarified that the requested direction was the inverse of `b1cd089`: the straight output arrow needed to become the curved multi-layer form. Restored the five curved input connectors and replaced the output arrow with a mirrored five-path convergence, yielding a symmetrical problem → analysis layers → executable decision map.
+- Limited each visible SVG segment to the gap between cards and raised only the non-interactive connector layer, so both convergence shapes remain fully visible without crossing card content. The selected analytical layer still emphasizes its matching path; tablet/mobile retain the existing readable vertical flow.
+- QA passed: `pnpm --filter web build` (23 generated pages and TypeScript); `pnpm lint` (137 traceability rows); complete Chromium E2E (9 passed), including Axe serious/critical checks, interactive layer selection and no horizontal overflow at 320/768/1440px. Manually inspected `artifacts/screenshots/replacement-diagram-1440.png` after the complete path animation.
+- `b1cd089` remains in local history but its straight-arrow presentation is superseded by this correction.
+
 Copy unresolved gates from `DECISIONS.md` and close them only with evidence.
 
 - Legal/privacy owner: approve and publish final terms, privacy, cancellation/refund, retention copy, and version identifiers; remove all drafts only after approval.

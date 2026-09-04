@@ -120,9 +120,10 @@ svg { width: 1.5em; height: 1.5em; }
 .map-head p { margin: 0; padding: 7px 12px; display: flex; align-items: center; gap: 8px; color: #536b7f; background: var(--ice); border: 1px solid var(--line); border-radius: 999px; font-size: .72rem; white-space: nowrap; }
 .map-head p i { width: 8px; height: 8px; background: var(--teal); border-radius: 50%; box-shadow: 0 0 0 4px rgba(0,140,133,.12); }
 .map-stage { position: relative; z-index: 1; min-height: 520px; padding: 32px clamp(20px, 3vw, 44px); display: grid; grid-template-columns: minmax(170px, .66fr) minmax(430px, 1.75fr) minmax(170px, .66fr); grid-template-areas: 'outcome layers origin'; gap: clamp(28px, 5vw, 76px); align-items: center; direction: ltr; }
-.map-flow { position: absolute; inset: 32px 3.1%; width: 93.8%; height: calc(100% - 64px); overflow: visible; pointer-events: none; }
-.map-arrow { fill: none; stroke: var(--blue); stroke-width: 5; stroke-linecap: round; vector-effect: non-scaling-stroke; }
-.map-flow marker path { fill: var(--blue); }
+.map-flow { position: absolute; z-index: 3; inset: 32px 3.1%; width: 93.8%; height: calc(100% - 64px); overflow: visible; pointer-events: none; }
+.map-path { fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; transition: stroke-width .2s, opacity .2s; }
+.map-path.is-active { stroke-width: 5; }
+.map-path-blue { stroke: var(--blue); }.map-path-gold { stroke: var(--gold); }.map-path-teal { stroke: var(--teal); }.map-path-navy { stroke: var(--ink); }.map-path-burgundy { stroke: var(--burgundy); }
 .map-origin, .map-outcome { position: relative; z-index: 2; min-height: 210px; padding: 24px 22px; display: flex; flex-direction: column; justify-content: center; direction: rtl; background: white; border: 1px solid #c8dbe8; border-radius: 18px; box-shadow: 0 16px 36px rgba(16,35,61,.09); }
 .map-origin { grid-area: origin; border-top: 5px solid var(--burgundy); }
 .map-outcome { grid-area: outcome; color: white; background: linear-gradient(145deg, var(--blue-dark), var(--ink)); border-color: var(--blue-dark); border-top: 5px solid var(--gold); box-shadow: 0 20px 48px rgba(7,75,145,.2); }

@@ -1,15 +1,22 @@
 'use client';
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { useId, useState } from 'react';
+import { useState } from 'react';
 import { productPillars } from '@/lib/content';
 
 const layerColors = ['blue', 'gold', 'teal', 'navy', 'burgundy'] as const;
 
+const layerPaths = [
+  'M805 240 C775 240 775 72 755 72 M245 72 C225 72 225 240 195 240',
+  'M805 240 C775 240 775 156 755 156 M245 156 C225 156 225 240 195 240',
+  'M805 240 H755 M245 240 H195',
+  'M805 240 C775 240 775 324 755 324 M245 324 C225 324 225 240 195 240',
+  'M805 240 C775 240 775 408 755 408 M245 408 C225 408 225 240 195 240',
+] as const;
+
 export function TransformationDiagram() {
   const [active, setActive] = useState(0);
   const reduceMotion = useReducedMotion();
-  const arrowId = useId().replace(/:/g, '');
   const activeLayer = productPillars[active];
 
   return (
@@ -28,29 +35,18 @@ export function TransformationDiagram() {
 
       <div className="map-stage">
         <svg className="map-flow" viewBox="0 0 1000 480" preserveAspectRatio="none" aria-hidden="true">
-          <defs>
-            <marker id={arrowId} viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto">
-              <path d="M1 1 11 6 1 11Z" />
-            </marker>
-          </defs>
-          <motion.path
-            d="M805 240 H755"
-            className="map-arrow map-entry"
-            markerEnd={`url(#${arrowId})`}
-            initial={reduceMotion ? false : { pathLength: 0 }}
-            whileInView={{ pathLength: 1 }}
-            viewport={{ once: true, amount: 0.35 }}
-            transition={{ duration: reduceMotion ? 0 : 0.45, ease: [0.16, 1, 0.3, 1] }}
-          />
-          <motion.path
-            d="M220 240 H176"
-            className="map-arrow map-exit"
-            markerEnd={`url(#${arrowId})`}
-            initial={reduceMotion ? false : { pathLength: 0 }}
-            whileInView={{ pathLength: 1 }}
-            viewport={{ once: true, amount: 0.35 }}
-            transition={{ duration: reduceMotion ? 0 : 0.45, delay: reduceMotion ? 0 : 0.2, ease: [0.16, 1, 0.3, 1] }}
-          />
+          {layerPaths.map((path, index) => (
+            <motion.path
+              key={path}
+              d={path}
+              className={`map-path map-path-${layerColors[index]}${active === index ? ' is-active' : ''}`}
+              initial={reduceMotion ? false : { pathLength: 0, opacity: 0 }}
+              whileInView={{ pathLength: 1, opacity: active === index ? 1 : 0.3 }}
+              animate={{ opacity: active === index ? 1 : 0.3 }}
+              viewport={{ once: true, amount: 0.35 }}
+              transition={{ duration: reduceMotion ? 0 : 0.9, delay: reduceMotion ? 0 : index * 0.07, ease: [0.16, 1, 0.3, 1] }}
+            />
+          ))}
         </svg>
 
         <div className="map-origin">

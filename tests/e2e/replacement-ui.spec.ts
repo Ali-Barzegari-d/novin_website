@@ -42,8 +42,7 @@ test('transformation map connects one problem to five analysis layers and one ex
   await map.scrollIntoViewIfNeeded();
   await expect(map.getByText('مسئله سازمانی', { exact: true })).toBeVisible();
   await expect(map.getByText('تصمیم قابل اجرا', { exact: true })).toBeVisible();
-  await expect(map.locator('.map-entry')).toHaveCount(1);
-  await expect(map.locator('.map-exit')).toHaveCount(1);
+  await expect(map.locator('.map-path')).toHaveCount(5);
 
   const layers = map.getByRole('group', { name: 'لایه‌های تحلیل مسئله' });
   await expect(layers.getByRole('button')).toHaveCount(5);
@@ -63,6 +62,7 @@ for (const width of [320, 768, 1440]) {
     expect(overflow).toBeLessThanOrEqual(1);
     const transformationMap = page.locator('.system-map');
     await transformationMap.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(1100);
     await page.locator('.site-header, .skip-link, .scroll-progress').evaluateAll((elements) => elements.forEach((element) => {
       (element as HTMLElement).style.display = 'none';
     }));
