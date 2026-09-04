@@ -24,10 +24,42 @@ test('public home is Persian RTL, accessible, and has no public price', async ({
   await page.goto('/');
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   await expect(page.getByRole('heading', { name: /پیچیدگی‌های مالی/ })).toBeVisible();
+  await expect(page.getByText('یک جریان منسجم، از رویداد تا پذیرش')).toBeVisible();
   await expect(page.getByText(/ریال|تومان|[۰-۹]+٬[۰-۹]+/)).not.toBeVisible();
   const axe = await new AxeBuilder({ page }).analyze();
   expect(axe.violations.filter((item) => ['critical', 'serious'].includes(item.impact ?? '')).map((item) => item.id)).toEqual([]);
   for (const size of sizes) { await page.setViewportSize({ width: size.width, height: size.height }); await activateHomeSections(page); expect(await page.locator('body').evaluate((element) => element.scrollWidth <= window.innerWidth)).toBe(true); await page.screenshot({ path: `artifacts/screenshots/home-${size.name}.png`, fullPage: true }); }
+});
+
+test('hero keeps the method legible without a decorative diagram', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByRole('complementary', { name: 'روش شروع همکاری' })).toBeVisible();
+  const heroPath = page.locator('.hero-path');
+  await expect(heroPath).toContainText('مسئله');
+  await expect(heroPath).toContainText('اجرا');
+  await expect(heroPath).toContainText('پذیرش');
+  await expect(page.locator('.hero-diagram')).toHaveCount(0);
+  await expect(page.locator('.hero-figure')).toHaveCount(0);
+  for (const size of sizes) {
+    await page.setViewportSize({ width: size.width, height: size.height });
+    expect(await page.locator('body').evaluate((element) => element.scrollWidth <= window.innerWidth)).toBe(true);
+  }
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.reload();
+  await expect(page.getByRole('complementary', { name: 'روش شروع همکاری' })).toBeVisible();
+});
+
+test('global semantic tokens apply RTL dark mode', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 960 });
+  await page.goto('/');
+  await expect(page.locator('html')).toHaveCSS('direction', 'rtl');
+  await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(248, 246, 240)');
+  await page.locator('html').evaluate((element) => element.classList.add('dark'));
+  await page.waitForTimeout(250);
+  await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(13, 15, 18)');
+  await expect(page.locator('html')).toHaveCSS('--color-text-primary', '#eaedf0');
+  expect(await page.locator('body').evaluate((element) => element.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.screenshot({ path: 'artifacts/screenshots/home-dark-320.png', fullPage: true });
 });
 
 test('primary public routes render a single request CTA without horizontal overflow', async ({ page }) => {

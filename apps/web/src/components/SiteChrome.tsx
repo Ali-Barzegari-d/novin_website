@@ -1,7 +1,0 @@
-import Link from 'next/link';
-import { Header } from './Header';
-import { SmsInbox } from './SmsInbox';
-
-const legal = [['شرایط استفاده','/terms'],['حریم خصوصی','/privacy'],['لغو و استرداد','/cancellation'],['ثبت شکایت','/complaints']] as const;
-export function Footer() { return <footer className="footer"><div className="shell"><div className="footer-signature"><Link className="brand" href="/">نوین ایرانیان</Link><span>شناخت دقیق. طراحی روشن. اجرای مسئولانه.</span></div><div className="footer-grid"><section><h2>شرکت طراحی و تحلیل مالی نوین ایرانیان</h2><p>[نیازمند درج شناسه ملی شرکت]</p><p>[نیازمند درج شماره ثبت]</p><p>[نیازمند درج نشانی قانونی]</p></section><section><h2>ارتباط رسمی</h2><p>[نیازمند درج تلفن]</p><p>[نیازمند درج ایمیل]</p><Link href="/contact">صفحه تماس با ما</Link></section><section><h2>اسناد و پیگیری</h2>{legal.map(([label, href]) => <p key={href}><Link href={href}>{label}</Link></p>)}<p><Link href="/account">درخواست‌های من</Link></p></section></div><p className="footer-note">اطلاعات هویتی و متن‌های حقوقی این نسخه هنوز در انتظار تأیید انتشار هستند.</p></div></footer>; }
-export function SiteChrome({ children }: { children: React.ReactNode }) { const demo = process.env.NEXT_PUBLIC_DEV_SMS_INBOX_ENABLED === 'true'; return <div className={demo ? 'site-frame has-dev-inbox' : 'site-frame'}><a className="skip-link" href="#main">پرش به محتوای اصلی</a><Header/><main id="main">{children}</main><Footer/>{demo ? <SmsInbox/> : null}</div>; }
