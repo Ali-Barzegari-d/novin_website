@@ -333,6 +333,7 @@ Reset evidence: clean offline install now has 250 dependency components (down fr
 
 - Replaced the five curved desktop convergence strokes at the organizational-problem input with one straight left-pointing blue arrow matching the executable-output arrow. The five analysis layers remain explicit interactive controls; only the connector shape changed. The vertical tablet/mobile flow remains unchanged.
 - QA passed: full `pnpm typecheck`; `pnpm lint` (137 traceability rows); `pnpm --filter web build` (23 generated pages); focused Chromium map/responsive checks; and `git diff --check`. Manually inspected the final 1440px rendering at `artifacts/screenshots/replacement-diagram-1440.png` and adjusted the endpoint until the arrowhead was fully visible outside the analysis card.
+- Implementation commit: `b1cd089` (`fix(web): simplify transformation map arrows`).
 
 Copy unresolved gates from `DECISIONS.md` and close them only with evidence.
 
