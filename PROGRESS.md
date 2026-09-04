@@ -341,6 +341,7 @@ Reset evidence: clean offline install now has 250 dependency components (down fr
 - Limited each visible SVG segment to the gap between cards and raised only the non-interactive connector layer, so both convergence shapes remain fully visible without crossing card content. The selected analytical layer still emphasizes its matching path; tablet/mobile retain the existing readable vertical flow.
 - QA passed: `pnpm --filter web build` (23 generated pages and TypeScript); `pnpm lint` (137 traceability rows); complete Chromium E2E (9 passed), including Axe serious/critical checks, interactive layer selection and no horizontal overflow at 320/768/1440px. Manually inspected `artifacts/screenshots/replacement-diagram-1440.png` after the complete path animation.
 - `b1cd089` remains in local history but its straight-arrow presentation is superseded by this correction.
+- Corrective implementation commit: `aa0c918` (`fix(web): mirror transformation map convergence`).
 
 Copy unresolved gates from `DECISIONS.md` and close them only with evidence.
 
