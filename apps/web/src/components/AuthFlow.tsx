@@ -1,11 +1,52 @@
 'use client';
-import { useState, type FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
 
-type Mode = 'login' | 'request';
-export function AuthFlow({ mode }: { mode: Mode }) {
-  const router = useRouter(); const [mobile, setMobile] = useState(''); const [sent, setSent] = useState(false); const [message, setMessage] = useState(''); const [error, setError] = useState('');
-  async function send(event: FormEvent) { event.preventDefault(); setError(''); const res = await fetch('/api/v1/auth/otp', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ mobile }) }); const data = await res.json(); if (!res.ok) return setError(data.error ?? 'ارسال رمز ناموفق بود.'); setSent(true); setMessage('رمز ارسال شد. در محیط آزمایشی آن را در صندوق پایین صفحه ببینید.'); }
-  async function verify(event: FormEvent<HTMLFormElement>) { event.preventDefault(); setError(''); const code = new FormData(event.currentTarget).get('code'); const res = await fetch('/api/v1/auth/verify', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ mobile, code, idempotencyKey: crypto.randomUUID() }) }); const data = await res.json(); if (!res.ok) return setError(data.error ?? 'تأیید رمز ناموفق بود.'); router.push(data.onboardingRequired ? `/request?onboarding=1` : mode === 'request' ? '/request?new=1' : '/account'); }
-  return <div className="card">{!sent ? <form className="form" onSubmit={send}><label className="field">شماره همراه ایران<input value={mobile} onChange={(event) => setMobile(event.target.value)} inputMode="tel" autoComplete="tel" required placeholder="۰۹۱۲۱۲۳۴۵۶۷" /><span className="hint">ورود و عضویت بدون رمز عبور دائمی انجام می‌شود.</span></label>{error ? <p className="error" role="alert">{error}</p> : null}<button className="button button-primary" type="submit">دریافت رمز یک‌بارمصرف</button></form> : <form className="form" onSubmit={verify}><p className="success" role="status">{message}</p><label className="field">رمز ۶ رقمی<input name="code" inputMode="numeric" autoComplete="one-time-code" maxLength={6} required /></label>{error ? <p className="error" role="alert">{error}</p> : null}<button className="button button-primary" type="submit">تأیید و ادامه</button><button className="button button-secondary" type="button" onClick={() => setSent(false)}>ویرایش شماره</button></form>}</div>;
+import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
+import { post } from '@/lib/http';
+
+export function AuthFlow({ mode, onAuthenticated }: { mode: 'login' | 'request'; onAuthenticated?: () => Promise<void> }) {
+  const router = useRouter();
+  const [mobile, setMobile] = useState('');
+  const [code, setCode] = useState('');
+  const [sent, setSent] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [countdown, setCountdown] = useState(0);
+  const [error, setError] = useState('');
+  const codeInput = useRef<HTMLInputElement>(null);
+  const pending = useRef(false);
+  useEffect(() => { if (sent) codeInput.current?.focus(); }, [sent]);
+  useEffect(() => { if (!countdown) return; const timer = window.setTimeout(() => setCountdown((value) => Math.max(0, value - 1)), 1000); return () => clearTimeout(timer); }, [countdown]);
+
+  async function send(event?: FormEvent) {
+    event?.preventDefault(); if (pending.current) return;
+    pending.current = true; setBusy(true); setError('');
+    try {
+      const data = await post<{ retryAfterSeconds: number }>('/api/v1/auth/otp', { mobile });
+      setSent(true); setCode(''); setCountdown(data.retryAfterSeconds);
+      window.dispatchEvent(new Event('novin:sms'));
+    } catch (reason) { setError((reason as Error).message); }
+    finally { pending.current = false; setBusy(false); }
+  }
+  async function verify(event: FormEvent) {
+    event.preventDefault(); if (pending.current) return;
+    pending.current = true; setBusy(true); setError('');
+    try {
+      const data = await post<{ onboardingRequired: boolean }>('/api/v1/auth/verify', { mobile, code, idempotencyKey: crypto.randomUUID() });
+      window.dispatchEvent(new Event('novin:sms-clear'));
+      if (onAuthenticated) await onAuthenticated();
+      else router.push(data.onboardingRequired ? '/request?onboarding=1' : mode === 'request' ? '/request' : '/account');
+    } catch (reason) { setError((reason as Error).message); }
+    finally { pending.current = false; setBusy(false); }
+  }
+  return <div className="card auth-card">
+    <p className="eyebrow">ورود بدون رمز عبور</p>
+    <h2>{sent ? 'شماره همراه را تأیید کنید.' : 'گفت‌وگو از اینجا شروع می‌شود.'}</h2>
+    <p className="muted">{sent ? <>رمز به <bdi>{mobile}</bdi> ارسال شد و دو دقیقه اعتبار دارد.</> : 'شماره همراه نماینده سازمان را وارد کنید. اگر حساب ندارید، در همین مسیر ساخته می‌شود.'}</p>
+    <form className="form" onSubmit={sent ? verify : send} aria-busy={busy}>
+      {sent ? <label className="field">رمز ۶ رقمی<input className="otp-input" ref={codeInput} name="code" dir="ltr" value={code} onChange={(event) => setCode(event.target.value.replace(/[۰-۹]/g, (n) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(n))).replace(/\D/g, '').slice(0, 6))} inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" required aria-describedby="otp-hint" /><span id="otp-hint" className="hint">می‌توانید رمز را یک‌جا جای‌گذاری کنید.</span></label> : <label className="field">شماره همراه ایران<input name="mobile" dir="ltr" type="tel" value={mobile} onChange={(event) => setMobile(event.target.value)} autoComplete="tel" required placeholder="۰۹۱۲۱۲۳۴۵۶۷" /></label>}
+      {error && <p className="error" role="alert">{error}</p>}
+      <button className="button button-primary" disabled={busy} type="submit">{busy ? 'لطفاً صبر کنید…' : sent ? 'تأیید و ادامه' : 'دریافت رمز یک‌بارمصرف'}</button>
+      {sent && <div className="auth-options"><button className="text-button" type="button" disabled={busy} onClick={() => { setSent(false); setError(''); }}>ویرایش شماره</button><button className="text-button" type="button" disabled={busy || countdown > 0} onClick={() => void send()}>{countdown ? `ارسال مجدد تا ${countdown.toLocaleString('fa-IR')} ثانیه دیگر` : 'ارسال مجدد رمز'}</button></div>}
+    </form>
+  </div>;
 }
