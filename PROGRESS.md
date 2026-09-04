@@ -318,6 +318,7 @@ Reset evidence: clean offline install now has 250 dependency components (down fr
 - QA passed: full `pnpm typecheck`; full production `pnpm build` (۲۳ generated web pages); `pnpm lint` (۱۳۷ traceability rows); `pnpm test` (۱۹ passed, ۱ integration skipped); `git diff --check`; full Chromium E2E (۸ passed) including RTL, Axe serious/critical checks across representative surfaces, Vazirmatn, Persian journey numbers, reduced motion, mobile menu and no overflow at ۳۲۰/۷۶۸/۱۴۴۰px. The full browser pass found a ۴٫۱۲:۱ small-text contrast regression from the new turquoise; small detail indices now use the darker semantic turquoise and the repeated full run passed.
 - Visual evidence was manually inspected at `artifacts/screenshots/replacement-first-viewport-{320,768,1440}.png` and `artifacts/screenshots/replacement-home-1440.png`. Production gates remain unchanged; no deployment or image publication was performed.
 - Rejected concept drafts were moved without deletion to `/tmp/novin-design-drafts-20260904`; the retained internal `canon.png` was not changed. The delivery commit excludes those drafts.
+- Implementation commit: `856debe` (`feat(web): deliver guided confidence experience`).
 
 Copy unresolved gates from `DECISIONS.md` and close them only with evidence.
 
