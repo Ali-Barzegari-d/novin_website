@@ -1,30 +1,11 @@
-# R6 — Editorial experience and intake reliability
+# R6 — Intake reliability checkpoint
 
 Baseline: `670ef4c` (2026-09-01). This is a follow-up slice, not a replacement
 for the existing R0–R5 history and not approval for public production.
 
-## Design direction
-
-Persian editorial / working-paper aesthetic: warm ivory, navy typography,
-teal process detail and restrained burgundy emphasis. Retain the existing
-self-hosted OFL Estedad and Vazirmatn fonts. No proprietary font, synthetic
-client, fabricated statistic, external tracking or stock image was added.
-
-- A bespoke SVG drawing explains needs/rules/data → shared model → executable
-  process. It is a method illustration, not evidence of delivered work.
-- The homepage follows the PRD sequence but varies composition: asymmetric
-  opening, editorial audience rows, native problem accordions, dark integration
-  specification, numbered journey, honest evidence/team placeholders and closing CTA.
-- Public content is server-rendered and visible without JavaScript. No opacity-zero
-  entrance states or continuously animated ornament. Native controls and CSS states
-  provide interaction, including a reduced-motion mode.
-- Intake uses a focused single-column form with a contextual step guide, progressive
-  identity collection, retained input, explicit retry, review and success states.
-- Public interior pages use numbered content chapters instead of repeated cards.
-
-Applied project-local Ponytail `full` and UI UX Pro Max guidance. No runtime
-dependency was added. The previously installed Framer Motion package is retained
-for compatibility, but the new public home does not import or hydrate it.
+The frontend and its visual direction were intentionally removed on 2026-09-04
+at the owner's request. This document now retains only the backend reliability,
+security, commerce and operations evidence from that checkpoint.
 
 ## Functional repairs in this slice
 
@@ -36,14 +17,11 @@ for compatibility, but the new public home does not import or hydrate it.
   once and commits failed-attempt counters.
 - Onboarding locks the representative row and creates one organization/membership
   transactionally. Retries do not create another organization.
-- Customer account includes a minimal organization summary, not internal workflow.
 - Request review/edit preserves input; retries reuse an idempotency key. Concurrent
   duplicate insert returns the original ID/reference without another consent/notification.
 - Internal transition saves a real note, writes only valid screening outcomes,
   checks optimistic-update results and keeps the audit write in the transaction.
   A dropdown cannot assert payment collection or offer issuance.
-- Compose passes API destination and demo/public flags at web **build time**, matching
-  Next standalone's serialized rewrites. Production builds disable the inbox.
 
 ## Verification contract
 
@@ -52,8 +30,6 @@ for compatibility, but the new public home does not import or hydrate it.
 | `tests/unit/intake-routes.test.ts` | Real Fastify handlers and schemas; DB/Redis/provider doubles |
 | `tests/unit/http.test.ts` | JSON, upstream and network failures |
 | `tests/integration/intake-postgres.test.ts` | Explicitly opted-in disposable PostgreSQL/Redis test; OTP replay, concurrent onboarding/submission, customer DTO and first screening transition |
-| `tests/e2e/intake-ux.spec.ts` | Browser UX against mocked API contracts; 320px onboarding/review/retry, navigation, no-JS content and axe |
-| `tests/e2e/public.spec.ts` | Public route/RTL/axe screenshots; existing private offer/invoice cases still need seed tokens |
 
 The DB test requires `NOVIN_RUN_DATABASE_TESTS=true`, `APP_ENV=test` and a database
 URL ending in `/novin_test`. CI opts in after migration. No production data is used.
@@ -71,20 +47,8 @@ This draft was reconciled on a new local branch after a successful
   `NOVIN_RUN_DATABASE_TESTS=true`. It verifies OTP failed-attempt/expiry/replay
   behavior, concurrent verify/onboarding/submission, private account data, and
   first screening plus audit note behavior. This is separate from mocked browser tests.
-- Chromium and Firefox each passed 6 tests with 2 synthetic private-token cases
-  skipped. The UI test covers the complete requested intake path, retry preservation,
-  keyboard/mobile/no-JS behavior, axe severe/critical findings and screenshots at
-  320/768/1440. WebKit was attempted but all runnable cases fail before assertions
-  with `page.goto: WebKit encountered an internal error`; this remains an unresolved
-  test-runner gate, not a passing result.
-- Reviewed images are in `artifacts/screenshots/home-{320,768,1440}.png` and
-  `artifacts/screenshots/request-{draft,review,success}-{320,768,1440}.png`.
-  They are development evidence; the local browser-only SMS affordance is expected
-  there and is excluded from the production-like Docker build.
-- `docker compose --env-file .env config --quiet` and a production-like build of
-  web/API images passed. A temporary loopback web container returned healthy and
-  its server-rendered home had no development SMS inbox. This verifies serialized
-  web rewrites/flags versus runtime API networking, not a production deployment.
+- Historical browser and visual evidence from this checkpoint was invalidated and
+  removed with the frontend reset. It must not be used to claim current acceptance.
 
 No remote branch, PR, push, merge or deployment was created. The follow-up remains
 outside the R0–R5 release ledger and must be reviewed as a checkpoint.

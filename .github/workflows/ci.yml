@@ -31,7 +31,7 @@ jobs:
       - run: make test
       - run: pnpm build
 
-  e2e:
+  integration:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
@@ -75,19 +75,11 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm exec playwright install --with-deps chromium firefox webkit
       - run: pnpm db:migrate
       - run: pnpm build
       - run: pnpm test
         env:
           NOVIN_RUN_DATABASE_TESTS: "true"
-      - run: make test-e2e
-      - if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: e2e-artifacts
-          path: artifacts/
-          if-no-files-found: ignore
 
   security:
     runs-on: ubuntu-24.04

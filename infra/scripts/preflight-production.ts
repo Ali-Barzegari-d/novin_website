@@ -1,8 +1,12 @@
 import { loadConfig } from '../../packages/config/src/index.js';
 import { createDatabase } from '../../packages/db/src/index.js';
+import { existsSync } from 'node:fs';
 
 type Gate = readonly [gate: string, owner: string, remediation: string];
 const gates: Gate[] = [];
+if (!existsSync('apps/web')) {
+  gates.push(['فرانت‌اند عمومی', 'Product/design', 'بریف جایگزین را تأیید و فرانت‌اند، تست مرورگر و شواهد دسترس‌پذیری را دوباره پیاده‌سازی کنید.']);
+}
 let config: ReturnType<typeof loadConfig> | undefined;
 try {
   config = loadConfig({ ...process.env, APP_ENV: 'production', NODE_ENV: 'production' });

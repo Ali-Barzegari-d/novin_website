@@ -56,7 +56,7 @@ Synthetic case studies/team/client entries may exist in dev/demo only and must c
 
 ## Page contracts
 
-- Home: exact section order in `DESIGN.md`/PRD 8.1.
+- Home: exact section order in PRD 8.1; presentation remains unset until the replacement frontend brief creates a new `DESIGN.md`.
 - Public/government solutions: stakeholder ambiguity, financial-service/process redesign, law-to-rule/system requirements, PRD/data/workflow/acceptance, vendor acceptance, independent functional oversight.
 - Private solutions: financial model fit, delayed/manual accounting events, accounting/legal-system integration, internal controls, e-invoice automation, tailored integration/product, compliance-aligned process design.
 - Capabilities: discovery, modeling, product/process/data design, automation/integration, software delivery where relevant, implementation governance, acceptance.

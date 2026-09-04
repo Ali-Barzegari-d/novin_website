@@ -1,6 +1,6 @@
 # Implementation progress
 
-Status: R6 UI/intake checkpoint validated locally; R7 visual-system, component, layout-shell and public-experience checkpoints validated locally. Public production remains blocked by external gates and unverified launch work.
+Status: owner-requested frontend and visual reset completed. The retained API/domain stack passes lint, typecheck, unit tests, and build; browser/UI acceptance and public production are intentionally blocked until a replacement frontend brief is supplied.
 
 ## Environment
 
@@ -22,10 +22,24 @@ Status: R6 UI/intake checkpoint validated locally; R7 visual-system, component, 
 | R5 | Passed (dev/demo); public production blocked | `97f9253` | final static/security gates, Docker image rehearsal, API/web health smoke, Chromium + Firefox E2E; see R5 evidence below | Legal/company/provider/TLS/backup/ClamAV gates and isolated restore drill remain open |
 | R6 | Validated checkpoint; not a production release | `b45f147` | frozen install, lint, typecheck, 22 unit tests, production build, disposable PostgreSQL/Redis integration, Chromium/Firefox E2E, Docker production-like image smoke | WebKit runner failure; all existing launch gates plus security/commerce/CMS/operations backlog remain open |
 | R7 | Visual-system, component, layout-shell and public-experience checkpoints validated; not a production release | `645c429`, `1ec7663`, `f8bf9cf`, `4671dbd`, `06e31db`, `b3ce320`, `eeda580`, `e22ef57`, `80e7bd4`, `a25350f`, `f61df0b`, `bd9115a`, `a474e50`, `6a9db1f` | frozen install, workspace typecheck, web production build, lint, 22 unit/integration tests and Chromium RTL/focus/axe checks | R6 and launch gates are unchanged |
+| Frontend reset | Completed; intentionally not a release | pending commit | Previous frontend, design system, visual assets/prompts/evidence and browser harness removed; backend QA re-run | Replacement UI/UX brief and implementation required before any public release |
 
 ## Execution log
 
 Add dated entries with commands, results, decisions, defects, and the next action. Never paste secrets or real personal data here.
+
+### 2026-09-04 — Frontend and visual reset checklist
+
+- [x] Read the mandatory project documents in the `AGENTS.md` order and inspect the repository state.
+- [x] Activate Ponytail `full`, retained UI UX Pro Max guidance, and Impeccable context for the frontend boundary.
+- [x] Remove the complete `apps/web` application, frontend-only tests/configuration, web container, and generated visual evidence.
+- [x] Remove the incumbent design specification, image prompts, asset register, source artwork, and visual-only R6 notes while retaining non-visual reliability history.
+- [x] Remove stale frontend dependencies and executable references while preserving API, database, security, content truth, and operations data.
+- [x] Mark traceability rows that lost frontend evidence as awaiting the replacement frontend; run backend-focused validation and record the result.
+
+Reset boundary: this is an explicit owner-requested destructive reset. Git history remains the recovery path for tracked files; ignored screenshots/build output are intentionally discarded. No replacement visual direction or UI is introduced in this step.
+
+Reset evidence: clean offline install now has 250 dependency components (down from the stale 706-component tree) and no Next, React, Tailwind, Radix, Framer Motion, Playwright, or Axe package in the lockfile/SBOM. `pnpm lint` passed with 137 traceability rows; `pnpm typecheck` passed; `pnpm test` passed 19 tests with one explicitly opted-out database suite; `pnpm build` passed for contracts/config/db/API; `docker compose --env-file .env config --quiet` passed and lists only ClamAV, PostgreSQL, Redis, API, and worker. The production deploy command exits 2 before mutation with the explicit missing-frontend gate. A filesystem scan outside Git/vendor/dependencies found no image, font, or vector asset.
 
 ### 2026-09-03 — R7 owner hero collage integration and image prompts
 

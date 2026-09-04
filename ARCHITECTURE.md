@@ -1,5 +1,7 @@
 # Architecture
 
+> Current repository state (2026-09-04): the owner intentionally removed the previous frontend. The web portions below remain target product constraints, not an implemented or deployable surface, until a replacement frontend brief is supplied.
+
 ## Shape
 
 Use a modular pnpm monorepo with physically separate web and API applications:

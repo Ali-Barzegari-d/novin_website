@@ -39,10 +39,10 @@ This file resolves the discovery answers and their conflicts with PRD v1.0. Thes
 | D-31 | Draft legal pages are generated with the label «پیش‌نویس — نیازمند تأیید حقوقی». Legal approval and effective version are production gates. |
 | D-32 | Complaints use a public, rate-limited form with a tracking code. Authentication is optional; sensitive evidence is not accepted in the initial form. |
 | D-33 | Persian RTL only for MVP, with locale-ready code boundaries. No English pages and no dark mode. UI numerals are Persian; stored values and machine APIs remain canonical ASCII/UTC. |
-| D-34 | Visual direction: formal, modern, premium, culturally grounded, and attractive. Use navy/teal/green with restrained burgundy and Persian-gold accents. Avoid generic banking charts, stock imagery, flag motifs, and copied layouts. |
-| D-35 | Typography roles: Estedad for display headings, IranYekan for body only if licensed files are supplied, and Vazirmatn as open fallback/body default. Do not bundle proprietary fonts without rights. |
-| D-36 | Motion is subtle/moderate and respects `prefers-reduced-motion`. WCAG 2.2 AA is the target. |
-| D-37 | Web research and image search are allowed. Use only assets with verified license/permission and store attribution metadata. Prefer original abstract geometry and typography until real company photos exist. |
+| D-34 | Superseded 2026-09-04: the prior visual direction was removed by owner request. The replacement visual identity remains intentionally unset until the next owner brief. |
+| D-35 | Superseded 2026-09-04: prior typography choices were removed with the frontend reset. No font is approved for the replacement frontend yet. |
+| D-36 | WCAG 2.2 AA remains a product requirement. Motion and other presentation choices remain unset until the replacement frontend brief. |
+| D-37 | Any future external visual asset still requires verified license/permission and recorded attribution; the previous asset set and prompts were removed. |
 | D-38 | No third-party analytics in this phase. Keep only privacy-safe internal operational/funnel events required by the PRD; never include problem text or PII in analytics properties. |
 | D-39 | Error monitoring is self-hosted inside the product: structured JSON logs, persisted error events, health checks, an admin error view, log rotation, and optional resource-light uptime checks. Do not deploy Sentry self-hosted on a 4 GB host. |
 | D-40 | Host disk/volume encryption plus TLS is sufficient unless legal review changes it. Secrets still require secret files/environment controls and never enter Git. |

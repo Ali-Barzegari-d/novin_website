@@ -1,5 +1,7 @@
 # Deployment and operations
 
+> Production deployment is intentionally blocked after the owner-requested frontend reset on 2026-09-04. The retained API/domain stack can be built and tested, but the public web service and port 3050 must not be reported healthy until a replacement frontend is implemented.
+
 ## Target
 
 - Ubuntu 24.04, AMD64, 4 GB RAM, 40 GB disk, sudo access

@@ -7,7 +7,7 @@ ROLLBACK_SHA ?=
 COMPOSE_FILE ?= compose.yaml
 COMPOSE := docker compose -f $(COMPOSE_FILE) --env-file .env
 
-.PHONY: help plan-check bootstrap install dev lint typecheck test test-e2e build up down restart logs ps health migrate seed admin-create backup restore restore-drill deploy rollback clean-safe preflight-production
+.PHONY: help plan-check bootstrap install dev lint typecheck test build up down restart logs ps health migrate seed admin-create backup restore restore-drill deploy rollback clean-safe preflight-production
 
 help: ## Show available targets
 	@awk 'BEGIN {FS = ":.*## "; printf "Usage: make <target> [ENV=dev|production]\n\n"} /^[a-zA-Z0-9_-]+:.*## / {printf "  %-22s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -38,10 +38,7 @@ typecheck: ## Run strict TypeScript checks
 test: ## Run unit and integration tests
 	@pnpm test
 
-test-e2e: ## Run production-like E2E and accessibility tests
-	@pnpm test:e2e
-
-build: ## Build applications and production images
+build: ## Build the backend application and production image
 	@pnpm build
 	@$(COMPOSE) build
 

@@ -18,7 +18,7 @@ Agent باید `AGENTS.md` را خودکار بخواند. اگر محیط ای�
 2. `DECISIONS.md` (حل تعارض پاسخ‌ها با PRD)
 3. `docs/PRD.md` و نسخه Word اصلی
 4. `docs/PRODUCT_DISCOVERY.md` (پرامپت، سؤال‌ها و پاسخ‌های مالک محصول)
-5. `PLAN.md`، `ARCHITECTURE.md`، `DESIGN.md`، `CONTENT.md` و `DEPLOYMENT.md`
+5. `PLAN.md`، `ARCHITECTURE.md`، `CONTENT.md` و `DEPLOYMENT.md` (`DESIGN.md` پس از پاک‌سازی فرانت عمداً وجود ندارد و فقط با بریف جدید مالک بازسازی می‌شود)
 
 ## نکته مهم درباره «بدون سؤال»
 

@@ -3,110 +3,110 @@ AUTH-01,Must,R2,۱۰.۱ هویت، عضویت و ورود,سامانه باید 
 AUTH-02,Must,R2,۱۰.۱ هویت، عضویت و ورود,شماره همراه باید پیش از ایجاد حساب تأیید شود.,T-AUTH-02,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
 AUTH-03,Must,R2,۱۰.۱ هویت، عضویت و ورود,ارسال OTP باید دارای محدودیت نرخ، زمان انقضا و سقف تلاش ناموفق باشد.,T-AUTH-03,apps/api/src/app.ts;packages/config/src/index.ts;tests/unit/intake-routes.test.ts;tests/integration/intake-postgres.test.ts;docs/R6_FOLLOWUP.md,Implemented
 AUTH-04,Must,R2,۱۰.۱ هویت، عضویت و ورود,حساب باید به یک شخص حقیقی به‌عنوان رابط یک یا چند شخص حقوقی متصل باشد.,T-AUTH-04,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
-AUTH-05,Must,R2,۱۰.۱ هویت، عضویت و ورود,در عضویت اولیه نام، نام خانوادگی، نام سازمان، سمت و ایمیل دریافت شود.,T-AUTH-05,apps/web/src/components/RequestFlow.tsx;apps/api/src/app.ts;tests/e2e/intake-ux.spec.ts;tests/integration/intake-postgres.test.ts;docs/R6_FOLLOWUP.md,Implemented
+AUTH-05,Must,R2,۱۰.۱ هویت، عضویت و ورود,در عضویت اولیه نام، نام خانوادگی، نام سازمان، سمت و ایمیل دریافت شود.,T-AUTH-05,apps/api/src/app.ts;tests/integration/intake-postgres.test.ts;docs/R6_FOLLOWUP.md,Partial - frontend reset
 AUTH-06,Should,R2,۱۰.۱ هویت، عضویت و ورود,ایمیل پیش از پرداخت نخستین سفارش تأیید شود.,T-AUTH-06,apps/api/src/app.ts,Implemented
 AUTH-07,Must,R2,۱۰.۱ هویت، عضویت و ورود,کاربر بتواند خروج امن انجام دهد و نشست‌ها زمان انقضای قابل تنظیم داشته باشند.,T-AUTH-07,apps/api/src/app.ts;packages/config/src/index.ts,Implemented
 AUTH-08,Must,R2,۱۰.۱ هویت، عضویت و ورود,کاربر بتواند رضایت خود با شرایط و حریم خصوصی را با نسخه و زمان ثبت کند.,T-AUTH-08,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
 ORG-01,Must,R2,۱۰.۲ پروفایل و سازمان,نوع سازمان باید یکی از خصوصی، عمومی یا دولتی باشد.,T-ORG-01,packages/contracts/src/index.ts;packages/db/src/schema.ts;tests/integration/intake-postgres.test.ts;docs/R6_FOLLOWUP.md,Implemented
-ORG-02,Must,R2,۱۰.۲ پروفایل و سازمان,در مرحله اولیه نام رایج سازمان کافی است.,T-ORG-02,apps/web/src/components/RequestFlow.tsx;apps/api/src/app.ts;tests/e2e/intake-ux.spec.ts;tests/integration/intake-postgres.test.ts,Implemented
+ORG-02,Must,R2,۱۰.۲ پروفایل و سازمان,در مرحله اولیه نام رایج سازمان کافی است.,T-ORG-02,apps/api/src/app.ts;tests/integration/intake-postgres.test.ts,Partial - frontend reset
 ORG-03,Must,R2,۱۰.۲ پروفایل و سازمان,پیش از پرداخت، نام ثبتی و شناسه ملی سازمان الزامی شود.,T-ORG-03,apps/api/src/app.ts;packages/contracts/src/index.ts,Implemented
 ORG-04,Must,R2,۱۰.۲ پروفایل و سازمان,اطلاعات لازم برای صورتحساب در مرحله پرداخت تکمیل شود.,T-ORG-04,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
-ORG-05,Must,R2,۱۰.۲ پروفایل و سازمان,نماینده باید تأیید کند رابط یا نماینده سازمان است؛ بارگذاری مدرک نمایندگی در MVP لازم نیست.,T-ORG-05,apps/web/src/components/RequestFlow.tsx;apps/api/src/app.ts;tests/e2e/intake-ux.spec.ts;tests/integration/intake-postgres.test.ts,Implemented
-ORG-06,Should,R2,۱۰.۲ پروفایل و سازمان,کاربر بتواند اطلاعات پایه خود را ویرایش کند؛ تغییر شماره همراه نیازمند تأیید مجدد باشد.,T-ORG-06,apps/web/src/components/AccountPanel.tsx;apps/api/src/app.ts,Implemented
-REQ-01,Must,R2,۱۰.۳ ثبت درخواست,فرم نباید کاربر را ملزم به انتخاب خدمت تخصصی کند.,T-REQ-01,apps/web/src/components/RequestFlow.tsx,Implemented
-REQ-02,Must,R2,۱۰.۳ ثبت درخواست,فرم باید عنوان کوتاه و شرح آزاد مسئله را دریافت کند.,T-REQ-02,apps/web/src/components/RequestFlow.tsx;packages/contracts/src/index.ts,Implemented
-REQ-03,Must,R2,۱۰.۳ ثبت درخواست,اطلاعات سازمان و نماینده از پروفایل پیش‌پر شوند.,T-REQ-03,apps/api/src/app.ts;apps/web/src/components/RequestFlow.tsx;tests/e2e/intake-ux.spec.ts;docs/R6_FOLLOWUP.md,Implemented
-REQ-04,Must,R2,۱۰.۳ ثبت درخواست,کاربر بتواند پیش از ارسال، اطلاعات را بازبینی و اصلاح کند.,T-REQ-04,apps/web/src/components/RequestFlow.tsx;tests/e2e/intake-ux.spec.ts;docs/R6_FOLLOWUP.md,Implemented
+ORG-05,Must,R2,۱۰.۲ پروفایل و سازمان,نماینده باید تأیید کند رابط یا نماینده سازمان است؛ بارگذاری مدرک نمایندگی در MVP لازم نیست.,T-ORG-05,apps/api/src/app.ts;tests/integration/intake-postgres.test.ts,Partial - frontend reset
+ORG-06,Should,R2,۱۰.۲ پروفایل و سازمان,کاربر بتواند اطلاعات پایه خود را ویرایش کند؛ تغییر شماره همراه نیازمند تأیید مجدد باشد.,T-ORG-06,apps/api/src/app.ts,Partial - frontend reset
+REQ-01,Must,R2,۱۰.۳ ثبت درخواست,فرم نباید کاربر را ملزم به انتخاب خدمت تخصصی کند.,T-REQ-01,,Pending - frontend reset
+REQ-02,Must,R2,۱۰.۳ ثبت درخواست,فرم باید عنوان کوتاه و شرح آزاد مسئله را دریافت کند.,T-REQ-02,packages/contracts/src/index.ts,Partial - frontend reset
+REQ-03,Must,R2,۱۰.۳ ثبت درخواست,اطلاعات سازمان و نماینده از پروفایل پیش‌پر شوند.,T-REQ-03,apps/api/src/app.ts;docs/R6_FOLLOWUP.md,Partial - frontend reset
+REQ-04,Must,R2,۱۰.۳ ثبت درخواست,کاربر بتواند پیش از ارسال، اطلاعات را بازبینی و اصلاح کند.,T-REQ-04,docs/R6_FOLLOWUP.md,Pending - frontend reset
 REQ-05,Must,R2,۱۰.۳ ثبت درخواست,هر درخواست شماره یکتای قابل ارجاع دریافت کند.,T-REQ-05,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
-REQ-06,Must,R2,۱۰.۳ ثبت درخواست,تأیید ثبت از طریق صفحه، پیامک و ایمیل ارسال شود.,T-REQ-06,apps/web/src/components/RequestFlow.tsx;apps/api/src/app.ts,Implemented
-REQ-07,Must,R2,۱۰.۳ ثبت درخواست,ارسال چندباره ناشی از دوبار کلیک یا خطای شبکه نباید درخواست تکراری بسازد.,T-REQ-07,apps/api/src/app.ts;packages/db/src/schema.ts;tests/e2e/intake-ux.spec.ts;tests/integration/intake-postgres.test.ts;PROGRESS.md;docs/R6_FOLLOWUP.md,Implemented
+REQ-06,Must,R2,۱۰.۳ ثبت درخواست,تأیید ثبت از طریق صفحه، پیامک و ایمیل ارسال شود.,T-REQ-06,apps/api/src/app.ts,Partial - frontend reset
+REQ-07,Must,R2,۱۰.۳ ثبت درخواست,ارسال چندباره ناشی از دوبار کلیک یا خطای شبکه نباید درخواست تکراری بسازد.,T-REQ-07,apps/api/src/app.ts;packages/db/src/schema.ts;tests/integration/intake-postgres.test.ts;PROGRESS.md;docs/R6_FOLLOWUP.md,Partial - frontend reset
 REQ-08,Must,R2,۱۰.۳ ثبت درخواست,تاریخ، منبع ورودی و نسخه شرایط پذیرفته‌شده ذخیره شود.,T-REQ-08,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
-REQ-09,Must,R2,۱۰.۳ ثبت درخواست,کاربر بتواند درخواست جدید ثبت کند بدون آنکه درخواست‌های قبلی تغییر کنند.,T-REQ-09,apps/web/src/components/AccountPanel.tsx;apps/api/src/app.ts,Implemented
+REQ-09,Must,R2,۱۰.۳ ثبت درخواست,کاربر بتواند درخواست جدید ثبت کند بدون آنکه درخواست‌های قبلی تغییر کنند.,T-REQ-09,apps/api/src/app.ts,Partial - frontend reset
 REQ-10,Should,R2,۱۰.۳ ثبت درخواست,سیستم باید از کپچا یا کنترل ضدربات متناسب استفاده کند.,T-REQ-10,apps/api/src/app.ts;packages/config/src/index.ts,Implemented
-FILE-01,Must,R2,۱۰.۴ پیوست اولیه,پیوست درخواست اختیاری باشد.,T-FILE-01,apps/web/src/components/RequestFlow.tsx,Implemented
-FILE-02,Must,R2,۱۰.۴ پیوست اولیه,پیش از بارگذاری، هشدار منع داده محرمانه و حساس نمایش داده و پذیرفته شود.,T-FILE-02,apps/web/src/components/RequestFlow.tsx;apps/api/src/app.ts,Implemented
+FILE-01,Must,R2,۱۰.۴ پیوست اولیه,پیوست درخواست اختیاری باشد.,T-FILE-01,,Pending - frontend reset
+FILE-02,Must,R2,۱۰.۴ پیوست اولیه,پیش از بارگذاری، هشدار منع داده محرمانه و حساس نمایش داده و پذیرفته شود.,T-FILE-02,apps/api/src/app.ts,Partial - frontend reset
 FILE-03,Must,R2,۱۰.۴ پیوست اولیه,نوع و حجم فایل مجاز از تنظیمات مدیریت قابل تغییر باشد.,T-FILE-03,packages/config/src/index.ts;.env.example,Implemented
 FILE-04,Must,R2,۱۰.۴ پیوست اولیه,فایل باید از نظر نوع واقعی، بدافزار و نام ناامن بررسی شود.,T-FILE-04,apps/api/src/lib/files.ts;PROGRESS.md,Implemented
 FILE-05,Must,R2,۱۰.۴ پیوست اولیه,فایل‌ها عمومی نباشند و فقط کاربران داخلی مجاز به آن‌ها دسترسی داشته باشند.,T-FILE-05,apps/api/src/app.ts;apps/api/src/lib/files.ts,Implemented
-ACC-01,Must,R2,۱۰.۵ حساب کاربری,حساب باید اطلاعات پایه کاربر را نمایش دهد.,T-ACC-01,apps/web/src/components/AccountPanel.tsx;apps/api/src/app.ts,Implemented
-ACC-02,Must,R2,۱۰.۵ حساب کاربری,حساب باید فهرست درخواست‌ها را با شماره، عنوان و تاریخ نمایش دهد.,T-ACC-02,apps/web/src/components/AccountPanel.tsx;apps/api/src/app.ts,Implemented
-ACC-03,Must,R2,۱۰.۵ حساب کاربری,وضعیت داخلی، یادداشت، فایل گزارش و گردش کار نباید در MVP نمایش داده شود.,T-ACC-03,apps/api/src/app.ts;apps/web/src/components/AccountPanel.tsx;tests/integration/intake-postgres.test.ts,Implemented
-ACC-04,Must,R2,۱۰.۵ حساب کاربری,CTA ثبت درخواست جدید باید در حساب قابل دسترس باشد.,T-ACC-04,apps/web/src/components/AccountPanel.tsx,Implemented
-ACC-05,Must,R2,۱۰.۵ حساب کاربری,لینک پیشنهاد اختصاصی می‌تواند مستقل از حساب و با توکن امن باز شود.,T-ACC-05,apps/api/src/app.ts;apps/web/src/app/offer/[token]/page.tsx,Implemented
-SCR-01,Must,R2,۱۰.۶ بررسی و غربالگری داخلی,ادمین عملیاتی بتواند درخواست‌ها را جست‌وجو، فیلتر و مشاهده کند.,T-SCR-01,apps/web/src/components/RequestDesk.tsx;apps/api/src/app.ts,Implemented
+ACC-01,Must,R2,۱۰.۵ حساب کاربری,حساب باید اطلاعات پایه کاربر را نمایش دهد.,T-ACC-01,apps/api/src/app.ts,Partial - frontend reset
+ACC-02,Must,R2,۱۰.۵ حساب کاربری,حساب باید فهرست درخواست‌ها را با شماره، عنوان و تاریخ نمایش دهد.,T-ACC-02,apps/api/src/app.ts,Partial - frontend reset
+ACC-03,Must,R2,۱۰.۵ حساب کاربری,وضعیت داخلی، یادداشت، فایل گزارش و گردش کار نباید در MVP نمایش داده شود.,T-ACC-03,apps/api/src/app.ts;tests/integration/intake-postgres.test.ts,Partial - frontend reset
+ACC-04,Must,R2,۱۰.۵ حساب کاربری,CTA ثبت درخواست جدید باید در حساب قابل دسترس باشد.,T-ACC-04,,Pending - frontend reset
+ACC-05,Must,R2,۱۰.۵ حساب کاربری,لینک پیشنهاد اختصاصی می‌تواند مستقل از حساب و با توکن امن باز شود.,T-ACC-05,apps/api/src/app.ts,Partial - frontend reset
+SCR-01,Must,R2,۱۰.۶ بررسی و غربالگری داخلی,ادمین عملیاتی بتواند درخواست‌ها را جست‌وجو، فیلتر و مشاهده کند.,T-SCR-01,apps/api/src/app.ts,Partial - frontend reset
 SCR-02,Must,R2,۱۰.۶ بررسی و غربالگری داخلی,کارشناس بتواند یادداشت داخلی و نتیجه تماس را ثبت کند.,T-SCR-02,apps/api/src/app.ts;packages/db/src/schema.ts;tests/integration/intake-postgres.test.ts;docs/R6_FOLLOWUP.md,Implemented
 SCR-03,Must,R2,۱۰.۶ بررسی و غربالگری داخلی,نتیجه بررسی باید حداقل واجد همکاری، فاقد امکان همکاری یا نیازمند اطلاعات بیشتر باشد.,T-SCR-03,packages/contracts/src/index.ts;apps/api/src/app.ts;tests/integration/intake-postgres.test.ts,Implemented
-SCR-04,Must,R2,۱۰.۶ بررسی و غربالگری داخلی,وضعیت داخلی برای کاربر قابل مشاهده نباشد.,T-SCR-04,apps/api/src/app.ts;apps/web/src/components/AccountPanel.tsx,Implemented
+SCR-04,Must,R2,۱۰.۶ بررسی و غربالگری داخلی,وضعیت داخلی برای کاربر قابل مشاهده نباشد.,T-SCR-04,apps/api/src/app.ts,Partial - frontend reset
 SCR-05,Must,R2,۱۰.۶ بررسی و غربالگری داخلی,ثبت‌کننده و زمان هر تغییر مهم در لاگ ممیزی ذخیره شود.,T-SCR-05,apps/api/src/app.ts;packages/db/src/schema.ts;tests/integration/intake-postgres.test.ts,Implemented
 SCR-06,Should,R2,۱۰.۶ بررسی و غربالگری داخلی,ادمین بتواند درخواست را به کارشناس داخلی تخصیص دهد.,T-SCR-06,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
-SCR-07,Should,R2,۱۰.۶ بررسی و غربالگری داخلی,خروجی اکسل از فهرست درخواست‌ها با رعایت سطح دسترسی ممکن باشد.,T-SCR-07,apps/api/src/app.ts;apps/web/src/components/RequestDesk.tsx,Implemented
+SCR-07,Should,R2,۱۰.۶ بررسی و غربالگری داخلی,خروجی اکسل از فهرست درخواست‌ها با رعایت سطح دسترسی ممکن باشد.,T-SCR-07,apps/api/src/app.ts,Partial - frontend reset
 ORD-01,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,فقط درخواست واجد همکاری بتواند به پیشنهاد جلسه تبدیل شود.,T-ORD-01,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
-ORD-02,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,پیشنهاد شامل عنوان، شرح، دامنه، مدت، زمان، تخصص کارشناسان و خروجی باشد.,T-ORD-02,apps/api/src/app.ts;apps/web/src/components/OfferFlow.tsx,Implemented
-ORD-03,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,مبلغ پایه، مالیات/عوارض و مبلغ نهایی جداگانه ثبت و نمایش داده شود.,T-ORD-03,apps/api/src/lib/money.ts;apps/web/src/components/OfferFlow.tsx,Implemented
+ORD-02,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,پیشنهاد شامل عنوان، شرح، دامنه، مدت، زمان، تخصص کارشناسان و خروجی باشد.,T-ORD-02,apps/api/src/app.ts,Partial - frontend reset
+ORD-03,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,مبلغ پایه، مالیات/عوارض و مبلغ نهایی جداگانه ثبت و نمایش داده شود.,T-ORD-03,apps/api/src/lib/money.ts,Partial - frontend reset
 ORD-04,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,پیشنهاد دارای تاریخ انقضا و وضعیت باشد.,T-ORD-04,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
 ORD-05,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,لینک پیشنهاد توکن غیرقابل حدس، قابل ابطال و مدت‌دار داشته باشد.,T-ORD-05,apps/api/src/lib/security.ts;apps/api/src/app.ts,Implemented
-ORD-06,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,مبلغ جلسه در صفحه عمومی نمایش داده نشود.,T-ORD-06,apps/web/src/app/page.tsx;tests/e2e/public.spec.ts,Implemented
-ORD-07,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,مبلغ دقیق و همه هزینه‌ها پیش از پرداخت در صفحه اختصاصی نمایش داده شود.,T-ORD-07,apps/web/src/components/OfferFlow.tsx,Implemented
-ORD-08,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,قاعده کسر مبلغ جلسه از قرارداد اصلی در پیشنهاد درج شود.,T-ORD-08,apps/web/src/components/OfferFlow.tsx;apps/api/src/app.ts,Implemented
-ORD-09,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,شرایط لغو، جابه‌جایی و استرداد پیش از پذیرش نمایش داده شود.,T-ORD-09,apps/web/src/components/OfferFlow.tsx,Implemented
+ORD-06,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,مبلغ جلسه در صفحه عمومی نمایش داده نشود.,T-ORD-06,,Pending - frontend reset
+ORD-07,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,مبلغ دقیق و همه هزینه‌ها پیش از پرداخت در صفحه اختصاصی نمایش داده شود.,T-ORD-07,,Pending - frontend reset
+ORD-08,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,قاعده کسر مبلغ جلسه از قرارداد اصلی در پیشنهاد درج شود.,T-ORD-08,apps/api/src/app.ts,Partial - frontend reset
+ORD-09,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,شرایط لغو، جابه‌جایی و استرداد پیش از پذیرش نمایش داده شود.,T-ORD-09,,Pending - frontend reset
 ORD-10,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,پذیرش شرایط با نسخه، زمان، IP و شناسه پیشنهاد ثبت شود.,T-ORD-10,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
-ORD-11,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,پس از انقضا، لینک اجازه پرداخت ندهد و پیام مناسب نمایش دهد.,T-ORD-11,apps/api/src/app.ts;apps/web/src/components/OfferFlow.tsx,Implemented
+ORD-11,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,پس از انقضا، لینک اجازه پرداخت ندهد و پیام مناسب نمایش دهد.,T-ORD-11,apps/api/src/app.ts,Partial - frontend reset
 ORD-12,Should,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,ادمین بتواند پیشنهاد پرداخت‌نشده را با ثبت نسخه جدید اصلاح کند.,T-ORD-12,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
 ORD-13,Must,R3,۱۰.۷ پیشنهاد و سفارش اختصاصی,پیشنهاد پرداخت‌شده قابل ویرایش مخرب نباشد و اصلاح با سند جدید انجام شود.,T-ORD-13,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
 PAY-01,Must,R3,۱۰.۸ پرداخت و رسید,پرداخت آنلاین از طریق درگاه مورد تأیید پشتیبانی شود.,T-PAY-01,apps/api/src/lib/payment.ts;apps/api/src/app.ts,Implemented
-PAY-02,Must,R3,۱۰.۸ پرداخت و رسید,روش واریز بانکی نیز قابل انتخاب باشد.,T-PAY-02,apps/web/src/components/OfferFlow.tsx;apps/api/src/app.ts,Implemented
+PAY-02,Must,R3,۱۰.۸ پرداخت و رسید,روش واریز بانکی نیز قابل انتخاب باشد.,T-PAY-02,apps/api/src/app.ts,Partial - frontend reset
 PAY-03,Must,R3,۱۰.۸ پرداخت و رسید,بازگشت از درگاه باید با استعلام سمت سرور و جلوگیری از ثبت تکراری تأیید شود.,T-PAY-03,apps/api/src/lib/payment.ts;apps/api/src/app.ts;PROGRESS.md,Implemented
 PAY-04,Must,R3,۱۰.۸ پرداخت و رسید,شماره تراکنش، مبلغ، زمان و وضعیت پرداخت ذخیره شود.,T-PAY-04,packages/db/src/schema.ts;apps/api/src/app.ts,Implemented
-PAY-05,Must,R3,۱۰.۸ پرداخت و رسید,پس از پرداخت موفق، رسید روی صفحه و از طریق ایمیل ارسال شود.,T-PAY-05,apps/api/src/app.ts;apps/web/src/components/OfferFlow.tsx,Implemented
-PAY-06,Must,R3,۱۰.۸ پرداخت و رسید,برای واریز بانکی، ثبت مشخصات و تأیید دستی توسط مالی امکان‌پذیر باشد.,T-PAY-06,apps/api/src/app.ts;apps/web/src/components/OfferFlow.tsx,Implemented
+PAY-05,Must,R3,۱۰.۸ پرداخت و رسید,پس از پرداخت موفق، رسید روی صفحه و از طریق ایمیل ارسال شود.,T-PAY-05,apps/api/src/app.ts,Partial - frontend reset
+PAY-06,Must,R3,۱۰.۸ پرداخت و رسید,برای واریز بانکی، ثبت مشخصات و تأیید دستی توسط مالی امکان‌پذیر باشد.,T-PAY-06,apps/api/src/app.ts,Partial - frontend reset
 PAY-07,Must,R3,۱۰.۸ پرداخت و رسید,تا قبل از تأیید واریز بانکی، سفارش پرداخت‌شده تلقی نشود.,T-PAY-07,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
 PAY-08,Should,R3,۱۰.۸ پرداخت و رسید,استرداد کامل یا جزئی با دلیل، مرجع و لاگ قابل ثبت باشد.,T-PAY-08,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
 PAY-09,Must,R3,۱۰.۸ پرداخت و رسید,اطلاعات کارت بانکی در سامانه ذخیره نشود.,T-PAY-09,apps/api/src/lib/payment.ts;packages/db/src/schema.ts,Implemented
-PAY-10,Should,R3,۱۰.۸ پرداخت و رسید,ادمین بتواند برای مراحل قرارداد اصلی نیز لینک صورتحساب اختصاصی صادر کند.,T-PAY-10,apps/api/src/app.ts;packages/db/src/schema.ts;apps/web/src/app/invoice/[token]/page.tsx,Implemented
+PAY-10,Should,R3,۱۰.۸ پرداخت و رسید,ادمین بتواند برای مراحل قرارداد اصلی نیز لینک صورتحساب اختصاصی صادر کند.,T-PAY-10,apps/api/src/app.ts;packages/db/src/schema.ts,Partial - frontend reset
 NOT-01,Must,R3,۱۰.۹ اعلان‌ها,ثبت درخواست از طریق پیامک و ایمیل اعلام شود.,T-NOT-01,apps/api/src/app.ts,Implemented
 NOT-02,Must,R3,۱۰.۹ اعلان‌ها,لینک پیشنهاد جلسه از طریق هر دو کانال ارسال شود.,T-NOT-02,apps/api/src/app.ts,Implemented
 NOT-03,Must,R3,۱۰.۹ اعلان‌ها,پرداخت موفق، ناموفق یا در انتظار تأیید پیام متناسب داشته باشد.,T-NOT-03,apps/api/src/app.ts,Implemented
 NOT-04,Should,R3,۱۰.۹ اعلان‌ها,متن اعلان‌ها از پنل مدیریت قابل تنظیم و نسخه‌گذاری باشد.,T-NOT-04,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
 NOT-05,Must,R3,۱۰.۹ اعلان‌ها,موفقیت یا خطای ارسال و شناسه سرویس‌دهنده ذخیره شود.,T-NOT-05,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
 NOT-06,Should,R3,۱۰.۹ اعلان‌ها,ارسال مجدد لینک توسط ادمین با محدودیت مناسب ممکن باشد.,T-NOT-06,apps/api/src/app.ts,Implemented
-CMS-01,Must,R1,۱۰.۱۰ محتوا، پروژه‌ها و تیم,مدیر محتوا بتواند صفحات اصلی را ویرایش و پیش‌نمایش کند.,T-CMS-01,apps/api/src/app.ts;apps/web/src/app/admin/content/page.tsx,Implemented
+CMS-01,Must,R1,۱۰.۱۰ محتوا، پروژه‌ها و تیم,مدیر محتوا بتواند صفحات اصلی را ویرایش و پیش‌نمایش کند.,T-CMS-01,apps/api/src/app.ts,Partial - frontend reset
 CMS-02,Must,R1,۱۰.۱۰ محتوا، پروژه‌ها و تیم,امکان ثبت نشان مشتری با متن جایگزین و ترتیب نمایش وجود داشته باشد.,T-CMS-02,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
 CMS-03,Must,R1,۱۰.۱۰ محتوا، پروژه‌ها و تیم,مطالعه موردی شامل مسئله، اقدام، نتیجه، کارفرما و وضعیت انتشار باشد.,T-CMS-03,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
 CMS-04,Must,R1,۱۰.۱۰ محتوا، پروژه‌ها و تیم,انتشار نام و نشان مشتری فقط پس از تأیید داخلی انجام شود.,T-CMS-04,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
 CMS-05,Must,R1,۱۰.۱۰ محتوا، پروژه‌ها و تیم,اعضای تیم با نام، نقش، تخصص، تصویر و خلاصه سابقه مدیریت شوند.,T-CMS-05,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
 CMS-06,Should,R1,۱۰.۱۰ محتوا، پروژه‌ها و تیم,نسخه پیش‌نویس و منتشرشده برای محتوای حساس قابل تفکیک باشد.,T-CMS-06,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
 CMS-07,Must,R1,۱۰.۱۰ محتوا، پروژه‌ها و تیم,صفحات حقوقی نسخه و تاریخ اجرا داشته باشند.,T-CMS-07,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
-CMS-08,Should,R1,۱۰.۱۰ محتوا، پروژه‌ها و تیم,سایت بدون نیاز به تغییر کد برای به‌روزرسانی محتوای اصلی قابل مدیریت باشد.,T-CMS-08,apps/api/src/app.ts;apps/web/src/app/admin/content/page.tsx,Implemented
+CMS-08,Should,R1,۱۰.۱۰ محتوا، پروژه‌ها و تیم,سایت بدون نیاز به تغییر کد برای به‌روزرسانی محتوای اصلی قابل مدیریت باشد.,T-CMS-08,apps/api/src/app.ts,Partial - frontend reset
 ADM-01,Must,R2,۱۰.۱۱ پنل مدیریت و دسترسی,سطوح دسترسی حداقل شامل کارشناس، عملیات، مالی، محتوا و سوپرادمین باشد.,T-ADM-01,packages/db/src/schema.ts;apps/api/src/lib/rbac.ts,Implemented
 ADM-02,Must,R2,۱۰.۱۱ پنل مدیریت و دسترسی,هر نقش فقط داده و عملیات موردنیاز خود را مشاهده کند.,T-ADM-02,apps/api/src/lib/rbac.ts;tests/unit/security.test.ts,Implemented
 ADM-03,Must,R2,۱۰.۱۱ پنل مدیریت و دسترسی,عملیات حساس شامل تغییر مبلغ، تأیید واریز، استرداد و تغییر دسترسی لاگ شود.,T-ADM-03,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
-ADM-04,Must,R2,۱۰.۱۱ پنل مدیریت و دسترسی,جست‌وجو بر اساس شماره درخواست، همراه، سازمان و شناسه ملی ممکن باشد.,T-ADM-04,apps/api/src/app.ts;apps/web/src/components/RequestDesk.tsx,Implemented
-ADM-05,Should,R2,۱۰.۱۱ پنل مدیریت و دسترسی,فیلتر تاریخ، وضعیت داخلی و کارشناس مسئول وجود داشته باشد.,T-ADM-05,apps/api/src/app.ts;apps/web/src/components/RequestDesk.tsx,Implemented
-ADM-06,Must,R2,۱۰.۱۱ پنل مدیریت و دسترسی,سوپرادمین بتواند تنظیمات سرویس پیامک، ایمیل و پرداخت را مدیریت کند.,T-ADM-06,apps/api/src/app.ts;apps/web/src/components/SettingsPanel.tsx,Implemented
+ADM-04,Must,R2,۱۰.۱۱ پنل مدیریت و دسترسی,جست‌وجو بر اساس شماره درخواست، همراه، سازمان و شناسه ملی ممکن باشد.,T-ADM-04,apps/api/src/app.ts,Partial - frontend reset
+ADM-05,Should,R2,۱۰.۱۱ پنل مدیریت و دسترسی,فیلتر تاریخ، وضعیت داخلی و کارشناس مسئول وجود داشته باشد.,T-ADM-05,apps/api/src/app.ts,Partial - frontend reset
+ADM-06,Must,R2,۱۰.۱۱ پنل مدیریت و دسترسی,سوپرادمین بتواند تنظیمات سرویس پیامک، ایمیل و پرداخت را مدیریت کند.,T-ADM-06,apps/api/src/app.ts,Partial - frontend reset
 ADM-07,Must,R2,۱۰.۱۱ پنل مدیریت و دسترسی,حذف فیزیکی رکوردهای مالی و رضایت‌ها از رابط عادی ممکن نباشد.,T-ADM-07,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
 ADM-08,Must,R2,۱۰.۱۱ پنل مدیریت و دسترسی,غیرفعال‌سازی کاربر داخلی باید فوراً دسترسی او را قطع کند.,T-ADM-08,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
 BR-01,Required,R0-R4,۱۱. قواعد کسب‌وکار,مشتری خدمت شخص حقوقی است؛ شخص حقیقی فقط به‌عنوان رابط یا نماینده عمل می‌کند.,T-BR-01,packages/db/src/schema.ts;apps/api/src/app.ts,Implemented
-BR-02,Required,R0-R4,۱۱. قواعد کسب‌وکار,همه انواع اشخاص حقوقی خصوصی، عمومی و دولتی مجاز به ثبت درخواست‌اند.,T-BR-02,packages/contracts/src/index.ts;apps/web/src/components/RequestFlow.tsx,Implemented
-BR-03,Required,R0-R4,۱۱. قواعد کسب‌وکار,ثبت درخواست به معنای سفارش قطعی، پذیرش پروژه یا تشکیل قرارداد نیست.,T-BR-03,apps/web/src/app/request/page.tsx;apps/web/src/components/RequestFlow.tsx,Implemented
-BR-04,Required,R0-R4,۱۱. قواعد کسب‌وکار,تماس و بررسی اولیه رایگان است.,T-BR-04,apps/web/src/app/request/page.tsx;apps/web/src/app/initial-assessment/page.tsx,Implemented
-BR-05,Required,R0-R4,۱۱. قواعد کسب‌وکار,شرکت می‌تواند پس از بررسی، درخواست را نپذیرد و تعهدی به ارائه پیشنهاد ندارد.,T-BR-05,apps/api/src/lib/transitions.ts;apps/web/src/app/request/page.tsx,Implemented
-BR-06,Required,R0-R4,۱۱. قواعد کسب‌وکار,اولین خدمت قابل پرداخت، جلسه کارشناسی اولیه با خروجی مکتوب است.,T-BR-06,apps/api/src/app.ts;apps/web/src/components/OfferFlow.tsx,Implemented
-BR-07,Required,R0-R4,۱۱. قواعد کسب‌وکار,مبلغ جلسه ثابت نیست و بر اساس مسئله، زمان و ترکیب کارشناسان تعیین می‌شود.,T-BR-07,apps/api/src/app.ts;apps/web/src/components/OfferFlow.tsx,Implemented
-BR-08,Required,R0-R4,۱۱. قواعد کسب‌وکار,قیمت جلسه در صفحات عمومی نمایش داده نمی‌شود.,T-BR-08,apps/web/src/app/page.tsx;tests/e2e/public.spec.ts,Implemented
-BR-09,Required,R0-R4,۱۱. قواعد کسب‌وکار,پیش از پرداخت، مبلغ دقیق و شرایط کامل باید در پیشنهاد اختصاصی نمایش داده شود.,T-BR-09,apps/web/src/components/OfferFlow.tsx,Implemented
-BR-10,Required,R0-R4,۱۱. قواعد کسب‌وکار,هزینه جلسه تنها طبق شرایط مندرج در پیشنهاد/قرارداد اصلی قابل کسر از پروژه است.,T-BR-10,apps/web/src/components/OfferFlow.tsx,Implemented
-BR-11,Required,R0-R4,۱۱. قواعد کسب‌وکار,قرارداد پروژه اصلی مستقل از سفارش جلسه کارشناسی است.,T-BR-11,apps/web/src/components/OfferFlow.tsx;docs/DATA_DICTIONARY.md,Implemented
-BR-12,Required,R0-R4,۱۱. قواعد کسب‌وکار,شرکت ارائه‌دهنده مستقیم است و مسئولیت خدمت را به نام خود می‌پذیرد.,T-BR-12,apps/web/src/app/about/page.tsx;CONTENT.md,Implemented
-BR-13,Required,R0-R4,۱۱. قواعد کسب‌وکار,فرم اولیه نباید اسناد محرمانه، اطلاعات هویتی اشخاص یا داده حساس دریافت کند.,T-BR-13,apps/web/src/components/RequestFlow.tsx,Implemented
+BR-02,Required,R0-R4,۱۱. قواعد کسب‌وکار,همه انواع اشخاص حقوقی خصوصی، عمومی و دولتی مجاز به ثبت درخواست‌اند.,T-BR-02,packages/contracts/src/index.ts,Partial - frontend reset
+BR-03,Required,R0-R4,۱۱. قواعد کسب‌وکار,ثبت درخواست به معنای سفارش قطعی، پذیرش پروژه یا تشکیل قرارداد نیست.,T-BR-03,,Pending - frontend reset
+BR-04,Required,R0-R4,۱۱. قواعد کسب‌وکار,تماس و بررسی اولیه رایگان است.,T-BR-04,,Pending - frontend reset
+BR-05,Required,R0-R4,۱۱. قواعد کسب‌وکار,شرکت می‌تواند پس از بررسی، درخواست را نپذیرد و تعهدی به ارائه پیشنهاد ندارد.,T-BR-05,apps/api/src/lib/transitions.ts,Partial - frontend reset
+BR-06,Required,R0-R4,۱۱. قواعد کسب‌وکار,اولین خدمت قابل پرداخت، جلسه کارشناسی اولیه با خروجی مکتوب است.,T-BR-06,apps/api/src/app.ts,Partial - frontend reset
+BR-07,Required,R0-R4,۱۱. قواعد کسب‌وکار,مبلغ جلسه ثابت نیست و بر اساس مسئله، زمان و ترکیب کارشناسان تعیین می‌شود.,T-BR-07,apps/api/src/app.ts,Partial - frontend reset
+BR-08,Required,R0-R4,۱۱. قواعد کسب‌وکار,قیمت جلسه در صفحات عمومی نمایش داده نمی‌شود.,T-BR-08,,Pending - frontend reset
+BR-09,Required,R0-R4,۱۱. قواعد کسب‌وکار,پیش از پرداخت، مبلغ دقیق و شرایط کامل باید در پیشنهاد اختصاصی نمایش داده شود.,T-BR-09,,Pending - frontend reset
+BR-10,Required,R0-R4,۱۱. قواعد کسب‌وکار,هزینه جلسه تنها طبق شرایط مندرج در پیشنهاد/قرارداد اصلی قابل کسر از پروژه است.,T-BR-10,,Pending - frontend reset
+BR-11,Required,R0-R4,۱۱. قواعد کسب‌وکار,قرارداد پروژه اصلی مستقل از سفارش جلسه کارشناسی است.,T-BR-11,docs/DATA_DICTIONARY.md,Pending - frontend reset
+BR-12,Required,R0-R4,۱۱. قواعد کسب‌وکار,شرکت ارائه‌دهنده مستقیم است و مسئولیت خدمت را به نام خود می‌پذیرد.,T-BR-12,CONTENT.md,Pending - frontend reset
+BR-13,Required,R0-R4,۱۱. قواعد کسب‌وکار,فرم اولیه نباید اسناد محرمانه، اطلاعات هویتی اشخاص یا داده حساس دریافت کند.,T-BR-13,,Pending - frontend reset
 BR-14,Required,R0-R4,۱۱. قواعد کسب‌وکار,تبادل داده محرمانه فقط پس از پذیرش اولیه، NDA و مسیر امن انجام می‌شود.,T-BR-14,apps/api/src/lib/files.ts;SECURITY.md,Implemented
-BR-15,Required,R0-R4,۱۱. قواعد کسب‌وکار,گزارش جلسه مختصر و مقدماتی است و جایگزین حسابرسی، نظر حقوقی یا گزارش رسمی تخصصی نیست مگر صریحاً توافق شود.,T-BR-15,apps/web/src/app/initial-assessment/page.tsx;CONTENT.md,Implemented
-BR-16,Required,R0-R4,۱۱. قواعد کسب‌وکار,هماهنگی جلسه و تحویل خروجی الزاماً داخل پنل انجام نمی‌شود.,T-BR-16,apps/web/src/app/process/page.tsx,Implemented
-BR-17,Required,R0-R4,۱۱. قواعد کسب‌وکار,کاربر فقط فهرست درخواست‌های خود را می‌بیند؛ وضعیت‌ها و یادداشت‌های داخلی محرمانه‌اند.,T-BR-17,apps/api/src/app.ts;apps/web/src/components/AccountPanel.tsx,Implemented
-BR-18,Required,R0-R4,۱۱. قواعد کسب‌وکار,پرداخت آنلاین و واریز بانکی هر دو مجازند؛ خدمت پس از تأیید وصول برنامه‌ریزی می‌شود.,T-BR-18,apps/api/src/app.ts;apps/web/src/components/OfferFlow.tsx,Implemented
-BR-19,Required,R0-R4,۱۱. قواعد کسب‌وکار,پیشنهاد منقضی قابل پرداخت نیست و نیازمند صدور مجدد است.,T-BR-19,apps/api/src/app.ts;apps/web/src/components/OfferFlow.tsx,Implemented
-BR-20,Required,R0-R4,۱۱. قواعد کسب‌وکار,شرکت نباید در محتوا وعده کاهش مالیات، تضمین نتیجه یا جانشینی مرجع قانونی بدهد.,T-BR-20,CONTENT.md;apps/web/src/app/terms/page.tsx,Implemented
-NFR-01,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,RTL و زبان — رابط کاملاً فارسی، راست‌به‌چپ و سازگار با اعداد و تاریخ ایرانی باشد.,T-NFR-01,apps/web/src/app/layout.tsx;tests/e2e/public.spec.ts;tests/e2e/intake-ux.spec.ts,Implemented
-NFR-02,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,واکنش‌گرایی — همه جریان‌های اصلی در موبایل، تبلت و دسکتاپ قابل تکمیل باشند.,T-NFR-02,apps/web/src/app/globals.css;tests/e2e/public.spec.ts;tests/e2e/intake-ux.spec.ts;docs/R6_FOLLOWUP.md,Implemented
+BR-15,Required,R0-R4,۱۱. قواعد کسب‌وکار,گزارش جلسه مختصر و مقدماتی است و جایگزین حسابرسی، نظر حقوقی یا گزارش رسمی تخصصی نیست مگر صریحاً توافق شود.,T-BR-15,CONTENT.md,Pending - frontend reset
+BR-16,Required,R0-R4,۱۱. قواعد کسب‌وکار,هماهنگی جلسه و تحویل خروجی الزاماً داخل پنل انجام نمی‌شود.,T-BR-16,,Pending - frontend reset
+BR-17,Required,R0-R4,۱۱. قواعد کسب‌وکار,کاربر فقط فهرست درخواست‌های خود را می‌بیند؛ وضعیت‌ها و یادداشت‌های داخلی محرمانه‌اند.,T-BR-17,apps/api/src/app.ts,Partial - frontend reset
+BR-18,Required,R0-R4,۱۱. قواعد کسب‌وکار,پرداخت آنلاین و واریز بانکی هر دو مجازند؛ خدمت پس از تأیید وصول برنامه‌ریزی می‌شود.,T-BR-18,apps/api/src/app.ts,Partial - frontend reset
+BR-19,Required,R0-R4,۱۱. قواعد کسب‌وکار,پیشنهاد منقضی قابل پرداخت نیست و نیازمند صدور مجدد است.,T-BR-19,apps/api/src/app.ts,Partial - frontend reset
+BR-20,Required,R0-R4,۱۱. قواعد کسب‌وکار,شرکت نباید در محتوا وعده کاهش مالیات، تضمین نتیجه یا جانشینی مرجع قانونی بدهد.,T-BR-20,CONTENT.md,Pending - frontend reset
+NFR-01,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,RTL و زبان — رابط کاملاً فارسی، راست‌به‌چپ و سازگار با اعداد و تاریخ ایرانی باشد.,T-NFR-01,,Pending - frontend reset
+NFR-02,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,واکنش‌گرایی — همه جریان‌های اصلی در موبایل، تبلت و دسکتاپ قابل تکمیل باشند.,T-NFR-02,docs/R6_FOLLOWUP.md,Pending - frontend reset
 NFR-03,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,کارایی — LCP صفحات عمومی در صدک ۷۵ کمتر از ۲٫۵ ثانیه و پاسخ API داخلی عادی کمتر از ۵۰۰ms هدف‌گذاری شود.,T-NFR-03,ARCHITECTURE.md;infra/scripts/health.sh,Implemented
 NFR-04,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,پایداری — دسترس‌پذیری ماهانه سرویس عمومی و پرداخت حداقل ۹۹٫۵٪ باشد.,T-NFR-04,DEPLOYMENT.md;infra/scripts/health.sh,Implemented
 NFR-05,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,امنیت انتقال — تمام ترافیک با HTTPS و تنظیمات امن کوکی و هدرهای امنیتی منتقل شود.,T-NFR-05,apps/api/src/app.ts;infra/nginx/karafintech.ir.conf.example,Implemented
@@ -116,23 +116,23 @@ NFR-08,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,فا�
 NFR-09,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,حریم خصوصی — حداقل‌گرایی داده، محدودیت نگهداری و منع ارسال داده حساس به ابزار تحلیلی رعایت شود.,T-NFR-09,apps/api/src/worker.ts;docs/RETENTION.md;SECURITY.md,Implemented
 NFR-10,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,لاگ — لاگ امنیتی و ممیزی دارای زمان هماهنگ، شناسه بازیگر و مقاومت در برابر تغییر باشد.,T-NFR-10,apps/api/src/lib/audit.ts;packages/db/src/schema.ts,Implemented
 NFR-11,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,پشتیبان — پشتیبان روزانه، RPO حداکثر ۲۴ ساعت و RTO پیشنهادی ۸ ساعت برقرار باشد.,T-NFR-11,infra/scripts/backup.sh;infra/scripts/restore-drill.sh;docs/OPERATIONS.md;DEPLOYMENT.md,Implemented
-NFR-12,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,دسترس‌پذیری — کنتراست، ناوبری صفحه‌کلید، برچسب فرم، متن جایگزین و پیام خطای قابل فهم رعایت شود.,T-NFR-12,apps/web/src/app/globals.css;tests/e2e/public.spec.ts;tests/e2e/intake-ux.spec.ts;docs/R6_FOLLOWUP.md,Implemented
-NFR-13,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,SEO — متادیتا، sitemap، canonical، structured data سازمان و صفحات قابل ایندکس فراهم شود.,T-NFR-13,apps/web/src/app/sitemap.ts;apps/web/src/app/robots.ts,Implemented
-NFR-14,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,مرورگر — دو نسخه آخر مرورگرهای رایج موبایل و دسکتاپ پشتیبانی شوند.,T-NFR-14,README.md;tests/e2e/public.spec.ts,Implemented
-NFR-15,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,قابلیت نگهداری — تنظیمات مبلغ، قالب پیام، انواع فایل و متن حقوقی بدون تغییر کد قابل مدیریت باشند.,T-NFR-15,apps/api/src/app.ts;apps/web/src/components/SettingsPanel.tsx,Implemented
-NFR-16,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,محلی‌سازی — ذخیره زمان به UTC و نمایش به منطقه زمانی ایران و تقویم شمسی انجام شود.,T-NFR-16,packages/db/src/schema.ts;apps/web/src/components/OfferFlow.tsx,Implemented
-AC-01,Required,R4,۲۱. معیارهای پذیرش سطح محصول,عضویت — با شماره همراه معتبر، OTP صحیح و تکمیل اطلاعات پایه، حساب ساخته و ورود انجام شود؛ OTP منقضی یا بیش از سقف تلاش پذیرفته نشود.,T-AC-01,apps/api/src/app.ts;tests/e2e/intake-ux.spec.ts;tests/integration/intake-postgres.test.ts;PROGRESS.md;docs/R6_FOLLOWUP.md,Implemented
-AC-02,Required,R4,۲۱. معیارهای پذیرش سطح محصول,ثبت درخواست — کاربر بدون انتخاب خدمت، شرح مسئله را ثبت کند و شماره یکتا در صفحه، پیامک و ایمیل بگیرد.,T-AC-02,apps/web/src/components/RequestFlow.tsx;tests/e2e/intake-ux.spec.ts;tests/integration/intake-postgres.test.ts;PROGRESS.md;docs/R6_FOLLOWUP.md,Implemented
+NFR-12,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,دسترس‌پذیری — کنتراست، ناوبری صفحه‌کلید، برچسب فرم، متن جایگزین و پیام خطای قابل فهم رعایت شود.,T-NFR-12,docs/R6_FOLLOWUP.md,Pending - frontend reset
+NFR-13,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,SEO — متادیتا، sitemap، canonical، structured data سازمان و صفحات قابل ایندکس فراهم شود.,T-NFR-13,,Pending - frontend reset
+NFR-14,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,مرورگر — دو نسخه آخر مرورگرهای رایج موبایل و دسکتاپ پشتیبانی شوند.,T-NFR-14,README.md,Pending - frontend reset
+NFR-15,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,قابلیت نگهداری — تنظیمات مبلغ، قالب پیام، انواع فایل و متن حقوقی بدون تغییر کد قابل مدیریت باشند.,T-NFR-15,apps/api/src/app.ts,Partial - frontend reset
+NFR-16,Required,R1-R5,۱۵. نیازمندی‌های غیرکارکردی,محلی‌سازی — ذخیره زمان به UTC و نمایش به منطقه زمانی ایران و تقویم شمسی انجام شود.,T-NFR-16,packages/db/src/schema.ts,Partial - frontend reset
+AC-01,Required,R4,۲۱. معیارهای پذیرش سطح محصول,عضویت — با شماره همراه معتبر، OTP صحیح و تکمیل اطلاعات پایه، حساب ساخته و ورود انجام شود؛ OTP منقضی یا بیش از سقف تلاش پذیرفته نشود.,T-AC-01,apps/api/src/app.ts;tests/integration/intake-postgres.test.ts;PROGRESS.md;docs/R6_FOLLOWUP.md,Partial - frontend reset
+AC-02,Required,R4,۲۱. معیارهای پذیرش سطح محصول,ثبت درخواست — کاربر بدون انتخاب خدمت، شرح مسئله را ثبت کند و شماره یکتا در صفحه، پیامک و ایمیل بگیرد.,T-AC-02,tests/integration/intake-postgres.test.ts;PROGRESS.md;docs/R6_FOLLOWUP.md,Partial - frontend reset
 AC-03,Required,R4,۲۱. معیارهای پذیرش سطح محصول,پیوست — فایل مجاز و غیرمحرمانه بارگذاری شود؛ فایل نامعتبر یا آلوده رد و دلیل قابل فهم نمایش داده شود.,T-AC-03,apps/api/src/lib/files.ts;PROGRESS.md,Implemented
-AC-04,Required,R4,۲۱. معیارهای پذیرش سطح محصول,حساب کاربری — کاربر فقط مشخصات و فهرست درخواست‌های خود را ببیند و به داده سایر کاربران دسترسی نداشته باشد.,T-AC-04,apps/api/src/app.ts;apps/web/src/components/AccountPanel.tsx;tests/integration/intake-postgres.test.ts,Implemented
-AC-05,Required,R4,۲۱. معیارهای پذیرش سطح محصول,بررسی داخلی — ادمین درخواست را بیابد، یادداشت و نتیجه تماس ثبت کند و تمام تغییرات حساس ممیزی شوند.,T-AC-05,apps/api/src/app.ts;apps/web/src/components/RequestDesk.tsx;tests/integration/intake-postgres.test.ts;docs/R6_FOLLOWUP.md,Implemented
-AC-06,Required,R4,۲۱. معیارهای پذیرش سطح محصول,پیشنهاد — پیشنهاد اختصاصی با مبلغ، خروجی، شرایط و انقضا ساخته و لینک آن از دو کانال ارسال شود.,T-AC-06,apps/api/src/app.ts;apps/web/src/components/OfferFlow.tsx,Implemented
-AC-07,Required,R4,۲۱. معیارهای پذیرش سطح محصول,حریم قیمت — هیچ قیمت جلسه‌ای در صفحه عمومی وجود نداشته باشد؛ مبلغ فقط در لینک معتبر همان پیشنهاد دیده شود.,T-AC-07,tests/e2e/public.spec.ts;apps/web/src/components/OfferFlow.tsx,Implemented
+AC-04,Required,R4,۲۱. معیارهای پذیرش سطح محصول,حساب کاربری — کاربر فقط مشخصات و فهرست درخواست‌های خود را ببیند و به داده سایر کاربران دسترسی نداشته باشد.,T-AC-04,apps/api/src/app.ts;tests/integration/intake-postgres.test.ts,Partial - frontend reset
+AC-05,Required,R4,۲۱. معیارهای پذیرش سطح محصول,بررسی داخلی — ادمین درخواست را بیابد، یادداشت و نتیجه تماس ثبت کند و تمام تغییرات حساس ممیزی شوند.,T-AC-05,apps/api/src/app.ts;tests/integration/intake-postgres.test.ts;docs/R6_FOLLOWUP.md,Partial - frontend reset
+AC-06,Required,R4,۲۱. معیارهای پذیرش سطح محصول,پیشنهاد — پیشنهاد اختصاصی با مبلغ، خروجی، شرایط و انقضا ساخته و لینک آن از دو کانال ارسال شود.,T-AC-06,apps/api/src/app.ts,Partial - frontend reset
+AC-07,Required,R4,۲۱. معیارهای پذیرش سطح محصول,حریم قیمت — هیچ قیمت جلسه‌ای در صفحه عمومی وجود نداشته باشد؛ مبلغ فقط در لینک معتبر همان پیشنهاد دیده شود.,T-AC-07,,Pending - frontend reset
 AC-08,Required,R4,۲۱. معیارهای پذیرش سطح محصول,پرداخت آنلاین — پس از verify سمت سرور، سفارش دقیقاً یک‌بار پرداخت‌شده شود و رسید صادر گردد.,T-AC-08,apps/api/src/app.ts;PROGRESS.md,Implemented
 AC-09,Required,R4,۲۱. معیارهای پذیرش سطح محصول,واریز بانکی — ثبت واریز در انتظار بماند و فقط پس از تأیید کاربر مالی، سفارش وصول‌شده شود.,T-AC-09,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented
-AC-10,Required,R4,۲۱. معیارهای پذیرش سطح محصول,انقضا — پیشنهاد منقضی یا باطل‌شده قابل پذیرش و پرداخت نباشد.,T-AC-10,apps/api/src/app.ts;apps/web/src/components/OfferFlow.tsx,Implemented
-AC-11,Required,R4,۲۱. معیارهای پذیرش سطح محصول,حقوقی — پیش از پرداخت، شرایط، حریم خصوصی و لغو/استرداد قابل مشاهده و پذیرش نسخه‌دار باشند.,T-AC-11,apps/web/src/components/OfferFlow.tsx;apps/api/src/app.ts,Blocked
-AC-12,Required,R4,۲۱. معیارهای پذیرش سطح محصول,اطلاعات شرکت — نام ثبتی، شناسه ملی، شماره ثبت، نشانی، تلفن و ایمیل در فوتر و تماس قابل مشاهده باشند.,T-AC-12,apps/web/src/components/SiteChrome.tsx;CONTENT.md,Blocked
+AC-10,Required,R4,۲۱. معیارهای پذیرش سطح محصول,انقضا — پیشنهاد منقضی یا باطل‌شده قابل پذیرش و پرداخت نباشد.,T-AC-10,apps/api/src/app.ts,Partial - frontend reset
+AC-11,Required,R4,۲۱. معیارهای پذیرش سطح محصول,حقوقی — پیش از پرداخت، شرایط، حریم خصوصی و لغو/استرداد قابل مشاهده و پذیرش نسخه‌دار باشند.,T-AC-11,apps/api/src/app.ts,Partial - frontend reset
+AC-12,Required,R4,۲۱. معیارهای پذیرش سطح محصول,اطلاعات شرکت — نام ثبتی، شناسه ملی، شماره ثبت، نشانی، تلفن و ایمیل در فوتر و تماس قابل مشاهده باشند.,T-AC-12,CONTENT.md,Pending - frontend reset
 AC-13,Required,R4,۲۱. معیارهای پذیرش سطح محصول,سطح دسترسی — کاربر محتوا، عملیات و مالی فقط عملیات نقش خود را انجام دهد و دسترسی غیرفعال فوراً قطع شود.,T-AC-13,apps/api/src/lib/rbac.ts;apps/api/src/app.ts,Implemented
-AC-14,Required,R4,۲۱. معیارهای پذیرش سطح محصول,RTL و موبایل — همه مسیرهای اصلی در عرض ۳۲۰ پیکسل بدون اسکرول افقی و با ترتیب RTL صحیح قابل انجام باشند.,T-AC-14,tests/e2e/public.spec.ts;tests/e2e/intake-ux.spec.ts;artifacts/screenshots;docs/R6_FOLLOWUP.md,Implemented
+AC-14,Required,R4,۲۱. معیارهای پذیرش سطح محصول,RTL و موبایل — همه مسیرهای اصلی در عرض ۳۲۰ پیکسل بدون اسکرول افقی و با ترتیب RTL صحیح قابل انجام باشند.,T-AC-14,docs/R6_FOLLOWUP.md,Pending - frontend reset
 AC-15,Required,R4,۲۱. معیارهای پذیرش سطح محصول,ممیزی — تغییر مبلغ، تأیید واریز، استرداد و تغییر نقش با بازیگر، زمان و مقدار قبل/بعد ثبت شوند.,T-AC-15,apps/api/src/app.ts;packages/db/src/schema.ts,Implemented

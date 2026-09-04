@@ -16,12 +16,11 @@ Before editing code, read these files completely:
 4. `DECISIONS.md`
 5. `PLAN.md`
 6. `ARCHITECTURE.md`
-7. `DESIGN.md`
-8. `CONTENT.md`
-9. `SECURITY.md`
-10. `ACCEPTANCE.md`
-11. `DEPLOYMENT.md`
-12. `docs/TRACEABILITY.csv`
+7. `CONTENT.md`
+8. `SECURITY.md`
+9. `ACCEPTANCE.md`
+10. `DEPLOYMENT.md`
+11. `docs/TRACEABILITY.csv`
 
 Then write a concise execution checklist into `PROGRESS.md` and begin. Do not ask questions already answered in these documents.
 
@@ -44,7 +43,7 @@ Use Ponytail in `full` mode for all implementation and review work. Ponytail con
    - `codex plugin add ponytail@ponytail`
 4. If plugin installation is unavailable, clone `https://github.com/DietrichGebert/ponytail` into a temporary directory, verify the MIT license, record the resolved commit in `docs/SKILL_PROVENANCE.md`, and vendor only the project-local files needed for Codex. Read `skills/ponytail/SKILL.md` fully and apply it in `full` mode.
 
-For frontend work, use UI UX Pro Max. Prefer an already-installed skill. Otherwise run the official `ui-ux-pro-max-cli` Codex initialization or use the official repository `https://github.com/nextlevelbuilder/ui-ux-pro-max-skill`. Record source, version/commit, license, and files retained in `docs/SKILL_PROVENANCE.md`. Generate a project design system, then reconcile it with `DESIGN.md`; `DESIGN.md` wins on brand and product constraints.
+The previous frontend and `DESIGN.md` were intentionally removed at the owner's request on 2026-09-04. Do not infer or reconstruct that discarded visual direction. When the owner provides the replacement frontend brief, use UI UX Pro Max (prefer the already-retained official skill), establish a fresh design system, and create a new `DESIGN.md` from the approved direction. Record source, version/commit, license, and retained files in `docs/SKILL_PROVENANCE.md`.
 
 Do not download code or assets from lookalike repositories. Never overwrite this repository's `AGENTS.md` when installing a skill. Merge only the relevant skill guidance.
 

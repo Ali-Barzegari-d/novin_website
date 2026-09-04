@@ -1,4 +1,4 @@
-# Novin Iranian financial analysis website — agent handoff
+# Novin Iranian financial analysis platform — backend retained
 
 This repository seed turns the approved PRD and discovery answers into an autonomous implementation contract for Codex.
 
@@ -6,4 +6,4 @@ Human: read `START_HERE.md`.
 
 Agent: read `AGENTS.md` and follow its mandatory document order.
 
-The repository is intentionally a planning/scaffold baseline, not a claim that the application is already implemented. The implementation agent owns completing the workspace, scripts, Dockerfiles, Compose, CI, tests, and product code, then proving each R1–R5 gate.
+The product documents and backend/domain implementation are retained. The previous frontend, UI/UX system, visual assets, image prompts, browser tests, and web deployment artifact were intentionally removed on 2026-09-04 at the owner's request. Do not reconstruct the discarded visual direction before receiving the replacement brief.

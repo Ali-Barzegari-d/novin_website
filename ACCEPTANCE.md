@@ -1,5 +1,7 @@
 # Acceptance and QA contract
 
+> Current status (2026-09-04): frontend, browser tests, and visual evidence were intentionally removed for a complete redesign. All browser/UI acceptance gates are pending again; prior evidence is historical only.
+
 ## Global quality gates
 
 Every release requires clean install/build, lint, typecheck, unit/integration tests, relevant Playwright journeys, accessibility checks, visual review, security checks, traceability update, and a healthy production-like Compose run.
