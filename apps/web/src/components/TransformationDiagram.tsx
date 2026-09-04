@@ -19,7 +19,7 @@ export function TransformationDiagram({ compact = false }: { compact?: boolean }
           {[0,1,2,3,4,5].map((index) => {
             const positions = [[602,117],[495,117],[432,204],[337,204],[275,117],[171,117]];
             const [cx, cy] = positions[index]!;
-            return <motion.circle key={index} cx={cx} cy={cy} r={active === index ? 13 : 8} className={active === index ? 'map-dot active' : 'map-dot'} animate={{ r: active === index ? 13 : 8 }} transition={{ type: 'spring', stiffness: 420, damping: 26 }}/>;
+            return <motion.circle key={index} cx={cx} cy={cy} r={active === index ? 13 : 8} className={`map-dot map-dot-${index}${active === index ? ' active' : ''}`} animate={{ r: active === index ? 13 : 8 }} transition={{ type: 'spring', stiffness: 420, damping: 26 }}/>;
           })}
           <g className="map-bars"><path d="M458 180v-35m14 35v-52m14 52v-70"/><path d="M205 90h54v38h-54zM216 105h32M216 116h22"/><circle cx="337" cy="204" r="25"/><path d="m327 204 8 8 14-18"/></g>
         </svg>

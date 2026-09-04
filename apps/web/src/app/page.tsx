@@ -2,20 +2,22 @@ import Link from 'next/link';
 import { Icon } from '@/components/Icon';
 import { Pressable, Reveal } from '@/components/Motion';
 import { TransformationDiagram } from '@/components/TransformationDiagram';
+import { TrustJourney } from '@/components/TrustJourney';
 import { audiences, placeholderNotice, processSteps, productPillars } from '@/lib/content';
 
 export default function HomePage() {
   return (
     <main id="main-content">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@type': 'Organization', name: 'شرکت طراحی و تحلیل مالی نوین ایرانیان', url: process.env.NEXT_PUBLIC_BASE_URL ?? 'https://karafintech.ir', description: 'طراحی و تحلیل یکپارچه مالی، فرایند، داده و سامانه برای اشخاص حقوقی' }).replace(/</g, '\\u003c') }} />
-      <section className="hero shell" aria-labelledby="home-title">
-        <div className="hero-copy">
-          <h1 id="home-title">پیچیدگی‌های مالی و کسب‌وکاری را به فرایند، سامانه و محصول قابل‌اجرا تبدیل می‌کنیم.</h1>
-          <p>مسئله را پیش از راه‌حل می‌فهمیم و مالی، فرایند، داده و سامانه را در یک مسیر قابل‌ردیابی کنار هم می‌گذاریم.</p>
-          <div className="hero-actions"><Pressable><Link className="button button-large" href="/request">شرح مسئله‌تان را شروع کنید <Icon name="arrow" /></Link></Pressable><Link className="secondary-action" href="/process">فرایند همکاری را ببینید</Link></div>
-          <p className="hero-note"><Icon name="check" /> ثبت درخواست رایگان است و به معنی سفارش یا تشکیل قرارداد نیست.</p>
+      <section className="hero home-hero shell" aria-labelledby="home-title">
+        <div className="hero-copy home-hero-copy">
+          <Reveal className="hero-kicker">تحلیل یکپارچه برای تصمیم قابل اجرا</Reveal>
+          <Reveal delay={0.08}><h1 id="home-title">پیچیدگی‌های مالی و کسب‌وکاری را به <span>فرایند، سامانه و محصول قابل‌اجرا</span> تبدیل می‌کنیم.</h1></Reveal>
+          <Reveal delay={0.16}><p>مسئله را پیش از راه‌حل می‌فهمیم و مالی، فرایند، داده و سامانه را در یک مسیر قابل‌ردیابی کنار هم می‌گذاریم.</p></Reveal>
+          <Reveal delay={0.23} className="hero-actions"><Pressable><Link className="button button-large" href="/request">شرح مسئله‌تان را شروع کنید <Icon name="arrow" /></Link></Pressable><Link className="secondary-action" href="/process">فرایند همکاری را ببینید</Link></Reveal>
+          <Reveal delay={0.3}><p className="hero-note"><Icon name="check" /> ثبت درخواست رایگان است و به معنی سفارش یا تشکیل قرارداد نیست.</p></Reveal>
         </div>
-        <Reveal className="hero-visual"><TransformationDiagram compact /></Reveal>
+        <TrustJourney />
         <div className="trust-rail" aria-label="اصول شروع همکاری">
           <div><Icon name="search"/><span><strong>بررسی اولیه رایگان</strong><small>برای تشخیص امکان همکاری</small></span></div>
           <div><Icon name="lock"/><span><strong>محرمانگی از ابتدا</strong><small>بدون دریافت داده حساس در فرم</small></span></div>

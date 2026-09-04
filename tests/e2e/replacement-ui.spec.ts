@@ -18,6 +18,24 @@ test('canonical public experience is RTL, accessible and release-gated', async (
   expect(results.violations.filter((violation) => ['serious', 'critical'].includes(violation.impact ?? ''))).toEqual([]);
 });
 
+test('approved guided-confidence hero uses Persian steps, bundled typography and reduced-motion fallback', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  const journey = page.locator('.trust-journey');
+  await expect(journey).toBeVisible();
+  await expect(journey.locator('li')).toHaveCount(4);
+  await expect(journey.locator('li').first()).toContainText('۰۱');
+  await expect(journey.locator('li').last()).toContainText('۰۴');
+  const visualContract = await page.evaluate(() => ({
+    font: getComputedStyle(document.body).fontFamily,
+    blue: getComputedStyle(document.documentElement).getPropertyValue('--blue').trim(),
+    direction: getComputedStyle(document.documentElement).direction,
+  }));
+  expect(visualContract.font).toContain('Vazirmatn Variable');
+  expect(visualContract.blue).toBe('#0a66c2');
+  expect(visualContract.direction).toBe('rtl');
+});
+
 for (const width of [320, 768, 1440]) {
   test(`home remains composed without horizontal overflow at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: width === 320 ? 760 : 900 });

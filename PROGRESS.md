@@ -308,6 +308,17 @@ Reset evidence: clean offline install now has 250 dependency components (down fr
 - QA passed: `pnpm typecheck`; `pnpm lint` (137-row traceability contract); `pnpm test` (22 passed, 1 opted-out integration test skipped); `pnpm --filter web build` (25 routes); `git diff --check`; and focused Chromium public smoke (4 passed, 2 private-token cases skipped). The full Chromium suite was also launched after the production build and regenerated visual evidence; the focused run records the complete result. Manually inspected `artifacts/screenshots/home-{320,768,1440}.png` for teal prominence, RTL, contrast, 320px overflow and legible process artwork.
 - Implementation commit: `bd9115a` (`feat(r7): shift public palette to turquoise`). No push, merge or deployment was performed. Production gates and `docs/TRACEABILITY.csv` are unchanged because this is a presentation refinement, not a new PRD behavior.
 
+### 2026-09-04 — Approved guided-confidence frontend and motion
+
+- Owner selected concept `۰۱ — اطمینان هدایت‌شده`. Replaced the superseded design specification with the approved blue-led system: trustworthy blue is dominant, turquoise and cream create calm operational surfaces, gold marks decisions, and burgundy is a sparse accent.
+- Rebuilt the real homepage first viewport around a centered Persian statement, explicit free/non-contractual boundary, an RTL four-stage collaboration journey, and three start-of-engagement trust principles. The rest of the public experience now shares the expanded semantic palette without fabricated claims or statistics.
+- Activated the existing Framer Motion layer: staged hero arrival, once-only viewport reveals, spring press/hover feedback, staggered journey cards, scroll progress, and progressive SVG paths. Motion uses opacity/transform and respects `prefers-reduced-motion`.
+- Added self-hosted `@fontsource-variable/vazirmatn@5.2.8` under SIL OFL 1.1. The IranYekan display slot is documented but remains gated until the owner supplies licensed webfont files and redistribution evidence.
+- Researched five image candidates for owner review only; the owner rejected all of them. No third-party image was added to the product, and the approved direction now explicitly remains stock-image-free.
+- QA passed: full `pnpm typecheck`; full production `pnpm build` (۲۳ generated web pages); `pnpm lint` (۱۳۷ traceability rows); `pnpm test` (۱۹ passed, ۱ integration skipped); `git diff --check`; full Chromium E2E (۸ passed) including RTL, Axe serious/critical checks across representative surfaces, Vazirmatn, Persian journey numbers, reduced motion, mobile menu and no overflow at ۳۲۰/۷۶۸/۱۴۴۰px. The full browser pass found a ۴٫۱۲:۱ small-text contrast regression from the new turquoise; small detail indices now use the darker semantic turquoise and the repeated full run passed.
+- Visual evidence was manually inspected at `artifacts/screenshots/replacement-first-viewport-{320,768,1440}.png` and `artifacts/screenshots/replacement-home-1440.png`. Production gates remain unchanged; no deployment or image publication was performed.
+- Rejected concept drafts were moved without deletion to `/tmp/novin-design-drafts-20260904`; the retained internal `canon.png` was not changed. The delivery commit excludes those drafts.
+
 Copy unresolved gates from `DECISIONS.md` and close them only with evidence.
 
 - Legal/privacy owner: approve and publish final terms, privacy, cancellation/refund, retention copy, and version identifiers; remove all drafts only after approval.

@@ -37,6 +37,7 @@ export function SiteHeader() {
     <header className="site-header">
       <div className="header-inner">
         <Link className="wordmark" href="/" aria-label={`${companyName}؛ صفحه اصلی`}>
+          <i className="brand-mark" aria-hidden="true"><b /></i>
           <span>{companyName}</span>
         </Link>
         <nav className="desktop-nav" aria-label="ناوبری اصلی">

@@ -1,3 +1,4 @@
+import '@fontsource-variable/vazirmatn';
 import '@fontsource-variable/noto-sans-arabic';
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
@@ -18,10 +19,10 @@ export const viewport: Viewport = { width: 'device-width', initialScale: 1, them
 
 const designContract = `<!--
 THESIS: پیچیدگی سازمان را به یک مسیر اجرایی قابل‌ردیابی تبدیل می‌کنیم؛ صفحه از هیروی مبهم و ادعاهای بی‌مدرک دور می‌ماند.
-OWN-WORLD: سفید روشن، جوهر سرمه‌ای، فیروزه‌ای عملیاتی، خطوط فنی یک‌پیکسلی و سطوح دقیق با گوشه‌های کنترل‌شده.
+OWN-WORLD: آبی قابل اعتماد، جوهر سرمه‌ای، فیروزه‌ای زنده، کرمی آرام، طلایی محدود و عنابی بسیار کم؛ خطوط فنی یک‌پیکسلی و سطوح دقیق.
 STORY: مخاطب مسئله را می‌شناسد، اتصال مالی/فرایند/داده/سامانه را می‌بیند، حدود همکاری را می‌فهمد و شرح مسئله را آغاز می‌کند.
-FIRST VIEWPORT: ناوبری باریک، تیتر بزرگ راست، دیاگرام چرخه اجرایی چپ، CTA روشن و نوار سه‌گانه اعتماد در پایین قاب.
-FORM: استاندارد حرفه‌ای سایت مشاوره، انتخاب مستقیم مالک؛ seed 3701d870، comp .impeccable/mocks/decision/canon.png.
+FIRST VIEWPORT: ناوبری باریک، تیتر مرکزی مقتدر، CTA روشن، چهار مرحله اعتماد و نوار سه‌گانه اصول شروع.
+FORM: مسیر «اطمینان هدایت‌شده» که مالک در ۱۴۰۵/۰۶/۱۳ انتخاب کرد؛ بدون بازسازی مسیر بصری کنارگذاشته‌شده.
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
 -->`;
 

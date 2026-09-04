@@ -9,8 +9,19 @@ export function ScrollProgress() {
   return <motion.div className="scroll-progress" style={{ scaleX }} aria-hidden="true" />;
 }
 
-export function Reveal({ children, className = '' }: { children: ReactNode; className?: string; delay?: number }) {
-  return <div className={className}>{children}</div>;
+export function Reveal({ children, className = '', delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
+  const reduce = useReducedMotion();
+  return (
+    <motion.div
+      className={className}
+      initial={reduce ? false : { opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.18 }}
+      transition={{ duration: reduce ? 0 : 0.62, delay: reduce ? 0 : delay, ease: [0.16, 1, 0.3, 1] }}
+    >
+      {children}
+    </motion.div>
+  );
 }
 
 export function Pressable({ children, className = '' }: { children: ReactNode; className?: string }) {
