@@ -327,6 +327,7 @@ Reset evidence: clean offline install now has 250 dependency components (down fr
 - Added a focused browser contract for the input/layer/output count and layer interaction, plus dedicated visual evidence at `artifacts/screenshots/replacement-diagram-{320,768,1440}.png`.
 - QA passed: `pnpm typecheck`; `pnpm lint` (137 traceability rows); `pnpm --filter web build` (23 generated pages); `git diff --check`; and the complete Chromium E2E suite (9 passed), including Axe serious/critical checks and no horizontal overflow at 320/768/1440px. All three diagram screenshots were manually inspected after the final tablet-header adjustment.
 - This correction changes no PRD behavior or traceability mapping. No third-party image or fabricated metric was added, and production gates remain unchanged.
+- Implementation commit: `b77a253` (`fix(web): replace ambiguous transformation map`).
 
 Copy unresolved gates from `DECISIONS.md` and close them only with evidence.
 
