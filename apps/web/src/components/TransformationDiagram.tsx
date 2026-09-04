@@ -6,14 +6,6 @@ import { productPillars } from '@/lib/content';
 
 const layerColors = ['blue', 'gold', 'teal', 'navy', 'burgundy'] as const;
 
-const layerPaths = [
-  'M805 240 C755 240 750 72 690 72 H310 C260 72 255 240 220 240',
-  'M805 240 C755 240 750 156 690 156 H310 C260 156 255 240 220 240',
-  'M805 240 H220',
-  'M805 240 C755 240 750 324 690 324 H310 C260 324 255 240 220 240',
-  'M805 240 C755 240 750 408 690 408 H310 C260 408 255 240 220 240',
-] as const;
-
 export function TransformationDiagram() {
   const [active, setActive] = useState(0);
   const reduceMotion = useReducedMotion();
@@ -41,26 +33,23 @@ export function TransformationDiagram() {
               <path d="M1 1 11 6 1 11Z" />
             </marker>
           </defs>
-          {layerPaths.map((path, index) => (
-            <motion.path
-              key={path}
-              d={path}
-              className={`map-path map-path-${layerColors[index]}${active === index ? ' is-active' : ''}`}
-              initial={reduceMotion ? false : { pathLength: 0, opacity: 0 }}
-              whileInView={{ pathLength: 1, opacity: active === index ? 1 : 0.3 }}
-              animate={{ opacity: active === index ? 1 : 0.3 }}
-              viewport={{ once: true, amount: 0.35 }}
-              transition={{ duration: reduceMotion ? 0 : 0.9, delay: reduceMotion ? 0 : index * 0.07, ease: [0.16, 1, 0.3, 1] }}
-            />
-          ))}
           <motion.path
-            d="M220 240 H176"
-            className="map-exit"
+            d="M805 240 H755"
+            className="map-arrow map-entry"
             markerEnd={`url(#${arrowId})`}
             initial={reduceMotion ? false : { pathLength: 0 }}
             whileInView={{ pathLength: 1 }}
             viewport={{ once: true, amount: 0.35 }}
-            transition={{ duration: reduceMotion ? 0 : 0.45, delay: reduceMotion ? 0 : 0.65 }}
+            transition={{ duration: reduceMotion ? 0 : 0.45, ease: [0.16, 1, 0.3, 1] }}
+          />
+          <motion.path
+            d="M220 240 H176"
+            className="map-arrow map-exit"
+            markerEnd={`url(#${arrowId})`}
+            initial={reduceMotion ? false : { pathLength: 0 }}
+            whileInView={{ pathLength: 1 }}
+            viewport={{ once: true, amount: 0.35 }}
+            transition={{ duration: reduceMotion ? 0 : 0.45, delay: reduceMotion ? 0 : 0.2, ease: [0.16, 1, 0.3, 1] }}
           />
         </svg>
 

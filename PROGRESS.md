@@ -329,6 +329,11 @@ Reset evidence: clean offline install now has 250 dependency components (down fr
 - This correction changes no PRD behavior or traceability mapping. No third-party image or fabricated metric was added, and production gates remain unchanged.
 - Implementation commit: `b77a253` (`fix(web): replace ambiguous transformation map`).
 
+### 2026-09-04 — Transformation map arrow refinement
+
+- Replaced the five curved desktop convergence strokes at the organizational-problem input with one straight left-pointing blue arrow matching the executable-output arrow. The five analysis layers remain explicit interactive controls; only the connector shape changed. The vertical tablet/mobile flow remains unchanged.
+- QA passed: full `pnpm typecheck`; `pnpm lint` (137 traceability rows); `pnpm --filter web build` (23 generated pages); focused Chromium map/responsive checks; and `git diff --check`. Manually inspected the final 1440px rendering at `artifacts/screenshots/replacement-diagram-1440.png` and adjusted the endpoint until the arrowhead was fully visible outside the analysis card.
+
 Copy unresolved gates from `DECISIONS.md` and close them only with evidence.
 
 - Legal/privacy owner: approve and publish final terms, privacy, cancellation/refund, retention copy, and version identifiers; remove all drafts only after approval.

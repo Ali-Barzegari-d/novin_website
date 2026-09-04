@@ -42,7 +42,8 @@ test('transformation map connects one problem to five analysis layers and one ex
   await map.scrollIntoViewIfNeeded();
   await expect(map.getByText('مسئله سازمانی', { exact: true })).toBeVisible();
   await expect(map.getByText('تصمیم قابل اجرا', { exact: true })).toBeVisible();
-  await expect(map.locator('.map-path')).toHaveCount(5);
+  await expect(map.locator('.map-entry')).toHaveCount(1);
+  await expect(map.locator('.map-exit')).toHaveCount(1);
 
   const layers = map.getByRole('group', { name: 'لایه‌های تحلیل مسئله' });
   await expect(layers.getByRole('button')).toHaveCount(5);
