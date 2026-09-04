@@ -22,7 +22,7 @@ Status: owner-requested frontend and visual reset completed. The retained API/do
 | R5 | Passed (dev/demo); public production blocked | `97f9253` | final static/security gates, Docker image rehearsal, API/web health smoke, Chromium + Firefox E2E; see R5 evidence below | Legal/company/provider/TLS/backup/ClamAV gates and isolated restore drill remain open |
 | R6 | Validated checkpoint; not a production release | `b45f147` | frozen install, lint, typecheck, 22 unit tests, production build, disposable PostgreSQL/Redis integration, Chromium/Firefox E2E, Docker production-like image smoke | WebKit runner failure; all existing launch gates plus security/commerce/CMS/operations backlog remain open |
 | R7 | Visual-system, component, layout-shell and public-experience checkpoints validated; not a production release | `645c429`, `1ec7663`, `f8bf9cf`, `4671dbd`, `06e31db`, `b3ce320`, `eeda580`, `e22ef57`, `80e7bd4`, `a25350f`, `f61df0b`, `bd9115a`, `a474e50`, `6a9db1f` | frozen install, workspace typecheck, web production build, lint, 22 unit/integration tests and Chromium RTL/focus/axe checks | R6 and launch gates are unchanged |
-| Frontend reset | Completed; intentionally not a release | pending commit | Previous frontend, design system, visual assets/prompts/evidence and browser harness removed; backend QA re-run | Replacement UI/UX brief and implementation required before any public release |
+| Frontend reset | Completed; intentionally not a release | `8fcb9ab` | Previous frontend, design system, visual assets/prompts/evidence and browser harness removed; backend QA re-run | Replacement UI/UX brief and implementation required before any public release |
 
 ## Execution log
 
