@@ -36,6 +36,22 @@ test('approved guided-confidence hero uses Persian steps, bundled typography and
   expect(visualContract.direction).toBe('rtl');
 });
 
+test('transformation map connects one problem to five analysis layers and one executable outcome', async ({ page }) => {
+  await page.goto('/');
+  const map = page.locator('.system-map');
+  await map.scrollIntoViewIfNeeded();
+  await expect(map.getByText('مسئله سازمانی', { exact: true })).toBeVisible();
+  await expect(map.getByText('تصمیم قابل اجرا', { exact: true })).toBeVisible();
+  await expect(map.locator('.map-path')).toHaveCount(5);
+
+  const layers = map.getByRole('group', { name: 'لایه‌های تحلیل مسئله' });
+  await expect(layers.getByRole('button')).toHaveCount(5);
+  const dataLayer = layers.getByRole('button', { name: /داده/ });
+  await dataLayer.click();
+  await expect(dataLayer).toHaveAttribute('aria-pressed', 'true');
+  await expect(map.locator('.map-reading')).toContainText('کیفیت، یکپارچگی و قابلیت اتکا');
+});
+
 for (const width of [320, 768, 1440]) {
   test(`home remains composed without horizontal overflow at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: width === 320 ? 760 : 900 });
@@ -44,14 +60,16 @@ for (const width of [320, 768, 1440]) {
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(1);
-    if (width === 320) {
-      const clippedMapTags = await page.locator('.system-map.compact .map-mobile-legend span').evaluateAll((tags) => tags.map((tag) => {
-        const rect = tag.getBoundingClientRect();
-        const map = tag.closest('.system-map')!.getBoundingClientRect();
-        return { text: tag.textContent, left: rect.left, right: rect.right, mapLeft: map.left, mapRight: map.right };
-      }).filter(({ left, right, mapLeft, mapRight }) => left < mapLeft || right > mapRight));
-      expect(clippedMapTags, JSON.stringify(clippedMapTags)).toEqual([]);
-    }
+    const transformationMap = page.locator('.system-map');
+    await transformationMap.scrollIntoViewIfNeeded();
+    await page.locator('.site-header, .skip-link, .scroll-progress').evaluateAll((elements) => elements.forEach((element) => {
+      (element as HTMLElement).style.display = 'none';
+    }));
+    await page.evaluate(() => new Promise(requestAnimationFrame));
+    await transformationMap.screenshot({ path: `artifacts/screenshots/replacement-diagram-${width}.png` });
+    await page.locator('.site-header, .skip-link, .scroll-progress').evaluateAll((elements) => elements.forEach((element) => {
+      (element as HTMLElement).style.display = '';
+    }));
     for (const section of await page.locator('main section').all()) await section.scrollIntoViewIfNeeded();
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({ path: `artifacts/screenshots/replacement-home-${width}.png`, fullPage: true });

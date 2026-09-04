@@ -4,35 +4,109 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { useId, useState } from 'react';
 import { productPillars } from '@/lib/content';
 
-export function TransformationDiagram({ compact = false }: { compact?: boolean }) {
+const layerColors = ['blue', 'gold', 'teal', 'navy', 'burgundy'] as const;
+
+const layerPaths = [
+  'M805 240 C755 240 750 72 690 72 H310 C260 72 255 240 220 240',
+  'M805 240 C755 240 750 156 690 156 H310 C260 156 255 240 220 240',
+  'M805 240 H220',
+  'M805 240 C755 240 750 324 690 324 H310 C260 324 255 240 220 240',
+  'M805 240 C755 240 750 408 690 408 H310 C260 408 255 240 220 240',
+] as const;
+
+export function TransformationDiagram() {
   const [active, setActive] = useState(0);
-  const reduce = useReducedMotion();
-  const markerId = useId().replace(/:/g, '');
+  const reduceMotion = useReducedMotion();
+  const arrowId = useId().replace(/:/g, '');
+  const activeLayer = productPillars[active];
+
   return (
-    <div className={compact ? 'system-map compact' : 'system-map'}>
-      <p className="sr-only">چرخه مفهومی تبدیل مسئله سازمانی از تحلیل مالی، فرایند، داده و سامانه به محصول قابل اجرا.</p>
-      <div className="map-canvas" aria-hidden="true">
-        <svg viewBox="0 0 720 380">
-          <defs><marker id={markerId} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10Z" fill="currentColor"/></marker></defs>
-          <motion.path className="map-loop" d="M620 110C690 210 625 318 490 326H183C65 326 27 207 95 121" fill="none" markerEnd={`url(#${markerId})`} initial={reduce ? false : { pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true, amount: .45 }} transition={{ duration: reduce ? 0 : 1.4, ease: [0.16, 1, 0.3, 1] }}/>
-          <motion.path className="map-link" d="M602 117H495L432 204H337L275 117H171L111 204" fill="none" initial={reduce ? false : { pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true, amount: .45 }} transition={{ duration: reduce ? 0 : 1.1, delay: .18, ease: [0.16, 1, 0.3, 1] }}/>
-          {[0,1,2,3,4,5].map((index) => {
-            const positions = [[602,117],[495,117],[432,204],[337,204],[275,117],[171,117]];
-            const [cx, cy] = positions[index]!;
-            return <motion.circle key={index} cx={cx} cy={cy} r={active === index ? 13 : 8} className={`map-dot map-dot-${index}${active === index ? ' active' : ''}`} animate={{ r: active === index ? 13 : 8 }} transition={{ type: 'spring', stiffness: 420, damping: 26 }}/>;
-          })}
-          <g className="map-bars"><path d="M458 180v-35m14 35v-52m14 52v-70"/><path d="M205 90h54v38h-54zM216 105h32M216 116h22"/><circle cx="337" cy="204" r="25"/><path d="m327 204 8 8 14-18"/></g>
+    <div className="system-map">
+      <p className="sr-only">
+        نقشه مفهومی تبدیل مسئله سازمانی با بررسی هم‌زمان پنج لایه مالی، فرایند، داده، سامانه و محصول به یک تصمیم قابل اجرا.
+      </p>
+
+      <header className="map-head">
+        <div>
+          <span>مدل تصمیم</span>
+          <h3>پنج زاویه تحلیل، یک مسیر روشن برای اجرا</h3>
+        </div>
+        <p><i />نمایش مفهومی؛ بدون داده واقعی مشتری</p>
+      </header>
+
+      <div className="map-stage">
+        <svg className="map-flow" viewBox="0 0 1000 480" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <marker id={arrowId} viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto">
+              <path d="M1 1 11 6 1 11Z" />
+            </marker>
+          </defs>
+          {layerPaths.map((path, index) => (
+            <motion.path
+              key={path}
+              d={path}
+              className={`map-path map-path-${layerColors[index]}${active === index ? ' is-active' : ''}`}
+              initial={reduceMotion ? false : { pathLength: 0, opacity: 0 }}
+              whileInView={{ pathLength: 1, opacity: active === index ? 1 : 0.3 }}
+              animate={{ opacity: active === index ? 1 : 0.3 }}
+              viewport={{ once: true, amount: 0.35 }}
+              transition={{ duration: reduceMotion ? 0 : 0.9, delay: reduceMotion ? 0 : index * 0.07, ease: [0.16, 1, 0.3, 1] }}
+            />
+          ))}
+          <motion.path
+            d="M220 240 H176"
+            className="map-exit"
+            markerEnd={`url(#${arrowId})`}
+            initial={reduceMotion ? false : { pathLength: 0 }}
+            whileInView={{ pathLength: 1 }}
+            viewport={{ once: true, amount: 0.35 }}
+            transition={{ duration: reduceMotion ? 0 : 0.45, delay: reduceMotion ? 0 : 0.65 }}
+          />
         </svg>
-        <span className="map-tag tag-problem">مسئله</span><span className="map-tag tag-finance">مالی</span><span className="map-tag tag-process">فرایند</span><span className="map-tag tag-data">داده</span><span className="map-tag tag-system">سامانه</span><span className="map-tag tag-result">محصول قابل اجرا</span>
-        <div className="map-mobile-legend">
-          {['مسئله', 'مالی', 'فرایند', 'داده', 'سامانه', 'محصول قابل اجرا'].map((label) => <span key={label}>{label}</span>)}
+
+        <div className="map-origin">
+          <span>ورودی</span>
+          <strong>مسئله سازمانی</strong>
+          <p>ابهام در عدد، فرایند، داده یا سامانه</p>
+        </div>
+
+        <div className="map-layers" role="group" aria-label="لایه‌های تحلیل مسئله">
+          {productPillars.map(([title, text], index) => (
+            <motion.button
+              key={title}
+              type="button"
+              className={`map-layer map-layer-${layerColors[index]}`}
+              aria-pressed={active === index}
+              onClick={() => setActive(index)}
+              onPointerEnter={() => setActive(index)}
+              whileHover={reduceMotion ? {} : { x: -4 }}
+              whileTap={reduceMotion ? {} : { scale: 0.99 }}
+              transition={{ type: 'spring', stiffness: 420, damping: 30 }}
+            >
+              <span>{new Intl.NumberFormat('fa-IR', { minimumIntegerDigits: 2 }).format(index + 1)}</span>
+              <strong>{title}</strong>
+              <small>{text}</small>
+              <i aria-hidden="true" />
+            </motion.button>
+          ))}
+        </div>
+
+        <div className="map-outcome">
+          <span>خروجی</span>
+          <strong>تصمیم قابل اجرا</strong>
+          <ul>
+            <li>مرز روشن</li>
+            <li>مالک مشخص</li>
+            <li>معیار قابل سنجش</li>
+          </ul>
         </div>
       </div>
-      {!compact && <div className="map-controls" role="group" aria-label="لایه‌های تحلیل">
-        {productPillars.map(([title, text], index) => <button key={title} type="button" aria-pressed={active === index} onClick={() => setActive(index)} onPointerEnter={() => setActive(index)}><span>{title}</span><small>{text}</small></button>)}
-      </div>}
-      {!compact && <p className="map-active-detail" aria-live="polite"><strong>{productPillars[active]?.[0]}</strong><span>{productPillars[active]?.[1]}</span></p>}
-      {!compact && <p className="map-caption"><span className="status-dot"/>این نقشه یک نمایش مفهومی است؛ نه داده واقعی مشتری.</p>}
+
+      <div className="map-reading" aria-live="polite">
+        <span>لایه فعال</span>
+        <strong>{activeLayer?.[0]}</strong>
+        <p>{activeLayer?.[1]}</p>
+      </div>
     </div>
   );
 }

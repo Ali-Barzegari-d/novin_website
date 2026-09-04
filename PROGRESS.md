@@ -320,6 +320,14 @@ Reset evidence: clean offline install now has 250 dependency components (down fr
 - Rejected concept drafts were moved without deletion to `/tmp/novin-design-drafts-20260904`; the retained internal `canon.png` was not changed. The delivery commit excludes those drafts.
 - Implementation commit: `856debe` (`feat(web): deliver guided confidence experience`).
 
+### 2026-09-04 — Transformation map correction
+
+- Replaced the ambiguous zigzag/loop illustration after owner review. The new RTL convergence map has one explicit organizational-problem input, five correctly matched interactive analysis layers, and one executable-decision output. It no longer maps five controls onto six unlabeled SVG points or relies on absolutely positioned tags.
+- Desktop draws five independent semantic paths from right to left and emphasizes the selected layer. Tablet and mobile use a readable vertical flow instead of shrinking the desktop artwork; every layer remains a native button with Persian numbering, `aria-pressed`, click support and a live textual explanation. Reduced-motion keeps the complete static result.
+- Added a focused browser contract for the input/layer/output count and layer interaction, plus dedicated visual evidence at `artifacts/screenshots/replacement-diagram-{320,768,1440}.png`.
+- QA passed: `pnpm typecheck`; `pnpm lint` (137 traceability rows); `pnpm --filter web build` (23 generated pages); `git diff --check`; and the complete Chromium E2E suite (9 passed), including Axe serious/critical checks and no horizontal overflow at 320/768/1440px. All three diagram screenshots were manually inspected after the final tablet-header adjustment.
+- This correction changes no PRD behavior or traceability mapping. No third-party image or fabricated metric was added, and production gates remain unchanged.
+
 Copy unresolved gates from `DECISIONS.md` and close them only with evidence.
 
 - Legal/privacy owner: approve and publish final terms, privacy, cancellation/refund, retention copy, and version identifiers; remove all drafts only after approval.
